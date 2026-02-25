@@ -903,7 +903,32 @@ const splitUpdateNoteLines = (rawValue) =>
   normalizeUpdateNoteText(rawValue)
     .split(/\n+/)
     .map((line) => line.replace(/^\s*[-*•]+\s*/, '').trim())
-    .filter(Boolean);
+    .filter((line) => {
+      if (!line) return false;
+      if (/^[.|\-_/\\\s]+\(v?\d+\.\d+\.\d+\)$/i.test(line)) return false;
+      if (/^[.|\-_/\\\s]*\|{1,3}.*\(\d+\.\d+\.\d+\)$/i.test(line)) return false;
+      return true;
+    });
+
+const localizeFallbackUpdateNote = (note, languageCode = 'en') => {
+  const language = languageCode === 'ru' ? 'ru' : 'en';
+  const source = String(note || '').trim();
+  if (!source) return source;
+  if (language !== 'ru') return source;
+  if (/[А-Яа-яЁё]/.test(source)) return source;
+
+  const normalized = source.toLowerCase();
+  if (normalized.includes('custom theme') && normalized.includes('color picker') && normalized.includes('cursor')) {
+    return 'Добавлен редактор своей темы, кастомный выбор цвета и плавный хвост курсора.';
+  }
+  if (normalized.includes('custom theme') && normalized.includes('smoother cursor')) {
+    return 'Улучшена своя тема, добавлен кастомный выбор цвета и более плавный хвост курсора.';
+  }
+  if (normalized.includes('update reliability') && normalized.includes('bug fixes')) {
+    return 'Повышена надежность обновлений и исправлены ошибки.';
+  }
+  return source;
+};
 
 const normalizeUpdateNotes = (rawValue, languageCode = 'en') => {
   const targetLanguage = languageCode === 'ru' ? 'ru' : 'en';
@@ -952,7 +977,8 @@ const normalizeUpdateNotes = (rawValue, languageCode = 'en') => {
   }
 
   const selected = localized[targetLanguage];
-  return (selected.length ? selected : fallback).slice(0, 4);
+  const resolved = (selected.length ? selected : fallback).map((line) => localizeFallbackUpdateNote(line, targetLanguage));
+  return resolved.slice(0, 4);
 };
 
 const FALLBACK_GAME_VERSIONS = [
@@ -4614,18 +4640,18 @@ export default function App() {
 
   const getPrimaryButtonClassName = (instance) => {
     if (instance.installState === 'installed') {
-      return 'bg-white text-black hover:bg-green-500 hover:text-white';
+      return 'text-black hover:brightness-110';
     }
 
     if (instance.installState === 'installing') {
-      return 'bg-green-500/15 text-green-300 border border-green-500/30';
+      return 'border';
     }
 
     if (instance.installState === 'error') {
       return 'bg-red-500/10 text-red-300 border border-red-500/20 hover:bg-red-500/20';
     }
 
-    return 'bg-white/10 text-white border border-white/10 hover:bg-green-600 hover:border-green-600';
+    return 'bg-white/10 text-white border hover:bg-white/15';
   };
 
   const dismissUpdateBanner = () => {
@@ -4771,6 +4797,50 @@ export default function App() {
     [latestInstalledNotes, latestInstalledUpdate.version, t]
   );
   const latestUpdateVersionLabel = latestInstalledUpdate.version ? t('latestUpdateVersion', { version: latestInstalledUpdate.version }) : '';
+  const themeAccentRgb = useMemo(() => parseRgbTriplet(activeVisualTheme.pointerRgb, [34, 197, 94]), [activeVisualTheme.pointerRgb]);
+  const themeAccentSoftRgb = useMemo(() => mixRgb(themeAccentRgb, [255, 255, 255], 0.16), [themeAccentRgb]);
+  const themeAccentDeepRgb = useMemo(() => mixRgb(themeAccentRgb, [4, 11, 24], 0.56), [themeAccentRgb]);
+  const themeAccentHex = useMemo(() => rgbToHex(themeAccentRgb), [themeAccentRgb]);
+  const themeAccentSoftHex = useMemo(() => rgbToHex(themeAccentSoftRgb), [themeAccentSoftRgb]);
+  const themeAccentDeepHex = useMemo(() => rgbToHex(themeAccentDeepRgb), [themeAccentDeepRgb]);
+  const themeAccentRgba = useCallback((alpha = 0.28) => `rgba(${themeAccentRgb.join(',')}, ${Math.max(0, Math.min(1, Number(alpha) || 0))})`, [themeAccentRgb]);
+  const themeBrandIconStyle = useMemo(
+    () => ({
+      background: `linear-gradient(135deg, ${themeAccentSoftHex} 0%, ${themeAccentHex} 52%, ${themeAccentDeepHex} 100%)`,
+      boxShadow: `0 0 30px ${themeAccentRgba(0.34)}`
+    }),
+    [themeAccentDeepHex, themeAccentHex, themeAccentRgba, themeAccentSoftHex]
+  );
+  const themeCreateButtonStyle = useMemo(
+    () => ({
+      background: `linear-gradient(90deg, ${themeAccentSoftHex} 0%, ${themeAccentHex} 100%)`,
+      color: '#04130a',
+      boxShadow: `0 12px 26px ${themeAccentRgba(0.24)}`
+    }),
+    [themeAccentHex, themeAccentRgba, themeAccentSoftHex]
+  );
+  const getPrimaryButtonStyle = useCallback(
+    (instance) => {
+      if (instance.installState === 'installed') {
+        return {
+          background: `linear-gradient(90deg, ${themeAccentSoftHex} 0%, ${themeAccentHex} 100%)`,
+          color: '#04130a',
+          boxShadow: `0 10px 22px ${themeAccentRgba(0.22)}`
+        };
+      }
+      if (instance.installState === 'installing') {
+        return {
+          borderColor: themeAccentRgba(0.45),
+          background: themeAccentRgba(0.18),
+          color: themeAccentSoftHex
+        };
+      }
+      return {
+        borderColor: themeAccentRgba(0.34)
+      };
+    },
+    [themeAccentHex, themeAccentRgba, themeAccentSoftHex]
+  );
 
   const currentManageItems = resolveContentListByType(editingInstance, manageContentType);
   const allModsCount = currentManageItems.length;
@@ -4959,7 +5029,7 @@ export default function App() {
 
       <div className="drag-region relative z-40 flex h-11 items-center border-b border-white/[0.05] bg-gradient-to-r from-[#0b111c]/95 via-[#0d121d]/95 to-[#0a1118]/95 pl-4 pr-2 backdrop-blur-xl animate-[slideDown_420ms_ease-out]">
         <div className="pointer-events-none flex items-center gap-2">
-          <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-green-400 to-green-600 shadow-[0_0_16px_rgba(0,173,92,0.35)]">
+          <div className="flex h-5 w-5 items-center justify-center rounded-md" style={themeBrandIconStyle}>
             <Cpu size={11} className="text-white" />
           </div>
           <p className="text-[11px] font-black tracking-wide text-zinc-100">KonLauncher</p>
@@ -4995,7 +5065,8 @@ export default function App() {
 
       {showUpdateBanner && (
         <div
-          className="fixed right-5 top-14 z-[205] w-[min(440px,calc(100vw-24px))] rounded-3xl border border-emerald-500/25 bg-[#10141f]/96 p-5 shadow-[0_18px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+          className="fixed right-5 top-14 z-[205] w-[min(440px,calc(100vw-24px))] rounded-3xl border bg-[#10141f]/96 p-5 shadow-[0_18px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+          style={{ borderColor: themeAccentRgba(0.24) }}
         >
           <button
             onClick={dismissUpdateBanner}
@@ -5012,7 +5083,7 @@ export default function App() {
           </div>
 
           <div className="mt-3 rounded-2xl border border-white/10 bg-[#0c1420]/75 px-3 py-2.5">
-            <p className="text-[11px] font-black uppercase tracking-[0.08em] text-emerald-300">{t('updateBannerChangesTitle')}</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.08em]" style={{ color: themeAccentSoftHex }}>{t('updateBannerChangesTitle')}</p>
             <div className="mt-1.5 space-y-1">
               {updateNotes.map((note, index) => (
                 <p key={`update-note-${index}`} className="text-[11px] font-semibold leading-relaxed text-zinc-300">
@@ -5024,17 +5095,18 @@ export default function App() {
 
           <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-zinc-800/90">
             <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-green-400 transition-all duration-200"
-              style={{ width: `${updateProgressPercent}%` }}
+              className="h-full transition-all duration-200"
+              style={{ background: `linear-gradient(90deg, ${themeAccentSoftHex} 0%, ${themeAccentHex} 100%)`, width: `${updateProgressPercent}%` }}
             />
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-3">
-            <span className="text-xs font-black text-emerald-300">{updateProgressPercent}%</span>
+            <span className="text-xs font-black" style={{ color: themeAccentSoftHex }}>{updateProgressPercent}%</span>
             <button
               onClick={applyLauncherUpdate}
               disabled={updateActionDisabled}
-              className="flex min-w-[132px] items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black tracking-wide text-black transition-all hover:bg-green-500 hover:text-white disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
+              className="flex min-w-[132px] items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-black tracking-wide text-black transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
+              style={{ background: `linear-gradient(90deg, #ffffff 0%, ${themeAccentSoftHex} 100%)` }}
             >
               {(updateActionBusy || updaterBanner.state === 'downloading' || updaterBanner.state === 'installing') && <Loader2 size={14} className="animate-spin" />}
               {updateActionLabel}
@@ -5046,7 +5118,7 @@ export default function App() {
       <div className="flex min-h-0 flex-1">
         <aside className="z-20 flex w-64 flex-col border-r border-white/10 bg-gradient-to-b from-[#0d111a]/94 via-[#0b1017]/94 to-[#0a0f15]/92 backdrop-blur-3xl animate-[slideInLeft_500ms_ease-out]">
           <div className="flex items-center gap-3 p-8">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-green-400 to-green-600 shadow-[0_0_30px_rgba(0,173,92,0.4)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={themeBrandIconStyle}>
               <Cpu size={22} className="text-white" />
             </div>
             <h1 className="text-xl font-black tracking-tighter">KonLauncher</h1>
@@ -5097,7 +5169,7 @@ export default function App() {
                   <History size={14} /> {t('latestUpdateLabel')}
                 </button>
                 <div className="pointer-events-none invisible absolute right-0 top-[calc(100%+10px)] z-[420] w-[min(380px,78vw)] translate-y-1 rounded-2xl border border-white/10 bg-[#0b1220] p-4 opacity-0 shadow-[0_18px_50px_rgba(0,0,0,0.62)] transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                  <p className="text-[11px] font-black uppercase tracking-[0.08em] text-emerald-300">{t('latestUpdateTitle')}</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.08em]" style={{ color: themeAccentSoftHex }}>{t('latestUpdateTitle')}</p>
                   {latestUpdateVersionLabel ? <p className="mt-1 text-[10px] font-black uppercase tracking-[0.08em] text-zinc-400">{latestUpdateVersionLabel}</p> : null}
                   <div className="mt-2 space-y-1.5">
                     {latestUpdateDetails.map((item, index) => (
@@ -5118,7 +5190,8 @@ export default function App() {
               ) : (
                 <button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="group flex items-center gap-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-400 px-6 py-2.5 text-sm font-bold text-[#05130a] shadow-lg shadow-emerald-900/30 transition-all hover:-translate-y-0.5 hover:from-green-400 hover:to-emerald-300 active:scale-95"
+                  className="group flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold text-[#05130a] transition-all hover:-translate-y-0.5 hover:brightness-110 active:scale-95"
+                  style={themeCreateButtonStyle}
                 >
                   <Plus size={18} className="transition-transform duration-500 group-hover:rotate-90" /> {t('createInstance')}
                 </button>
@@ -5242,6 +5315,7 @@ export default function App() {
                           className={`flex w-full items-center justify-center gap-3 rounded-2xl py-3.5 font-black transition-all active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 ${getPrimaryButtonClassName(
                             inst
                           )}`}
+                          style={getPrimaryButtonStyle(inst)}
                         >
                           {getPrimaryButtonIcon(inst)} {getPrimaryButtonLabel(inst)}
                         </button>
@@ -5842,10 +5916,10 @@ export default function App() {
                   <div className="space-y-6 rounded-[2rem] border border-white/5 bg-zinc-900/40 p-8">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <HardDrive size={20} className="text-green-500" />
+                        <HardDrive size={20} style={{ color: themeAccentHex }} />
                         <span className="font-bold">{t('allocatedMemory')}</span>
                       </div>
-                      <span className="text-xl font-black text-green-500">
+                      <span className="text-xl font-black" style={{ color: themeAccentHex }}>
                         {globalRam} GB <span className="text-sm text-zinc-500">/ {maxRamGb} GB</span>
                       </span>
                     </div>
@@ -5856,7 +5930,8 @@ export default function App() {
                       step="1"
                       value={globalRam}
                       onChange={(e) => setGlobalRam(parseInt(e.target.value, 10))}
-                      className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-800 accent-green-600"
+                      className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-800"
+                      style={{ accentColor: themeAccentHex }}
                     />
                     <div className="flex justify-between text-[10px] font-bold uppercase text-zinc-600">
                       <span>1 GB</span>
@@ -6582,6 +6657,7 @@ export default function App() {
                   className={`flex items-center gap-2 rounded-xl px-5 py-2.5 font-black transition-all disabled:cursor-not-allowed disabled:opacity-60 ${getPrimaryButtonClassName(
                     editingInstance
                   )}`}
+                  style={getPrimaryButtonStyle(editingInstance)}
                 >
                   {getPrimaryButtonIcon(editingInstance)} {getPrimaryButtonLabel(editingInstance)}
                 </button>
