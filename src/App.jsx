@@ -36,7 +36,11 @@ import {
   AlertCircle,
   Shirt,
   PencilLine,
-  Zap
+  Zap,
+  Palette,
+  Pipette,
+  Blend,
+  Sparkles
 } from 'lucide-react';
 import LOADER_ICON_SVG_BY_ID from './loaderIcons.json';
 import MOD_CATEGORY_ICON_SVG_BY_ID from './modCategoryIcons.json';
@@ -266,6 +270,80 @@ const rgbTripletToString = (rgb) => `${clampColorByte(rgb[0])},${clampColorByte(
 const rgbaFromRgb = (rgb, alpha = 0.2) => {
   const clampedAlpha = Math.max(0, Math.min(1, Number(alpha) || 0));
   return `rgba(${rgbTripletToString(rgb)},${clampedAlpha.toFixed(3)})`;
+};
+
+const clampUnit = (value) => Math.max(0, Math.min(1, Number(value) || 0));
+
+const rgbToHex = (rgb) =>
+  `#${rgb
+    .slice(0, 3)
+    .map((value) => clampColorByte(value).toString(16).padStart(2, '0'))
+    .join('')}`;
+
+const rgbToHsv = (rawRgb) => {
+  const red = clampColorByte(rawRgb[0]) / 255;
+  const green = clampColorByte(rawRgb[1]) / 255;
+  const blue = clampColorByte(rawRgb[2]) / 255;
+  const maxChannel = Math.max(red, green, blue);
+  const minChannel = Math.min(red, green, blue);
+  const delta = maxChannel - minChannel;
+
+  let hue = 0;
+  if (delta !== 0) {
+    if (maxChannel === red) hue = ((green - blue) / delta) % 6;
+    else if (maxChannel === green) hue = (blue - red) / delta + 2;
+    else hue = (red - green) / delta + 4;
+    hue *= 60;
+    if (hue < 0) hue += 360;
+  }
+
+  const saturation = maxChannel === 0 ? 0 : delta / maxChannel;
+  return { h: hue, s: saturation, v: maxChannel };
+};
+
+const hsvToRgb = (hueRaw, saturationRaw, valueRaw) => {
+  const hue = ((Number(hueRaw) % 360) + 360) % 360;
+  const saturation = clampUnit(saturationRaw);
+  const value = clampUnit(valueRaw);
+  const chroma = value * saturation;
+  const segment = hue / 60;
+  const second = chroma * (1 - Math.abs((segment % 2) - 1));
+
+  let red = 0;
+  let green = 0;
+  let blue = 0;
+  if (segment >= 0 && segment < 1) {
+    red = chroma;
+    green = second;
+  } else if (segment < 2) {
+    red = second;
+    green = chroma;
+  } else if (segment < 3) {
+    green = chroma;
+    blue = second;
+  } else if (segment < 4) {
+    green = second;
+    blue = chroma;
+  } else if (segment < 5) {
+    red = second;
+    blue = chroma;
+  } else {
+    red = chroma;
+    blue = second;
+  }
+
+  const offset = value - chroma;
+  return [
+    clampColorByte((red + offset) * 255),
+    clampColorByte((green + offset) * 255),
+    clampColorByte((blue + offset) * 255)
+  ];
+};
+
+const hexToHsv = (hexColor, fallback = { h: 195, s: 0.86, v: 0.88 }) => {
+  const normalized = normalizeHexColor(hexColor, '');
+  if (!normalized) return { ...fallback };
+  return rgbToHsv(parseHexColor(normalized, [35, 173, 230]));
 };
 
 const normalizeCustomVisualTheme = (rawTheme) => {
@@ -555,6 +633,11 @@ const UI_STRINGS = {
     customThemeGradient: 'Gradient',
     customThemePrimaryColor: 'Primary color',
     customThemeSecondaryColor: 'Secondary color',
+    customThemePickerTitle: 'Color picker',
+    customThemePickerHint: 'Drag in the field for tint and on slider for hue.',
+    customThemeTargetPrimary: 'Primary',
+    customThemeTargetSecondary: 'Secondary',
+    customThemeHex: 'Hex',
     customThemeApply: 'Use custom theme',
     themeApplied: 'Applied',
     updateBannerTitle: 'Update available',
@@ -564,7 +647,7 @@ const UI_STRINGS = {
     updateBannerStatusChecking: 'Checking for updates...',
     updateBannerStatusError: 'Update check failed: {message}',
     updateBannerChangesTitle: 'What changed',
-    updateBannerChangesFallback: 'Update reliability improvements and bug fixes.',
+    updateBannerChangesFallback: 'Custom theme editor, cleaner color cards and smoother cursor trail.',
     updateBannerAction: 'Update',
     updateBannerActionRetry: 'Retry',
     updateBannerHide: 'Hide update banner',
@@ -768,6 +851,11 @@ const UI_STRINGS = {
     customThemeGradient: 'Градиент',
     customThemePrimaryColor: 'Основной цвет',
     customThemeSecondaryColor: 'Второй цвет',
+    customThemePickerTitle: 'Выбор цвета',
+    customThemePickerHint: 'Перетаскивай в поле для тона и на слайдере для оттенка.',
+    customThemeTargetPrimary: 'Основной',
+    customThemeTargetSecondary: 'Второй',
+    customThemeHex: 'Hex',
     customThemeApply: 'Применить свою тему',
     themeApplied: 'Применено',
     updateBannerTitle: 'Доступно обновление',
@@ -777,7 +865,7 @@ const UI_STRINGS = {
     updateBannerStatusChecking: 'Проверка обновлений...',
     updateBannerStatusError: 'Не удалось проверить обновления: {message}',
     updateBannerChangesTitle: 'Что изменилось',
-    updateBannerChangesFallback: 'Исправлена проверка обновлений и улучшена стабильность.',
+    updateBannerChangesFallback: 'Добавлен редактор своей темы, аккуратные цветовые карточки и плавный хвост курсора.',
     updateBannerAction: 'Обновить',
     updateBannerActionRetry: 'Повторить',
     updateBannerHide: 'Скрыть плашку обновления',
@@ -1870,6 +1958,9 @@ export default function App() {
   const [cursorDistortionEnabled, setCursorDistortionEnabled] = useState(false);
   const [visualThemeId, setVisualThemeId] = useState(DEFAULT_VISUAL_THEME_ID);
   const [customVisualTheme, setCustomVisualTheme] = useState(() => ({ ...DEFAULT_CUSTOM_VISUAL_THEME }));
+  const [activeCustomColorTarget, setActiveCustomColorTarget] = useState('primary');
+  const [customColorPickerHsv, setCustomColorPickerHsv] = useState({ h: 195, s: 0.86, v: 0.88 });
+  const [customColorHexInput, setCustomColorHexInput] = useState(DEFAULT_CUSTOM_VISUAL_THEME.solidColor);
   const [ambientEffect, setAmbientEffect] = useState('stars');
   const [comets, setComets] = useState([]);
   const [rainWindDrift, setRainWindDrift] = useState(-18);
@@ -1974,6 +2065,7 @@ export default function App() {
   const pointerDistortVelocityRef = useRef({ x: 0, y: 0 });
   const neonTrailCanvasRef = useRef(null);
   const neonTrailPointsRef = useRef([]);
+  const customColorPlaneRef = useRef(null);
 
   const hasDesktopWindowApi = typeof window !== 'undefined' && Boolean(window.launcherWindow);
   const hasMinecraftApi = typeof window !== 'undefined' && Boolean(window.launcherMinecraft);
@@ -1993,6 +2085,159 @@ export default function App() {
   const defaultThemePreset = useMemo(() => VISUAL_THEME_PRESETS.find((theme) => theme.kind === 'default') || VISUAL_THEME_PRESETS[0], []);
   const solidThemePresets = useMemo(() => VISUAL_THEME_PRESETS.filter((theme) => theme.kind === 'solid'), []);
   const gradientThemePresets = useMemo(() => VISUAL_THEME_PRESETS.filter((theme) => theme.kind === 'gradient'), []);
+  const hasSecondaryCustomColor = customVisualTheme.mode === 'gradient';
+  const customPrimaryColorHex = useMemo(
+    () =>
+      normalizeHexColor(
+        customVisualTheme.mode === 'gradient' ? customVisualTheme.gradientFrom : customVisualTheme.solidColor,
+        DEFAULT_CUSTOM_VISUAL_THEME.solidColor
+      ),
+    [customVisualTheme.gradientFrom, customVisualTheme.mode, customVisualTheme.solidColor]
+  );
+  const customSecondaryColorHex = useMemo(
+    () => normalizeHexColor(customVisualTheme.gradientTo, DEFAULT_CUSTOM_VISUAL_THEME.gradientTo),
+    [customVisualTheme.gradientTo]
+  );
+  const activeCustomColorHex = useMemo(() => {
+    if (activeCustomColorTarget === 'secondary' && customVisualTheme.mode === 'gradient') {
+      return normalizeHexColor(customVisualTheme.gradientTo, DEFAULT_CUSTOM_VISUAL_THEME.gradientTo);
+    }
+    if (customVisualTheme.mode === 'gradient') {
+      return normalizeHexColor(customVisualTheme.gradientFrom, DEFAULT_CUSTOM_VISUAL_THEME.gradientFrom);
+    }
+    return normalizeHexColor(customVisualTheme.solidColor, DEFAULT_CUSTOM_VISUAL_THEME.solidColor);
+  }, [activeCustomColorTarget, customVisualTheme.gradientFrom, customVisualTheme.gradientTo, customVisualTheme.mode, customVisualTheme.solidColor]);
+  const customColorHueBackground = useMemo(() => rgbToHex(hsvToRgb(customColorPickerHsv.h, 1, 1)), [customColorPickerHsv.h]);
+  const customColorPointerPosition = useMemo(
+    () => ({
+      left: `${(clampUnit(customColorPickerHsv.s) * 100).toFixed(3)}%`,
+      top: `${((1 - clampUnit(customColorPickerHsv.v)) * 100).toFixed(3)}%`
+    }),
+    [customColorPickerHsv.s, customColorPickerHsv.v]
+  );
+  const setCustomThemeMode = useCallback((nextModeRaw) => {
+    const nextMode = String(nextModeRaw || '').trim().toLowerCase();
+    if (!CUSTOM_VISUAL_THEME_MODES.has(nextMode)) return;
+
+    setCustomVisualTheme((prev) => {
+      const current = normalizeCustomVisualTheme(prev);
+      if (current.mode === nextMode) return current;
+      if (nextMode === 'gradient') {
+        return {
+          ...current,
+          mode: 'gradient',
+          gradientFrom: normalizeHexColor(current.gradientFrom, current.solidColor),
+          gradientTo: normalizeHexColor(current.gradientTo, DEFAULT_CUSTOM_VISUAL_THEME.gradientTo)
+        };
+      }
+      return {
+        ...current,
+        mode: 'solid',
+        solidColor: normalizeHexColor(current.solidColor, current.gradientFrom || DEFAULT_CUSTOM_VISUAL_THEME.solidColor)
+      };
+    });
+
+    if (nextMode === 'solid') {
+      setActiveCustomColorTarget('primary');
+    }
+  }, []);
+  const setCustomThemeColorByTarget = useCallback((targetRaw, nextColorRaw) => {
+    const target = String(targetRaw || '').trim().toLowerCase() === 'secondary' ? 'secondary' : 'primary';
+
+    setCustomVisualTheme((prev) => {
+      const current = normalizeCustomVisualTheme(prev);
+      const fallbackColor =
+        target === 'secondary' ? normalizeHexColor(current.gradientTo, DEFAULT_CUSTOM_VISUAL_THEME.gradientTo) : normalizeHexColor(
+          current.mode === 'gradient' ? current.gradientFrom : current.solidColor,
+          DEFAULT_CUSTOM_VISUAL_THEME.solidColor
+        );
+      const nextColor = normalizeHexColor(nextColorRaw, fallbackColor);
+
+      if (current.mode === 'gradient') {
+        if (target === 'secondary') {
+          return { ...current, gradientTo: nextColor };
+        }
+        return { ...current, gradientFrom: nextColor };
+      }
+
+      return { ...current, solidColor: nextColor };
+    });
+  }, []);
+  const applyCustomPickerHsv = useCallback(
+    (patchOrFactory) => {
+      setCustomColorPickerHsv((prev) => {
+        const candidate = typeof patchOrFactory === 'function' ? patchOrFactory(prev) : { ...prev, ...patchOrFactory };
+        const next = {
+          h: ((Number(candidate.h) % 360) + 360) % 360,
+          s: clampUnit(candidate.s),
+          v: clampUnit(candidate.v)
+        };
+        const nextHex = rgbToHex(hsvToRgb(next.h, next.s, next.v));
+        setCustomThemeColorByTarget(activeCustomColorTarget, nextHex);
+        setCustomColorHexInput(nextHex);
+        return next;
+      });
+    },
+    [activeCustomColorTarget, setCustomThemeColorByTarget]
+  );
+  const updateCustomPickerByPointer = useCallback(
+    (clientX, clientY) => {
+      const planeNode = customColorPlaneRef.current;
+      if (!planeNode) return;
+      const rect = planeNode.getBoundingClientRect();
+      const saturation = clampUnit((clientX - rect.left) / Math.max(1, rect.width));
+      const value = 1 - clampUnit((clientY - rect.top) / Math.max(1, rect.height));
+      applyCustomPickerHsv((prev) => ({ ...prev, s: saturation, v: value }));
+    },
+    [applyCustomPickerHsv]
+  );
+  const handleCustomColorPlanePointerDown = useCallback(
+    (event) => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      updateCustomPickerByPointer(event.clientX, event.clientY);
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    },
+    [updateCustomPickerByPointer]
+  );
+  const handleCustomColorPlanePointerMove = useCallback(
+    (event) => {
+      if ((event.buttons & 1) !== 1) return;
+      updateCustomPickerByPointer(event.clientX, event.clientY);
+    },
+    [updateCustomPickerByPointer]
+  );
+  const handleCustomHueChange = useCallback(
+    (event) => {
+      const nextHue = Number(event.target.value || 0);
+      applyCustomPickerHsv((prev) => ({ ...prev, h: nextHue }));
+    },
+    [applyCustomPickerHsv]
+  );
+  const commitCustomHexInput = useCallback(() => {
+    const nextHex = normalizeHexColor(customColorHexInput, activeCustomColorHex);
+    setCustomThemeColorByTarget(activeCustomColorTarget, nextHex);
+    setCustomColorHexInput(nextHex);
+    setCustomColorPickerHsv(hexToHsv(nextHex, customColorPickerHsv));
+  }, [activeCustomColorHex, activeCustomColorTarget, customColorHexInput, customColorPickerHsv, setCustomThemeColorByTarget]);
+  const handleCustomHexInputChange = useCallback((event) => {
+    const rawValue = String(event.target.value || '')
+      .replace(/[^#0-9a-fA-F]/g, '')
+      .slice(0, 7);
+    const prefixed = rawValue.startsWith('#') || !rawValue ? rawValue : `#${rawValue}`;
+    setCustomColorHexInput(prefixed.toLowerCase());
+  }, []);
+
+  useEffect(() => {
+    if (!hasSecondaryCustomColor && activeCustomColorTarget === 'secondary') {
+      setActiveCustomColorTarget('primary');
+    }
+  }, [activeCustomColorTarget, hasSecondaryCustomColor]);
+
+  useEffect(() => {
+    setCustomColorHexInput(activeCustomColorHex);
+    setCustomColorPickerHsv(hexToHsv(activeCustomColorHex));
+  }, [activeCustomColorHex]);
   const getContentTypeLabel = useCallback(
     (contentType) => {
       const normalized = normalizeContentType(contentType);
@@ -2540,7 +2785,7 @@ export default function App() {
       seedPoints();
     };
 
-    const drawTrail = (time) => {
+    const drawTrail = () => {
       if (disposed) return;
 
       const points = neonTrailPointsRef.current;
@@ -2564,45 +2809,41 @@ export default function App() {
 
       context.clearRect(0, 0, canvasWidth, canvasHeight);
       context.save();
-      context.globalCompositeOperation = 'lighter';
+      context.globalCompositeOperation = 'screen';
       context.lineCap = 'round';
       context.lineJoin = 'round';
 
-      for (let index = 1; index < points.length; index += 1) {
-        const previous = points[index - 1];
-        const current = points[index];
-        const ratio = 1 - index / (points.length - 1);
-        const dx = previous.x - current.x;
-        const dy = previous.y - current.y;
-        const length = Math.hypot(dx, dy) || 1;
-        const normalX = -dy / length;
-        const normalY = dx / length;
-        const wave = Math.sin(time * 0.0038 + current.noiseSeed) * (0.55 + speed * 5.4 * ratio);
-        const controlX = (previous.x + current.x) * 0.5 + normalX * wave;
-        const controlY = (previous.y + current.y) * 0.5 + normalY * wave;
-        const alpha = 0.04 + ratio * 0.28;
-        const blur = 5 + ratio * 26 + speed * 28;
+      if (points.length > 2) {
+        // Draw a smooth tapered ribbon instead of segmented "snake" circles.
+        for (let index = 1; index < points.length - 1; index += 1) {
+          const previous = points[index - 1];
+          const current = points[index];
+          const next = points[index + 1];
+          const ratio = 1 - index / (points.length - 1);
+          const midX = (current.x + next.x) * 0.5;
+          const midY = (current.y + next.y) * 0.5;
+          const alpha = 0.045 + ratio * 0.24;
+          const blur = 3 + ratio * 17 + speed * 10;
 
-        context.beginPath();
-        context.moveTo(previous.x, previous.y);
-        context.quadraticCurveTo(controlX, controlY, current.x, current.y);
-        context.strokeStyle = `rgba(${red}, ${green}, ${blue}, ${alpha.toFixed(3)})`;
-        context.lineWidth = 1.2 + ratio * (5.2 + speed * 9);
-        context.shadowBlur = blur;
-        context.shadowColor = `rgba(${red}, ${green}, ${blue}, ${(0.12 + ratio * 0.52).toFixed(3)})`;
-        context.stroke();
-      }
+          context.beginPath();
+          context.moveTo(previous.x, previous.y);
+          context.quadraticCurveTo(current.x, current.y, midX, midY);
+          context.strokeStyle = `rgba(${red}, ${green}, ${blue}, ${alpha.toFixed(3)})`;
+          context.lineWidth = 0.8 + ratio * (3.9 + speed * 4.4);
+          context.shadowBlur = blur;
+          context.shadowColor = `rgba(${red}, ${green}, ${blue}, ${(0.10 + ratio * 0.33).toFixed(3)})`;
+          context.stroke();
+        }
 
-      if (points.length > 1) {
         const tip = points[0];
         const tipNext = points[1];
         context.beginPath();
         context.moveTo(tip.x, tip.y);
         context.quadraticCurveTo((tip.x + tipNext.x) * 0.5, (tip.y + tipNext.y) * 0.5, tipNext.x, tipNext.y);
-        context.strokeStyle = `rgba(255, 255, 255, ${(0.36 + speed * 0.18).toFixed(3)})`;
-        context.shadowBlur = 12 + speed * 18;
-        context.shadowColor = `rgba(${red}, ${green}, ${blue}, ${(0.38 + speed * 0.2).toFixed(3)})`;
-        context.lineWidth = 1.05 + speed * 1.4;
+        context.strokeStyle = `rgba(255, 255, 255, ${(0.3 + speed * 0.16).toFixed(3)})`;
+        context.shadowBlur = 10 + speed * 10;
+        context.shadowColor = `rgba(${red}, ${green}, ${blue}, ${(0.30 + speed * 0.18).toFixed(3)})`;
+        context.lineWidth = 0.8 + speed * 1.05;
         context.stroke();
       }
 
@@ -2846,10 +3087,14 @@ export default function App() {
       const shouldPersistLatestInstalled =
         nextState === 'downloaded' || nextState === 'installing' || nextState === 'idle';
       if (shouldPersistLatestInstalled && (nextVersion || nextRawNotes.length)) {
-        setLatestInstalledUpdate((prev) => ({
-          version: nextVersion || prev.version,
-          notes: nextRawNotes.length ? nextRawNotes : prev.notes
-        }));
+        setLatestInstalledUpdate((prev) => {
+          const resolvedVersion = nextVersion || prev.version;
+          const didVersionChange = Boolean(nextVersion) && nextVersion !== prev.version;
+          return {
+            version: resolvedVersion,
+            notes: nextRawNotes.length ? nextRawNotes : didVersionChange ? [] : prev.notes
+          };
+        });
       }
 
       if (nextState === 'idle' || nextState === 'error') {
@@ -5836,61 +6081,140 @@ export default function App() {
                               : 'border-white/10 bg-zinc-900/60'
                           }`}
                         >
-                          <div className="h-10 rounded-xl" style={{ background: customVisualThemePreset.preview }} />
+                          <div className="h-12 overflow-hidden rounded-xl border border-white/10 bg-black/30">
+                            <div className="h-full w-full" style={{ background: customVisualThemePreset.preview }} />
+                          </div>
                           <p className="mt-2 text-[11px] font-medium text-zinc-400">{t('customThemeHint')}</p>
 
                           <div className="mt-3 grid grid-cols-2 gap-2">
                             <button
-                              onClick={() => setCustomVisualTheme((prev) => ({ ...prev, mode: 'solid' }))}
+                              onClick={() => setCustomThemeMode('solid')}
                               className={`rounded-xl border px-3 py-2 text-[11px] font-black uppercase tracking-wide transition-colors ${
                                 customVisualTheme.mode === 'solid'
                                   ? 'border-emerald-400/55 bg-emerald-500/15 text-emerald-200'
                                   : 'border-white/10 bg-zinc-900/70 text-zinc-300 hover:border-white/20'
                               }`}
                             >
-                              {t('customThemeSolid')}
+                              <span className="inline-flex items-center gap-1.5">
+                                <Palette size={13} />
+                                {t('customThemeSolid')}
+                              </span>
                             </button>
                             <button
-                              onClick={() => setCustomVisualTheme((prev) => ({ ...prev, mode: 'gradient' }))}
+                              onClick={() => setCustomThemeMode('gradient')}
                               className={`rounded-xl border px-3 py-2 text-[11px] font-black uppercase tracking-wide transition-colors ${
                                 customVisualTheme.mode === 'gradient'
                                   ? 'border-emerald-400/55 bg-emerald-500/15 text-emerald-200'
                                   : 'border-white/10 bg-zinc-900/70 text-zinc-300 hover:border-white/20'
                               }`}
                             >
-                              {t('customThemeGradient')}
+                              <span className="inline-flex items-center gap-1.5">
+                                <Blend size={13} />
+                                {t('customThemeGradient')}
+                              </span>
                             </button>
                           </div>
 
                           <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                            <label className="space-y-1">
-                              <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">{t('customThemePrimaryColor')}</span>
-                              <input
-                                type="color"
-                                value={customVisualTheme.mode === 'gradient' ? customVisualTheme.gradientFrom : customVisualTheme.solidColor}
-                                onChange={(event) => {
-                                  const nextColor = normalizeHexColor(event.target.value);
-                                  setCustomVisualTheme((prev) =>
-                                    prev.mode === 'gradient' ? { ...prev, gradientFrom: nextColor } : { ...prev, solidColor: nextColor }
-                                  );
-                                }}
-                                className="h-10 w-full cursor-pointer rounded-xl border border-white/10 bg-zinc-950 p-1"
-                              />
-                            </label>
-                            {customVisualTheme.mode === 'gradient' && (
-                              <label className="space-y-1">
-                                <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">{t('customThemeSecondaryColor')}</span>
-                                <input
-                                  type="color"
-                                  value={customVisualTheme.gradientTo}
-                                  onChange={(event) => {
-                                    const nextColor = normalizeHexColor(event.target.value);
-                                    setCustomVisualTheme((prev) => ({ ...prev, gradientTo: nextColor }));
-                                  }}
-                                  className="h-10 w-full cursor-pointer rounded-xl border border-white/10 bg-zinc-950 p-1"
-                                />
-                              </label>
+                            <button
+                              onClick={() => setActiveCustomColorTarget('primary')}
+                              className={`rounded-xl border p-2 text-left transition-colors ${
+                                activeCustomColorTarget === 'primary'
+                                  ? 'border-emerald-400/55 bg-emerald-500/10'
+                                  : 'border-white/10 bg-zinc-900/60 hover:border-white/20'
+                              }`}
+                            >
+                              <p className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                <Pipette size={12} />
+                                {t('customThemePrimaryColor')}
+                              </p>
+                              <div className="mt-2 h-9 overflow-hidden rounded-lg border border-black/35 bg-black/40">
+                                <div className="h-full w-full rounded-[7px]" style={{ background: customPrimaryColorHex }} />
+                              </div>
+                            </button>
+                            {hasSecondaryCustomColor ? (
+                              <button
+                                onClick={() => setActiveCustomColorTarget('secondary')}
+                                className={`rounded-xl border p-2 text-left transition-colors ${
+                                  activeCustomColorTarget === 'secondary'
+                                    ? 'border-emerald-400/55 bg-emerald-500/10'
+                                    : 'border-white/10 bg-zinc-900/60 hover:border-white/20'
+                                }`}
+                              >
+                                <p className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                  <Pipette size={12} />
+                                  {t('customThemeSecondaryColor')}
+                                </p>
+                                <div className="mt-2 h-9 overflow-hidden rounded-lg border border-black/35 bg-black/40">
+                                  <div className="h-full w-full rounded-[7px]" style={{ background: customSecondaryColorHex }} />
+                                </div>
+                              </button>
+                            ) : (
+                              <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/40 p-2">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">{t('customThemeSecondaryColor')}</p>
+                                <p className="mt-2 text-[11px] font-semibold text-zinc-500">{t('customThemeSolid')}</p>
+                              </div>
                             )}
+                          </div>
+
+                          <div className="mt-3 rounded-2xl border border-white/10 bg-black/25 p-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.08em] text-zinc-200">
+                                <Sparkles size={13} />
+                                {t('customThemePickerTitle')}
+                              </p>
+                              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                                {activeCustomColorTarget === 'secondary' ? t('customThemeTargetSecondary') : t('customThemeTargetPrimary')}
+                              </p>
+                            </div>
+                            <p className="mt-1 text-[10px] font-medium text-zinc-500">{t('customThemePickerHint')}</p>
+
+                            <div
+                              ref={customColorPlaneRef}
+                              onPointerDown={handleCustomColorPlanePointerDown}
+                              onPointerMove={handleCustomColorPlanePointerMove}
+                              className="relative mt-3 h-36 cursor-crosshair overflow-hidden rounded-xl border border-white/10 bg-zinc-950"
+                            >
+                              <div className="absolute inset-0" style={{ background: customColorHueBackground }} />
+                              <div className="absolute inset-0 bg-gradient-to-r from-white to-transparent" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+                              <span
+                                className="pointer-events-none absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_2px_rgba(0,0,0,0.35)]"
+                                style={customColorPointerPosition}
+                              />
+                            </div>
+
+                            <input
+                              type="range"
+                              min="0"
+                              max="359"
+                              step="1"
+                              value={Math.round(customColorPickerHsv.h)}
+                              onChange={handleCustomHueChange}
+                              className="hue-slider mt-3 h-3 w-full cursor-pointer appearance-none rounded-full"
+                              style={{
+                                background:
+                                  'linear-gradient(90deg, #ff0000 0%, #ffff00 16.6%, #00ff00 33.2%, #00ffff 49.8%, #0000ff 66.4%, #ff00ff 83%, #ff0000 100%)'
+                              }}
+                            />
+
+                            <div className="mt-3 flex items-center gap-2">
+                              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{t('customThemeHex')}</p>
+                              <input
+                                type="text"
+                                value={customColorHexInput}
+                                onChange={handleCustomHexInputChange}
+                                onBlur={commitCustomHexInput}
+                                onKeyDown={(event) => {
+                                  if (event.key === 'Enter') {
+                                    event.preventDefault();
+                                    commitCustomHexInput();
+                                  }
+                                }}
+                                className="w-full rounded-lg border border-white/10 bg-zinc-950/80 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-zinc-200 outline-none transition-colors focus:border-emerald-400/45"
+                                spellCheck={false}
+                              />
+                            </div>
                           </div>
 
                           <button
@@ -6690,6 +7014,26 @@ export default function App() {
           filter: saturate(1.2) contrast(1.04);
           mix-blend-mode: screen;
           will-change: opacity;
+        }
+
+        .hue-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 14px;
+          height: 14px;
+          border-radius: 999px;
+          border: 2px solid #ffffff;
+          background: #0b0f16;
+          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+        }
+
+        .hue-slider::-moz-range-thumb {
+          width: 14px;
+          height: 14px;
+          border-radius: 999px;
+          border: 2px solid #ffffff;
+          background: #0b0f16;
+          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
         }
 
         @keyframes starPulse {
