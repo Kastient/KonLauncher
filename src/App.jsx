@@ -149,6 +149,15 @@ const VISUAL_THEME_PRESETS = [
   }
 ];
 
+const CUSTOM_VISUAL_THEME_ID = 'custom';
+const DEFAULT_CUSTOM_VISUAL_THEME = {
+  mode: 'solid',
+  solidColor: '#22c55e',
+  gradientFrom: '#0ea5e9',
+  gradientTo: '#22c55e'
+};
+const CUSTOM_VISUAL_THEME_MODES = new Set(['solid', 'gradient']);
+const ALLOWED_VISUAL_THEME_IDS = new Set([...VISUAL_THEME_PRESETS.map((theme) => theme.id), CUSTOM_VISUAL_THEME_ID]);
 const DEFAULT_VISUAL_THEME_ID = VISUAL_THEME_PRESETS[0].id;
 const BACKGROUND_FX_OPTIONS = ['stars', 'rain', 'snow'];
 
@@ -222,6 +231,79 @@ const parseRgbTriplet = (rawValue, fallback = [56, 189, 248]) => {
     .slice(0, 3);
   if (channels.length < 3) return fallback;
   return channels.map((value) => Math.max(0, Math.min(255, value)));
+};
+
+const HEX_COLOR_RE = /^#[0-9a-f]{6}$/i;
+
+const clampColorByte = (value) => Math.max(0, Math.min(255, Math.round(Number(value) || 0)));
+
+const normalizeHexColor = (value, fallback = '#22c55e') => {
+  const normalized = String(value || '').trim().toLowerCase();
+  return HEX_COLOR_RE.test(normalized) ? normalized : fallback;
+};
+
+const parseHexColor = (value, fallback = [34, 197, 94]) => {
+  const normalized = normalizeHexColor(value, '');
+  if (!normalized) return fallback.slice(0, 3);
+  return [
+    Number.parseInt(normalized.slice(1, 3), 16),
+    Number.parseInt(normalized.slice(3, 5), 16),
+    Number.parseInt(normalized.slice(5, 7), 16)
+  ];
+};
+
+const mixRgb = (from, to, ratio = 0.5) => {
+  const clampedRatio = Math.max(0, Math.min(1, Number(ratio) || 0));
+  return [
+    clampColorByte(from[0] + (to[0] - from[0]) * clampedRatio),
+    clampColorByte(from[1] + (to[1] - from[1]) * clampedRatio),
+    clampColorByte(from[2] + (to[2] - from[2]) * clampedRatio)
+  ];
+};
+
+const rgbTripletToString = (rgb) => `${clampColorByte(rgb[0])},${clampColorByte(rgb[1])},${clampColorByte(rgb[2])}`;
+
+const rgbaFromRgb = (rgb, alpha = 0.2) => {
+  const clampedAlpha = Math.max(0, Math.min(1, Number(alpha) || 0));
+  return `rgba(${rgbTripletToString(rgb)},${clampedAlpha.toFixed(3)})`;
+};
+
+const normalizeCustomVisualTheme = (rawTheme) => {
+  const source = rawTheme && typeof rawTheme === 'object' ? rawTheme : {};
+  const modeRaw = String(source.mode || '').trim().toLowerCase();
+  const mode = CUSTOM_VISUAL_THEME_MODES.has(modeRaw) ? modeRaw : DEFAULT_CUSTOM_VISUAL_THEME.mode;
+
+  return {
+    mode,
+    solidColor: normalizeHexColor(source.solidColor, DEFAULT_CUSTOM_VISUAL_THEME.solidColor),
+    gradientFrom: normalizeHexColor(source.gradientFrom, DEFAULT_CUSTOM_VISUAL_THEME.gradientFrom),
+    gradientTo: normalizeHexColor(source.gradientTo, DEFAULT_CUSTOM_VISUAL_THEME.gradientTo)
+  };
+};
+
+const buildCustomVisualThemePreset = (rawTheme) => {
+  const theme = normalizeCustomVisualTheme(rawTheme);
+  const primaryRgb = parseHexColor(theme.mode === 'gradient' ? theme.gradientFrom : theme.solidColor, [34, 197, 94]);
+  const secondaryRgb =
+    theme.mode === 'gradient' ? parseHexColor(theme.gradientTo, [14, 165, 233]) : mixRgb(primaryRgb, [5, 11, 20], 0.62);
+  const tertiaryRgb = mixRgb(primaryRgb, secondaryRgb, 0.5);
+  const solidDarkRgb = mixRgb(primaryRgb, [0, 0, 0], 0.58);
+  const preview =
+    theme.mode === 'gradient'
+      ? `linear-gradient(130deg, ${theme.gradientFrom} 0%, ${theme.gradientTo} 100%)`
+      : `linear-gradient(135deg, ${theme.solidColor} 0%, rgb(${solidDarkRgb.join(',')}) 100%)`;
+
+  return {
+    id: CUSTOM_VISUAL_THEME_ID,
+    kind: 'custom',
+    labels: { en: 'Custom', ru: 'Своя' },
+    preview,
+    overlay: `radial-gradient(circle at 14% 16%, ${rgbaFromRgb(primaryRgb, 0.22)}, rgba(0,0,0,0) 42%), radial-gradient(circle at 82% 12%, ${rgbaFromRgb(
+      secondaryRgb,
+      0.17
+    )}, rgba(0,0,0,0) 40%), radial-gradient(circle at 52% 100%, ${rgbaFromRgb(tertiaryRgb, 0.11)}, rgba(0,0,0,0) 48%)`,
+    pointerRgb: rgbTripletToString(mixRgb(primaryRgb, secondaryRgb, 0.5))
+  };
 };
 
 const createCometParticle = () => {
@@ -459,7 +541,7 @@ const UI_STRINGS = {
     cursorDistortionEnabled: 'Enabled',
     cursorDistortionDisabled: 'Disabled',
     themeEditorTitle: 'Theme editor',
-    themeEditorHint: 'Choose launcher look: 5 solid colors and 5 gradients.',
+    themeEditorHint: 'Choose launcher look: presets or build your own color/gradient theme.',
     backgroundFxTitle: 'Background atmosphere',
     backgroundFxHint: 'Choose a subtle animated effect for launcher background.',
     backgroundFxStars: 'Stars',
@@ -467,6 +549,13 @@ const UI_STRINGS = {
     backgroundFxSnow: 'Snow',
     themeSectionSolid: 'Solid colors',
     themeSectionGradient: 'Gradients',
+    themeSectionCustom: 'Custom',
+    customThemeHint: 'Pick your own color style and apply it as launcher theme.',
+    customThemeSolid: 'Solid',
+    customThemeGradient: 'Gradient',
+    customThemePrimaryColor: 'Primary color',
+    customThemeSecondaryColor: 'Secondary color',
+    customThemeApply: 'Use custom theme',
     themeApplied: 'Applied',
     updateBannerTitle: 'Update available',
     updateBannerStatusAvailable: 'Update is ready to install.',
@@ -665,7 +754,7 @@ const UI_STRINGS = {
     cursorDistortionEnabled: 'Включено',
     cursorDistortionDisabled: 'Выключено',
     themeEditorTitle: 'Редактор оформления',
-    themeEditorHint: 'Выбери стиль лаунчера: 5 обычных цветов и 5 градиентов.',
+    themeEditorHint: 'Выбери стиль лаунчера: готовые темы или своя цветовая/градиентная тема.',
     backgroundFxTitle: 'Атмосфера фона',
     backgroundFxHint: 'Выбери небольшой анимированный эффект для фона лаунчера.',
     backgroundFxStars: 'Звезды',
@@ -673,6 +762,13 @@ const UI_STRINGS = {
     backgroundFxSnow: 'Снег',
     themeSectionSolid: 'Обычные цвета',
     themeSectionGradient: 'Градиенты',
+    themeSectionCustom: 'Своя тема',
+    customThemeHint: 'Выбери свои цвета и примени их как тему лаунчера.',
+    customThemeSolid: 'Обычный цвет',
+    customThemeGradient: 'Градиент',
+    customThemePrimaryColor: 'Основной цвет',
+    customThemeSecondaryColor: 'Второй цвет',
+    customThemeApply: 'Применить свою тему',
     themeApplied: 'Применено',
     updateBannerTitle: 'Доступно обновление',
     updateBannerStatusAvailable: 'Обновление готово к установке.',
@@ -1773,6 +1869,7 @@ export default function App() {
   const [cursorGlowEnabled, setCursorGlowEnabled] = useState(true);
   const [cursorDistortionEnabled, setCursorDistortionEnabled] = useState(false);
   const [visualThemeId, setVisualThemeId] = useState(DEFAULT_VISUAL_THEME_ID);
+  const [customVisualTheme, setCustomVisualTheme] = useState(() => ({ ...DEFAULT_CUSTOM_VISUAL_THEME }));
   const [ambientEffect, setAmbientEffect] = useState('stars');
   const [comets, setComets] = useState([]);
   const [rainWindDrift, setRainWindDrift] = useState(-18);
@@ -1885,10 +1982,13 @@ export default function App() {
   const t = useCallback((key, params = {}) => translateTemplate(languageCode, key, params), [languageCode]);
   const offlineUsername = useMemo(() => username.trim() || 'Player', [username]);
   const activeMinecraftUsername = offlineUsername;
-  const activeVisualTheme = useMemo(
-    () => VISUAL_THEME_PRESETS.find((theme) => theme.id === visualThemeId) || VISUAL_THEME_PRESETS[0],
-    [visualThemeId]
-  );
+  const customVisualThemePreset = useMemo(() => buildCustomVisualThemePreset(customVisualTheme), [customVisualTheme]);
+  const activeVisualTheme = useMemo(() => {
+    if (visualThemeId === CUSTOM_VISUAL_THEME_ID) {
+      return customVisualThemePreset;
+    }
+    return VISUAL_THEME_PRESETS.find((theme) => theme.id === visualThemeId) || VISUAL_THEME_PRESETS[0];
+  }, [visualThemeId, customVisualThemePreset]);
   const neonTrailRgb = useMemo(() => parseRgbTriplet(activeVisualTheme.pointerRgb, [56, 189, 248]), [activeVisualTheme.pointerRgb]);
   const defaultThemePreset = useMemo(() => VISUAL_THEME_PRESETS.find((theme) => theme.kind === 'default') || VISUAL_THEME_PRESETS[0], []);
   const solidThemePresets = useMemo(() => VISUAL_THEME_PRESETS.filter((theme) => theme.kind === 'solid'), []);
@@ -2541,9 +2641,9 @@ export default function App() {
         setCursorGlowEnabled(result.data.cursorGlowEnabled !== false);
         setCursorDistortionEnabled(result.data.cursorDistortionEnabled === true);
         setAmbientEffect(BACKGROUND_FX_OPTIONS.includes(result.data.ambientEffect) ? result.data.ambientEffect : 'stars');
-        setVisualThemeId(
-          VISUAL_THEME_PRESETS.some((theme) => theme.id === result.data.visualThemeId) ? result.data.visualThemeId : DEFAULT_VISUAL_THEME_ID
-        );
+        const persistedThemeId = String(result.data.visualThemeId || '').trim().toLowerCase();
+        setVisualThemeId(ALLOWED_VISUAL_THEME_IDS.has(persistedThemeId) ? persistedThemeId : DEFAULT_VISUAL_THEME_ID);
+        setCustomVisualTheme(normalizeCustomVisualTheme(result.data.customVisualTheme));
         const persistedLatestUpdate = result.data.latestInstalledUpdate && typeof result.data.latestInstalledUpdate === 'object' ? result.data.latestInstalledUpdate : {};
         const persistedLatestVersion = String(persistedLatestUpdate.version || '').trim();
         const persistedLatestNotes = Array.isArray(persistedLatestUpdate.notes)
@@ -2802,13 +2902,14 @@ export default function App() {
           cursorDistortionEnabled,
           ambientEffect,
           visualThemeId,
+          customVisualTheme,
           latestInstalledUpdate
         })
         .catch(() => {});
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [instances, username, globalRam, launcherLanguage, cursorGlowEnabled, cursorDistortionEnabled, ambientEffect, visualThemeId, latestInstalledUpdate]);
+  }, [instances, username, globalRam, launcherLanguage, cursorGlowEnabled, cursorDistortionEnabled, ambientEffect, visualThemeId, customVisualTheme, latestInstalledUpdate]);
 
   useEffect(() => {
     if (!window.launcherMinecraft) return undefined;
@@ -5723,6 +5824,81 @@ export default function App() {
                               </button>
                             );
                           })}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{t('themeSectionCustom')}</p>
+                        <div
+                          className={`rounded-2xl border p-3 transition-all ${
+                            visualThemeId === CUSTOM_VISUAL_THEME_ID
+                              ? 'border-emerald-400/55 bg-emerald-500/10 shadow-[0_0_0_1px_rgba(52,211,153,0.4)]'
+                              : 'border-white/10 bg-zinc-900/60'
+                          }`}
+                        >
+                          <div className="h-10 rounded-xl" style={{ background: customVisualThemePreset.preview }} />
+                          <p className="mt-2 text-[11px] font-medium text-zinc-400">{t('customThemeHint')}</p>
+
+                          <div className="mt-3 grid grid-cols-2 gap-2">
+                            <button
+                              onClick={() => setCustomVisualTheme((prev) => ({ ...prev, mode: 'solid' }))}
+                              className={`rounded-xl border px-3 py-2 text-[11px] font-black uppercase tracking-wide transition-colors ${
+                                customVisualTheme.mode === 'solid'
+                                  ? 'border-emerald-400/55 bg-emerald-500/15 text-emerald-200'
+                                  : 'border-white/10 bg-zinc-900/70 text-zinc-300 hover:border-white/20'
+                              }`}
+                            >
+                              {t('customThemeSolid')}
+                            </button>
+                            <button
+                              onClick={() => setCustomVisualTheme((prev) => ({ ...prev, mode: 'gradient' }))}
+                              className={`rounded-xl border px-3 py-2 text-[11px] font-black uppercase tracking-wide transition-colors ${
+                                customVisualTheme.mode === 'gradient'
+                                  ? 'border-emerald-400/55 bg-emerald-500/15 text-emerald-200'
+                                  : 'border-white/10 bg-zinc-900/70 text-zinc-300 hover:border-white/20'
+                              }`}
+                            >
+                              {t('customThemeGradient')}
+                            </button>
+                          </div>
+
+                          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            <label className="space-y-1">
+                              <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">{t('customThemePrimaryColor')}</span>
+                              <input
+                                type="color"
+                                value={customVisualTheme.mode === 'gradient' ? customVisualTheme.gradientFrom : customVisualTheme.solidColor}
+                                onChange={(event) => {
+                                  const nextColor = normalizeHexColor(event.target.value);
+                                  setCustomVisualTheme((prev) =>
+                                    prev.mode === 'gradient' ? { ...prev, gradientFrom: nextColor } : { ...prev, solidColor: nextColor }
+                                  );
+                                }}
+                                className="h-10 w-full cursor-pointer rounded-xl border border-white/10 bg-zinc-950 p-1"
+                              />
+                            </label>
+                            {customVisualTheme.mode === 'gradient' && (
+                              <label className="space-y-1">
+                                <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">{t('customThemeSecondaryColor')}</span>
+                                <input
+                                  type="color"
+                                  value={customVisualTheme.gradientTo}
+                                  onChange={(event) => {
+                                    const nextColor = normalizeHexColor(event.target.value);
+                                    setCustomVisualTheme((prev) => ({ ...prev, gradientTo: nextColor }));
+                                  }}
+                                  className="h-10 w-full cursor-pointer rounded-xl border border-white/10 bg-zinc-950 p-1"
+                                />
+                              </label>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => setVisualThemeId(CUSTOM_VISUAL_THEME_ID)}
+                            className="mt-3 w-full rounded-xl border border-white/10 bg-zinc-900/70 px-3 py-2 text-[11px] font-black uppercase tracking-wide text-zinc-200 transition-colors hover:border-emerald-400/40 hover:text-emerald-200"
+                          >
+                            {visualThemeId === CUSTOM_VISUAL_THEME_ID ? t('themeApplied') : t('customThemeApply')}
+                          </button>
                         </div>
                       </div>
                     </div>

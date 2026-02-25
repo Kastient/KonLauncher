@@ -2318,6 +2318,14 @@ const getGameVersions = async () => {
 };
 
 const DEFAULT_VISUAL_THEME_ID = 'default';
+const CUSTOM_VISUAL_THEME_ID = 'custom';
+const DEFAULT_CUSTOM_VISUAL_THEME = {
+  mode: 'solid',
+  solidColor: '#22c55e',
+  gradientFrom: '#0ea5e9',
+  gradientTo: '#22c55e'
+};
+const CUSTOM_VISUAL_THEME_MODES = new Set(['solid', 'gradient']);
 const ALLOWED_VISUAL_THEME_IDS = new Set([
   'default',
   'emerald',
@@ -2329,7 +2337,8 @@ const ALLOWED_VISUAL_THEME_IDS = new Set([
   'sunset',
   'ocean',
   'lava',
-  'neon'
+  'neon',
+  CUSTOM_VISUAL_THEME_ID
 ]);
 const ALLOWED_AMBIENT_EFFECTS = new Set(['stars', 'rain', 'snow']);
 const ALLOWED_AUTH_MODES = new Set(['offline', 'online']);
@@ -2383,11 +2392,32 @@ const normalizeLatestInstalledUpdate = (value) => {
   return { version, notes };
 };
 
+const HEX_COLOR_RE = /^#[0-9a-f]{6}$/i;
+
+const normalizeHexColor = (value, fallback = '#22c55e') => {
+  const normalized = String(value || '').trim().toLowerCase();
+  return HEX_COLOR_RE.test(normalized) ? normalized : fallback;
+};
+
+const normalizeCustomVisualTheme = (value) => {
+  const source = value && typeof value === 'object' ? value : {};
+  const modeRaw = String(source.mode || '').trim().toLowerCase();
+  const mode = CUSTOM_VISUAL_THEME_MODES.has(modeRaw) ? modeRaw : DEFAULT_CUSTOM_VISUAL_THEME.mode;
+
+  return {
+    mode,
+    solidColor: normalizeHexColor(source.solidColor, DEFAULT_CUSTOM_VISUAL_THEME.solidColor),
+    gradientFrom: normalizeHexColor(source.gradientFrom, DEFAULT_CUSTOM_VISUAL_THEME.gradientFrom),
+    gradientTo: normalizeHexColor(source.gradientTo, DEFAULT_CUSTOM_VISUAL_THEME.gradientTo)
+  };
+};
+
 const normalizeLauncherState = (rawState) => {
   const source = rawState && typeof rawState === 'object' ? rawState : {};
   const language = String(source.language || '').toLowerCase() === 'ru' ? 'ru' : 'en';
   const visualThemeIdRaw = String(source.visualThemeId || '').trim().toLowerCase();
   const visualThemeId = ALLOWED_VISUAL_THEME_IDS.has(visualThemeIdRaw) ? visualThemeIdRaw : DEFAULT_VISUAL_THEME_ID;
+  const customVisualTheme = normalizeCustomVisualTheme(source.customVisualTheme);
   const ambientEffectRaw = String(source.ambientEffect || '').trim().toLowerCase();
   const ambientEffect = ALLOWED_AMBIENT_EFFECTS.has(ambientEffectRaw) ? ambientEffectRaw : 'stars';
 
@@ -2398,6 +2428,7 @@ const normalizeLauncherState = (rawState) => {
     cursorGlowEnabled: source.cursorGlowEnabled !== false,
     cursorDistortionEnabled: source.cursorDistortionEnabled === true,
     visualThemeId,
+    customVisualTheme,
     ambientEffect,
     instances: Array.isArray(source.instances) ? source.instances : [],
     latestInstalledUpdate: normalizeLatestInstalledUpdate(source.latestInstalledUpdate)
