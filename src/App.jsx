@@ -2941,13 +2941,14 @@ export default function App() {
     let cometTimer = null;
 
     const scheduleNextComet = () => {
-      const nextDelayMs = randomBetween(10000, 15000);
+      const nextDelayMs = 8000;
       cometTimer = setTimeout(() => {
         if (disposed) return;
-        const comet = createCometParticle();
+        const spawnCount = Math.floor(randomBetween(1, 4));
+        const nextComets = Array.from({ length: spawnCount }, () => createCometParticle());
         setComets((prev) => {
-          const recent = prev.slice(-4);
-          return [...recent, comet];
+          const recent = prev.slice(-9);
+          return [...recent, ...nextComets];
         });
         scheduleNextComet();
       }, nextDelayMs);
@@ -4640,7 +4641,7 @@ export default function App() {
 
   const getPrimaryButtonClassName = (instance) => {
     if (instance.installState === 'installed') {
-      return 'text-black hover:brightness-110';
+      return 'primary-installed-theme border border-white/15 bg-white text-black';
     }
 
     if (instance.installState === 'installing') {
@@ -4823,9 +4824,8 @@ export default function App() {
     (instance) => {
       if (instance.installState === 'installed') {
         return {
-          background: `linear-gradient(90deg, ${themeAccentSoftHex} 0%, ${themeAccentHex} 100%)`,
-          color: '#04130a',
-          boxShadow: `0 10px 22px ${themeAccentRgba(0.22)}`
+          '--play-hover-bg': `linear-gradient(90deg, ${themeAccentSoftHex} 0%, ${themeAccentHex} 100%)`,
+          '--play-hover-fg': '#04130a'
         };
       }
       if (instance.installState === 'installing') {
@@ -7110,6 +7110,12 @@ export default function App() {
           border: 2px solid #ffffff;
           background: #0b0f16;
           box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+        }
+
+        .primary-installed-theme:hover {
+          background: var(--play-hover-bg, #22c55e) !important;
+          color: var(--play-hover-fg, #04130a) !important;
+          border-color: transparent !important;
         }
 
         @keyframes starPulse {
