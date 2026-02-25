@@ -1,0 +1,98 @@
+{
+  "name": "konlaucher",
+  "description": "KonLauncher - Minecraft launcher with offline and Microsoft online sessions",
+  "author": "KonLauncher Team",
+  "private": true,
+  "version": "1.0.17",
+  "main": "electron/main.cjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kastient/KonLauncher.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:renderer": "vite --host 127.0.0.1 --port 5173",
+    "dev:electron": "wait-on tcp:5173 && node electron/run-electron.cjs --dev-server=http://127.0.0.1:5173",
+    "dev:app": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron\"",
+    "build": "vite build",
+    "build:app": "vite build",
+    "build:icon": "node electron/make-icon.cjs",
+    "build:exe": "npm run build && npm run build:icon && electron-builder --win nsis",
+    "build:portable": "npm run build && npm run build:icon && electron-builder --win portable",
+    "build:dist": "npm run build && npm run build:icon && electron-builder --win nsis portable",
+    "start:app": "node electron/run-electron.cjs",
+    "skin:server": "node skin-service/server.cjs",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9",
+    "lucide-react": "^0.575.0",
+    "minecraft-launcher-core": "^3.18.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "skinview3d": "^3.4.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.24",
+    "concurrently": "^9.2.1",
+    "electron": "^40.6.0",
+    "electron-builder": "^25.1.8",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "png-to-ico": "^2.1.8",
+    "postcss": "^8.5.6",
+    "rcedit": "^4.0.1",
+    "sharp": "^0.34.4",
+    "tailwindcss": "^3.4.17",
+    "vite": "^7.3.1",
+    "wait-on": "^9.0.4"
+  },
+  "build": {
+    "afterPack": "electron/builder-after-pack.cjs",
+    "appId": "com.konlauncher.app",
+    "productName": "KonLauncher",
+    "directories": {
+      "output": "release"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Kastient",
+        "repo": "KonLauncher"
+      }
+    ],
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "electron/main.cjs"
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false,
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "runAfterFinish": false
+    }
+  }
+}
