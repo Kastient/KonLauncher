@@ -102,6 +102,16 @@ const OFFLINE_MULTIPLAYER_FIX = {
   }
 };
 
+const OFFLINE_MULTIPLAYER_WORKAROUND = {
+  minVersion: '1.16',
+  maxVersion: '1.16.5',
+  hosts: {
+    auth: 'https://authserver.mojang.com',
+    account: 'https://api.mojang.com',
+    session: 'https://sessionserver.mojang.com'
+  }
+};
+
 const FALLBACK_VERSIONS = [
   '1.21.11',
   '1.21.10',
@@ -188,6 +198,8 @@ let forgePromotionsCache = null;
 let neoForgeVersionsCache = null;
 const officialProfileCache = new Map();
 let cachedSecureAuthSession = null;
+let offlineMultiplayerServicesServer = null;
+let offlineMultiplayerServicesServerPromise = null;
 
 const normalizeId = (value) => String(value ?? '').trim();
 
@@ -441,6 +453,112 @@ const resolveOfflineMultiplayerFixArtifact = (loader, minecraftVersion) => {
 
   const versionKey = compareGameVersions(minecraftVersion, '1.16.5') === 0 ? '1.16.5' : '1.16.4';
   return OFFLINE_MULTIPLAYER_FIX.artifacts[versionKey]?.[artifactLoader] || null;
+};
+
+const isOfflineMultiplayerWorkaroundVersion = (version) => {
+  if (!parseGameVersion(version)) return false;
+  if (compareGameVersions(version, OFFLINE_MULTIPLAYER_WORKAROUND.minVersion) < 0) return false;
+  if (compareGameVersions(version, OFFLINE_MULTIPLAYER_WORKAROUND.maxVersion) > 0) return false;
+  return true;
+};
+
+const sendJsonResponse = (res, statusCode, payload) => {
+  const body = JSON.stringify(payload || {});
+  res.writeHead(statusCode, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'Content-Length': Buffer.byteLength(body)
+  });
+  res.end(body);
+};
+
+const handleOfflineMultiplayerServicesRequest = (req, res) => {
+  const requestUrl = new URL(req.url || '/', 'http://127.0.0.1');
+  const pathname = requestUrl.pathname;
+
+  if ((req.method === 'GET' || req.method === 'HEAD') && pathname === '/privileges') {
+    sendJsonResponse(res, 200, {
+      privileges: {
+        onlineChat: { enabled: true },
+        multiplayerServer: { enabled: true },
+        multiplayerRealms: { enabled: true }
+      }
+    });
+    return;
+  }
+
+  if ((req.method === 'GET' || req.method === 'HEAD') && pathname === '/privacy/blocklist') {
+    sendJsonResponse(res, 200, {
+      blockedProfiles: []
+    });
+    return;
+  }
+
+  sendJsonResponse(res, 404, {
+    error: 'Not found'
+  });
+};
+
+const ensureOfflineMultiplayerServicesServer = async () => {
+  if (offlineMultiplayerServicesServer?.baseUrl) {
+    return offlineMultiplayerServicesServer;
+  }
+
+  if (offlineMultiplayerServicesServerPromise) {
+    return offlineMultiplayerServicesServerPromise;
+  }
+
+  offlineMultiplayerServicesServerPromise = new Promise((resolve, reject) => {
+    const server = http.createServer(handleOfflineMultiplayerServicesRequest);
+    const cleanup = () => {
+      server.removeAllListeners('error');
+      server.removeAllListeners('listening');
+    };
+
+    server.once('error', (error) => {
+      cleanup();
+      reject(error);
+    });
+
+    server.once('listening', () => {
+      cleanup();
+      const address = server.address();
+      if (!address || typeof address === 'string') {
+        reject(new Error('Offline multiplayer service failed to bind to a TCP port.'));
+        return;
+      }
+
+      const state = {
+        server,
+        baseUrl: `http://127.0.0.1:${address.port}`
+      };
+      offlineMultiplayerServicesServer = state;
+      resolve(state);
+    });
+
+    server.listen(0, '127.0.0.1');
+  });
+
+  try {
+    return await offlineMultiplayerServicesServerPromise;
+  } catch (error) {
+    offlineMultiplayerServicesServer = null;
+    throw error;
+  } finally {
+    offlineMultiplayerServicesServerPromise = null;
+  }
+};
+
+const buildOfflineMultiplayerWorkaroundArgs = async (minecraftVersion) => {
+  if (!isOfflineMultiplayerWorkaroundVersion(minecraftVersion)) return [];
+
+  const service = await ensureOfflineMultiplayerServicesServer();
+  return [
+    `-Dminecraft.api.auth.host=${OFFLINE_MULTIPLAYER_WORKAROUND.hosts.auth}`,
+    `-Dminecraft.api.account.host=${OFFLINE_MULTIPLAYER_WORKAROUND.hosts.account}`,
+    `-Dminecraft.api.session.host=${OFFLINE_MULTIPLAYER_WORKAROUND.hosts.session}`,
+    `-Dminecraft.api.services.host=${service.baseUrl}`
+  ];
 };
 
 const isVersionInRange = (version) => {
@@ -2057,8 +2175,10 @@ const launchInstanceInternal = async (event, payload) => {
 
     const ramGb = Math.max(2, Number(payload.ramGb || 4));
     const offlineUsername = String(payload.username || 'Player').trim() || 'Player';
-    const launchAuthorization = await buildOfflineAuthorization(offlineUsername);
-    const launchUsername = String(launchAuthorization.name || offlineUsername).trim() || offlineUsername;
+    const authResolution = await resolveLaunchAuthorization(offlineUsername);
+    const launchAuthorization = authResolution.authorization;
+    const launchUsername = authResolution.username;
+    const launchAuthMode = authResolution.authMode;
 
     await assertKnownModCompatibility({
       installPath,
@@ -2066,22 +2186,48 @@ const launchInstanceInternal = async (event, payload) => {
       loader
     });
 
-    try {
-      await ensureOfflineMultiplayerFix({
-        event,
-        instanceId,
-        instanceName,
-        installPath,
-        minecraftVersion,
-        loader
-      });
-    } catch (error) {
-      emitLaunchDebug(
-        event,
-        instanceId,
-        instanceName,
-        `[OfflineFix] Failed to apply patch: ${error?.message || 'unknown error'}`
-      );
+    emitLaunchDebug(event, instanceId, instanceName, `[Auth] Launching with ${launchAuthMode} session as ${launchUsername}.`);
+
+    let launchCustomArgs = [];
+    if (launchAuthMode === 'offline') {
+      try {
+        launchCustomArgs = await buildOfflineMultiplayerWorkaroundArgs(minecraftVersion);
+        if (launchCustomArgs.length) {
+          emitLaunchDebug(
+            event,
+            instanceId,
+            instanceName,
+            '[OfflineFix] Enabled built-in offline multiplayer workaround for 1.16.x.'
+          );
+        }
+      } catch (error) {
+        emitLaunchDebug(
+          event,
+          instanceId,
+          instanceName,
+          `[OfflineFix] Built-in workaround failed: ${error?.message || 'unknown error'}`
+        );
+      }
+    }
+
+    if (launchAuthMode === 'offline' && !launchCustomArgs.length) {
+      try {
+        await ensureOfflineMultiplayerFix({
+          event,
+          instanceId,
+          instanceName,
+          installPath,
+          minecraftVersion,
+          loader
+        });
+      } catch (error) {
+        emitLaunchDebug(
+          event,
+          instanceId,
+          instanceName,
+          `[OfflineFix] Failed to apply patch: ${error?.message || 'unknown error'}`
+        );
+      }
     }
 
     try {
@@ -2221,6 +2367,7 @@ const launchInstanceInternal = async (event, payload) => {
       overrides: {
         detached: false
       },
+      ...(launchCustomArgs.length ? { customArgs: launchCustomArgs } : {}),
       ...(forgeJarPath ? { forge: forgeJarPath } : {})
     };
 
@@ -3022,6 +3169,28 @@ const buildOnlineAuthorization = (session) => {
       xuid: String(profile.xuid || ''),
       clientId: String(session?.clientId || MICROSOFT_OAUTH_CLIENT_ID || '')
     }
+  };
+};
+
+const resolveLaunchAuthorization = async (offlineUsername) => {
+  const launcherState = await loadLauncherState();
+  const authMode = normalizeAuthMode(launcherState.authMode || 'offline');
+
+  if (authMode === 'online') {
+    const session = await ensureOnlineSessionForLaunch();
+    const authorization = buildOnlineAuthorization(session);
+    return {
+      authorization,
+      authMode,
+      username: String(authorization.name || '').trim() || offlineUsername
+    };
+  }
+
+  const authorization = await buildOfflineAuthorization(offlineUsername);
+  return {
+    authorization,
+    authMode: 'offline',
+    username: String(authorization.name || '').trim() || offlineUsername
   };
 };
 
