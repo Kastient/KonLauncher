@@ -408,13 +408,16 @@ const listJavaCandidates = () => {
       // noop
     }
 
-    const windowsRoots = [
+const windowsRoots = [
       'C:\\Program Files\\Java',
       'C:\\Program Files (x86)\\Java',
       'C:\\Program Files\\Eclipse Adoptium',
       'C:\\Program Files\\Microsoft',
       'C:\\Program Files\\Amazon Corretto',
-      'C:\\Program Files\\Zulu'
+      'C:\\Program Files\\Zulu',
+      'C:\\Program Files\\BellSoft',
+      'C:\\Program Files\\Liberica',
+      'C:\\Program Files\\Oracle\\Java'
     ];
 
     for (const root of windowsRoots) {
@@ -634,6 +637,7 @@ const getRequiredJavaMajor = (version) => {
 
   const [major, minor, patch] = tuple;
 
+  if (major > 1 && minor >= 6) return 22;
   if (major > 1) return 21;
 
   if (minor <= 16) return 8;
