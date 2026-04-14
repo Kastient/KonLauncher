@@ -52,7 +52,7 @@ const STATE_FILENAME = 'state.json';
 const SKINS_STATE_FILENAME = 'skins-state.json';
 const AUTH_SESSION_FILENAME = 'auth-session.bin';
 const MIN_VERSION_TUPLE = [1, 8, 0];
-const MAX_VERSION_TUPLE = [1, 21, 11];
+const MAX_VERSION_TUPLE = [26, 99, 99];
 const REQUEST_HEADERS = {
   'User-Agent': 'KonLauncher/0.2'
 };
@@ -119,7 +119,10 @@ const OFFLINE_MULTIPLAYER_WORKAROUND = {
   }
 };
 
-const FALLBACK_VERSIONS = [
+const FALLBACK_RELEASE_VERSIONS = [
+  '26.1.2',
+  '26.1.1',
+  '26.1',
   '1.21.11',
   '1.21.10',
   '1.21.9',
@@ -192,17 +195,28 @@ const FALLBACK_VERSIONS = [
   '1.8'
 ];
 
+const FALLBACK_PRERELEASE_VERSIONS = ['26.2-snapshot-3', '26.2-snapshot-2', '26.2-snapshot-1', '26.1.2-rc-1'];
+
+const MAX_SUPPORTED_VERSION_TEXT = `${MAX_VERSION_TUPLE[0]}.${MAX_VERSION_TUPLE[1]}.${MAX_VERSION_TUPLE[2]}`;
+
 let handlersRegistered = false;
 let activeInstallId = null;
 const canceledInstallIds = new Set();
 const runningGames = new Map();
 const launchingGames = new Set();
 let cachedVersions = {
-  expiresAt: 0,
-  values: FALLBACK_VERSIONS
+  release: {
+    expiresAt: 0,
+    values: FALLBACK_RELEASE_VERSIONS
+  },
+  all: {
+    expiresAt: 0,
+    values: [...FALLBACK_PRERELEASE_VERSIONS, ...FALLBACK_RELEASE_VERSIONS]
+  }
 };
 let forgePromotionsCache = null;
 let neoForgeVersionsCache = null;
+const loaderVersionsCache = new Map();
 const officialProfileCache = new Map();
 let cachedSecureAuthSession = null;
 let offlineMultiplayerServicesServer = null;
@@ -421,11 +435,16 @@ const listJavaCandidates = () => {
 };
 
 const parseGameVersion = (version) => {
-  const match = String(version || '')
-    .trim()
-    .match(/^(\d+)\.(\d+)(?:\.(\d+))?$/);
-  if (!match) return null;
-  return [Number.parseInt(match[1], 10), Number.parseInt(match[2], 10), Number.parseInt(match[3] || '0', 10)];
+  const text = String(version || '').trim();
+  const match = text.match(/(\d+)\.(\d+)(?:\.(\d+))?/);
+  if (match) {
+    return [Number.parseInt(match[1], 10), Number.parseInt(match[2], 10), Number.parseInt(match[3] || '0', 10)];
+  }
+  const snapshotMatch = text.match(/^(\d{2})w(\d{2})[a-z]?$/i);
+  if (snapshotMatch) {
+    return [Number.parseInt(snapshotMatch[1], 10), Number.parseInt(snapshotMatch[2], 10), 0];
+  }
+  return null;
 };
 
 const compareVersionTuple = (left, right) => {
@@ -582,7 +601,7 @@ const supportsLoaderForVersion = (loader, version) => {
   if (!isVersionInRange(version)) {
     return {
       supported: false,
-      reason: 'Version is outside of launcher supported range 1.8 .. 1.21.11.'
+      reason: `Version is outside of launcher supported range 1.8 .. ${MAX_SUPPORTED_VERSION_TEXT}.`
     };
   }
 
@@ -613,7 +632,9 @@ const getRequiredJavaMajor = (version) => {
   const tuple = parseGameVersion(version);
   if (!tuple) return 17;
 
-  const [, minor, patch] = tuple;
+  const [major, minor, patch] = tuple;
+
+  if (major > 1) return 21;
 
   if (minor <= 16) return 8;
   if (minor === 17) return 16;
@@ -1006,7 +1027,26 @@ const installVanillaLikeBase = async ({ event, instanceId, instanceName, rootDir
   }
 };
 
-const prepareFabricProfile = async (rootDir, minecraftVersion) => {
+const normalizeVersionSelection = (value) => String(value || '').trim();
+
+const selectPreferredLoaderVersion = (loaders, { preferredVersion = '', includePrerelease = false } = {}) => {
+  const requested = normalizeVersionSelection(preferredVersion);
+  if (!Array.isArray(loaders) || !loaders.length) return null;
+
+  if (requested) {
+    const exact = loaders.find((item) => String(item?.loader?.version || '').trim() === requested);
+    if (exact) return exact;
+  }
+
+  if (!includePrerelease) {
+    const stable = loaders.find((item) => item?.loader?.stable);
+    if (stable) return stable;
+  }
+
+  return loaders[0] || null;
+};
+
+const prepareFabricProfile = async (rootDir, minecraftVersion, { loaderVersion = '', includePrerelease = false } = {}) => {
   const loaders = await fetchJson(`https://meta.fabricmc.net/v2/versions/loader/${encodeURIComponent(minecraftVersion)}`);
   if (!Array.isArray(loaders) || !loaders.length) {
     const error = new Error(`Fabric loader was not found for ${minecraftVersion}`);
@@ -1014,27 +1054,30 @@ const prepareFabricProfile = async (rootDir, minecraftVersion) => {
     throw error;
   }
 
-  const preferred = loaders.find((item) => item.loader?.stable) || loaders[0];
-  const loaderVersion = preferred.loader?.version;
-  if (!loaderVersion) {
+  const preferred = selectPreferredLoaderVersion(loaders, {
+    preferredVersion: loaderVersion,
+    includePrerelease
+  });
+  const resolvedLoaderVersion = preferred?.loader?.version;
+  if (!resolvedLoaderVersion) {
     throw new Error(`Invalid Fabric loader payload for ${minecraftVersion}`);
   }
 
   const profile = await fetchJson(
-    `https://meta.fabricmc.net/v2/versions/loader/${encodeURIComponent(minecraftVersion)}/${encodeURIComponent(loaderVersion)}/profile/json`
+    `https://meta.fabricmc.net/v2/versions/loader/${encodeURIComponent(minecraftVersion)}/${encodeURIComponent(resolvedLoaderVersion)}/profile/json`
   );
 
-  const customVersionId = profile.id || `fabric-loader-${loaderVersion}-${minecraftVersion}`;
+  const customVersionId = profile.id || `fabric-loader-${resolvedLoaderVersion}-${minecraftVersion}`;
   profile.id = customVersionId;
 
   const versionDir = path.join(rootDir, 'versions', customVersionId);
   await fsp.mkdir(versionDir, { recursive: true });
   await fsp.writeFile(path.join(versionDir, `${customVersionId}.json`), JSON.stringify(profile, null, 2), 'utf8');
 
-  return { customVersionId, loaderVersion };
+  return { customVersionId, loaderVersion: resolvedLoaderVersion };
 };
 
-const prepareQuiltProfile = async (rootDir, minecraftVersion) => {
+const prepareQuiltProfile = async (rootDir, minecraftVersion, { loaderVersion = '', includePrerelease = false } = {}) => {
   const loaders = await fetchJson(`https://meta.quiltmc.org/v3/versions/loader/${encodeURIComponent(minecraftVersion)}`);
   if (!Array.isArray(loaders) || !loaders.length) {
     const error = new Error(`Quilt loader was not found for ${minecraftVersion}`);
@@ -1042,24 +1085,27 @@ const prepareQuiltProfile = async (rootDir, minecraftVersion) => {
     throw error;
   }
 
-  const preferred = loaders.find((item) => item.loader?.stable) || loaders[0];
-  const loaderVersion = preferred.loader?.version;
-  if (!loaderVersion) {
+  const preferred = selectPreferredLoaderVersion(loaders, {
+    preferredVersion: loaderVersion,
+    includePrerelease
+  });
+  const resolvedLoaderVersion = preferred?.loader?.version;
+  if (!resolvedLoaderVersion) {
     throw new Error(`Invalid Quilt loader payload for ${minecraftVersion}`);
   }
 
   const profile = await fetchJson(
-    `https://meta.quiltmc.org/v3/versions/loader/${encodeURIComponent(minecraftVersion)}/${encodeURIComponent(loaderVersion)}/profile/json`
+    `https://meta.quiltmc.org/v3/versions/loader/${encodeURIComponent(minecraftVersion)}/${encodeURIComponent(resolvedLoaderVersion)}/profile/json`
   );
 
-  const customVersionId = profile.id || `quilt-loader-${loaderVersion}-${minecraftVersion}`;
+  const customVersionId = profile.id || `quilt-loader-${resolvedLoaderVersion}-${minecraftVersion}`;
   profile.id = customVersionId;
 
   const versionDir = path.join(rootDir, 'versions', customVersionId);
   await fsp.mkdir(versionDir, { recursive: true });
   await fsp.writeFile(path.join(versionDir, `${customVersionId}.json`), JSON.stringify(profile, null, 2), 'utf8');
 
-  return { customVersionId, loaderVersion };
+  return { customVersionId, loaderVersion: resolvedLoaderVersion };
 };
 
 const streamDownloadToFile = async ({ url, destination, onProgress, timeoutMs = DEFAULT_DOWNLOAD_TIMEOUT_MS }) => {
@@ -1689,7 +1735,10 @@ const parseForgePromotions = async () => {
   return payload;
 };
 
-const resolveForgeVersion = async (minecraftVersion) => {
+const resolveForgeVersion = async (minecraftVersion, preferredVersion = '') => {
+  const explicitVersion = normalizeVersionSelection(preferredVersion);
+  if (explicitVersion) return explicitVersion;
+
   const payload = await parseForgePromotions();
   const promos = payload?.promos || {};
   const recommended = promos[`${minecraftVersion}-recommended`];
@@ -1774,32 +1823,135 @@ const compareDotVersions = (left, right) => {
   return compareVersionTuple(leftParts, rightParts);
 };
 
-const resolveNeoForgeVersion = async (minecraftVersion) => {
+const compareDotVersionsDesc = (left, right) => compareDotVersions(right, left);
+
+const listNeoForgeVersionsForMinecraft = async (minecraftVersion) => {
   const tuple = parseGameVersion(minecraftVersion);
-  if (!tuple) {
-    const error = new Error(`Invalid Minecraft version: ${minecraftVersion}`);
-    error.code = 'INVALID_VERSION';
-    throw error;
-  }
+  if (!tuple) return [];
 
   const [, minor, patch] = tuple;
   const exactPrefix = `${minor}.${patch}`;
   const broadPrefix = `${minor}`;
   const versions = await getNeoForgeVersions();
 
-  const exact = versions.filter((item) => item === exactPrefix || item.startsWith(`${exactPrefix}.`));
-  if (exact.length) {
-    return exact.sort(compareDotVersions).at(-1);
+  const exact = versions
+    .filter((item) => item === exactPrefix || item.startsWith(`${exactPrefix}.`))
+    .sort(compareDotVersionsDesc);
+  const broad = versions
+    .filter((item) => item === broadPrefix || item.startsWith(`${broadPrefix}.`))
+    .sort(compareDotVersionsDesc);
+
+  return [...new Set([...exact, ...broad])];
+};
+
+const resolveNeoForgeVersion = async (minecraftVersion, preferredVersion = '') => {
+  const explicitVersion = normalizeVersionSelection(preferredVersion);
+  if (explicitVersion) return explicitVersion;
+
+  if (!parseGameVersion(minecraftVersion)) {
+    const error = new Error(`Invalid Minecraft version: ${minecraftVersion}`);
+    error.code = 'INVALID_VERSION';
+    throw error;
   }
 
-  const broad = versions.filter((item) => item === broadPrefix || item.startsWith(`${broadPrefix}.`));
-  if (broad.length) {
-    return broad.sort(compareDotVersions).at(-1);
+  const candidates = await listNeoForgeVersionsForMinecraft(minecraftVersion);
+  if (candidates.length) {
+    return candidates[0];
   }
 
   const error = new Error(`NeoForge was not found for ${minecraftVersion}`);
   error.code = 'LOADER_NOT_AVAILABLE';
   throw error;
+};
+
+const listLoaderVersionsInternal = async ({ loader, minecraftVersion, includePrerelease = false }) => {
+  const normalizedLoader = normalizeLoader(loader);
+  const targetVersion = String(minecraftVersion || '').trim();
+  const withPrerelease = includePrerelease === true;
+
+  if (!targetVersion) {
+    const error = new Error('minecraftVersion is required for loader version list.');
+    error.code = 'INVALID_LOADER_VERSION_PAYLOAD';
+    throw error;
+  }
+
+  if (normalizedLoader === 'vanilla') {
+    return [];
+  }
+
+  const cacheKey = `${normalizedLoader}:${targetVersion}:${withPrerelease ? 'all' : 'stable'}`;
+  const cached = loaderVersionsCache.get(cacheKey);
+  if (cached && Date.now() < cached.expiresAt && Array.isArray(cached.values)) {
+    return cached.values;
+  }
+
+  let values = [];
+
+  if (normalizedLoader === 'fabric') {
+    const loaders = await fetchJson(`https://meta.fabricmc.net/v2/versions/loader/${encodeURIComponent(targetVersion)}`);
+    const mapped = (Array.isArray(loaders) ? loaders : [])
+      .map((item) => {
+        const id = String(item?.loader?.version || '').trim();
+        if (!id) return null;
+        const stable = item?.loader?.stable === true;
+        return {
+          id,
+          stable,
+          prerelease: !stable
+        };
+      })
+      .filter(Boolean);
+    const stableOnly = mapped.filter((item) => item.stable);
+    values = (withPrerelease ? mapped : stableOnly.length ? stableOnly : mapped).sort((a, b) => compareDotVersionsDesc(a.id, b.id));
+  } else if (normalizedLoader === 'quilt') {
+    const loaders = await fetchJson(`https://meta.quiltmc.org/v3/versions/loader/${encodeURIComponent(targetVersion)}`);
+    const mapped = (Array.isArray(loaders) ? loaders : [])
+      .map((item) => {
+        const id = String(item?.loader?.version || '').trim();
+        if (!id) return null;
+        const stable = item?.loader?.stable === true;
+        return {
+          id,
+          stable,
+          prerelease: !stable
+        };
+      })
+      .filter(Boolean);
+    const stableOnly = mapped.filter((item) => item.stable);
+    values = (withPrerelease ? mapped : stableOnly.length ? stableOnly : mapped).sort((a, b) => compareDotVersionsDesc(a.id, b.id));
+  } else if (normalizedLoader === 'forge') {
+    const payload = await parseForgePromotions();
+    const promos = payload?.promos || {};
+    const latest = normalizeVersionSelection(promos[`${targetVersion}-latest`]);
+    const recommended = normalizeVersionSelection(promos[`${targetVersion}-recommended`]);
+    const ordered = [latest, recommended].filter(Boolean);
+    values = [...new Set(ordered)].map((id, index) => ({
+      id,
+      stable: index !== 0 || !recommended || recommended === id,
+      prerelease: false
+    }));
+  } else if (normalizedLoader === 'neoforge') {
+    const versions = await listNeoForgeVersionsForMinecraft(targetVersion);
+    values = versions.map((id) => ({
+      id,
+      stable: true,
+      prerelease: false
+    }));
+  }
+
+  const normalizedValues = values.map((entry) => ({
+    id: entry.id,
+    name: entry.id,
+    stable: entry.stable !== false,
+    prerelease: entry.prerelease === true
+  }));
+
+  loaderVersionsCache.set(cacheKey, {
+    values: normalizedValues,
+    expiresAt: Date.now() + 1000 * 60 * 10
+  });
+
+  return normalizedValues;
 };
 
 const listVersionDirectories = async (rootDir) => {
@@ -1841,8 +1993,8 @@ const runJavaCommand = async (javaPath, args, cwd) => {
   });
 };
 
-const ensureNeoForgeProfile = async ({ javaPath, rootDir, minecraftVersion, onProgress }) => {
-  const neoForgeVersion = await resolveNeoForgeVersion(minecraftVersion);
+const ensureNeoForgeProfile = async ({ javaPath, rootDir, minecraftVersion, preferredLoaderVersion = '', onProgress }) => {
+  const neoForgeVersion = await resolveNeoForgeVersion(minecraftVersion, preferredLoaderVersion);
   const filename = `neoforge-${neoForgeVersion}-installer.jar`;
   const relativePath = `net/neoforged/neoforge/${neoForgeVersion}/${filename}`;
   const url = `https://maven.neoforged.net/releases/${relativePath}`;
@@ -1897,6 +2049,8 @@ const installInstanceInternal = async (event, payload) => {
   const instanceName = String(payload.instanceName || `Instance ${instanceId}`).trim() || `Instance ${instanceId}`;
   const minecraftVersion = String(payload.version || '').trim();
   const loader = normalizeLoader(payload.loader || 'vanilla');
+  const preferredLoaderVersion = normalizeVersionSelection(payload?.loaderVersion);
+  const includePrereleaseLoaders = payload?.includePrereleaseLoaders === true || payload?.showPrereleaseVersions === true;
 
   if (!instanceId) {
     const error = new Error('Instance id is required');
@@ -1957,7 +2111,10 @@ const installInstanceInternal = async (event, payload) => {
   if (loader === 'fabric') {
     assertInstallNotCancelled(instanceId);
     sendProgress('loader', 5, 'Resolving Fabric');
-    const prepared = await prepareFabricProfile(installPath, minecraftVersion);
+    const prepared = await prepareFabricProfile(installPath, minecraftVersion, {
+      loaderVersion: preferredLoaderVersion,
+      includePrerelease: includePrereleaseLoaders
+    });
     customVersionId = prepared.customVersionId;
     loaderVersion = prepared.loaderVersion;
   }
@@ -1965,7 +2122,10 @@ const installInstanceInternal = async (event, payload) => {
   if (loader === 'quilt') {
     assertInstallNotCancelled(instanceId);
     sendProgress('loader', 5, 'Resolving Quilt');
-    const prepared = await prepareQuiltProfile(installPath, minecraftVersion);
+    const prepared = await prepareQuiltProfile(installPath, minecraftVersion, {
+      loaderVersion: preferredLoaderVersion,
+      includePrerelease: includePrereleaseLoaders
+    });
     customVersionId = prepared.customVersionId;
     loaderVersion = prepared.loaderVersion;
   }
@@ -1984,7 +2144,7 @@ const installInstanceInternal = async (event, payload) => {
 
   if (loader === 'forge') {
     sendProgress('loader', 90, 'Resolving Forge version');
-    const forgeVersion = await resolveForgeVersion(minecraftVersion);
+    const forgeVersion = await resolveForgeVersion(minecraftVersion, preferredLoaderVersion);
     assertInstallNotCancelled(instanceId);
 
     const forgeInfo = await ensureForgeJar({
@@ -2008,6 +2168,7 @@ const installInstanceInternal = async (event, payload) => {
       javaPath: selectedJava.path,
       rootDir: installPath,
       minecraftVersion,
+      preferredLoaderVersion,
       onProgress: ({ percent }) => {
         sendProgress('loader', 90 + Math.round(percent * 0.08), `Downloading NeoForge installer (${percent}%)`);
       }
@@ -2025,6 +2186,7 @@ const installInstanceInternal = async (event, payload) => {
     instanceName,
     minecraftVersion,
     loader,
+    loaderVersion: loaderVersion || preferredLoaderVersion || null,
     updatedAt: new Date().toISOString()
   });
 
@@ -2109,6 +2271,7 @@ const launchInstanceInternal = async (event, payload) => {
     const installPath = path.resolve(payload.installPath || '');
     const minecraftVersion = String(payload.version || '').trim();
     const loader = normalizeLoader(payload.loader || 'vanilla');
+    const preferredLoaderVersion = normalizeVersionSelection(payload?.loaderVersion);
 
     if (!minecraftVersion) {
       const error = new Error('Minecraft version is required');
@@ -2172,7 +2335,7 @@ const launchInstanceInternal = async (event, payload) => {
       if (givenForgePath && fs.existsSync(givenForgePath)) {
         forgeJarPath = givenForgePath;
       } else {
-        const forgeVersion = await resolveForgeVersion(minecraftVersion);
+        const forgeVersion = await resolveForgeVersion(minecraftVersion, preferredLoaderVersion);
         const forgeInfo = await ensureForgeJar({
           minecraftVersion,
           forgeVersion
@@ -2500,30 +2663,46 @@ const stopInstanceInternal = async (payload) => {
     running: true
   };
 };
-const getGameVersions = async () => {
-  if (Date.now() < cachedVersions.expiresAt && cachedVersions.values?.length) {
-    return cachedVersions.values;
+const getFallbackGameVersions = (includeSnapshots = false) =>
+  includeSnapshots ? [...FALLBACK_PRERELEASE_VERSIONS, ...FALLBACK_RELEASE_VERSIONS] : FALLBACK_RELEASE_VERSIONS;
+
+const sortGameVersionsDesc = (left, right) => {
+  const byParsed = compareGameVersions(right, left);
+  if (byParsed !== 0) return byParsed;
+  return String(right || '').localeCompare(String(left || ''), 'en', { sensitivity: 'base' });
+};
+
+const getGameVersions = async ({ includeSnapshots = false } = {}) => {
+  const mode = includeSnapshots ? 'all' : 'release';
+  const cacheEntry = cachedVersions[mode];
+
+  if (cacheEntry && Date.now() < cacheEntry.expiresAt && cacheEntry.values?.length) {
+    return cacheEntry.values;
   }
 
   try {
     const manifest = await fetchJson('https://piston-meta.mojang.com/mc/game/version_manifest_v2.json');
+    const allowedTypes = includeSnapshots ? new Set(['release', 'snapshot']) : new Set(['release']);
     const versions = (manifest?.versions || [])
-      .filter((entry) => entry.type === 'release' && isVersionInRange(entry.id))
-      .map((entry) => entry.id);
+      .filter((entry) => allowedTypes.has(String(entry?.type || '').toLowerCase()) && isVersionInRange(entry.id))
+      .map((entry) => String(entry.id || '').trim())
+      .filter(Boolean);
 
-    const unique = [...new Set(versions)].sort((a, b) => compareGameVersions(b, a));
-    cachedVersions = {
-      values: unique.length ? unique : FALLBACK_VERSIONS,
+    const fallback = getFallbackGameVersions(includeSnapshots);
+    const unique = [...new Set([...fallback, ...versions])].sort(sortGameVersionsDesc);
+    cachedVersions[mode] = {
+      values: unique.length ? unique : fallback,
       expiresAt: Date.now() + 1000 * 60 * 10
     };
 
-    return cachedVersions.values;
+    return cachedVersions[mode].values;
   } catch {
-    cachedVersions = {
-      values: FALLBACK_VERSIONS,
+    const fallback = getFallbackGameVersions(includeSnapshots);
+    cachedVersions[mode] = {
+      values: fallback,
       expiresAt: Date.now() + 1000 * 60 * 5
     };
-    return cachedVersions.values;
+    return cachedVersions[mode].values;
   }
 };
 
@@ -4301,6 +4480,25 @@ const bufferToDataUrl = (buffer, mime = 'image/png') => {
   return `data:${mime};base64,${buffer.toString('base64')}`;
 };
 
+const detectBufferMimeType = (buffer, fallback = 'image/png') => {
+  if (!Buffer.isBuffer(buffer) || buffer.length < 12) return fallback;
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) return 'image/png';
+  if (buffer[0] === 0xff && buffer[1] === 0xd8) return 'image/jpeg';
+  if (
+    buffer[0] === 0x52 &&
+    buffer[1] === 0x49 &&
+    buffer[2] === 0x46 &&
+    buffer[3] === 0x46 &&
+    buffer[8] === 0x57 &&
+    buffer[9] === 0x45 &&
+    buffer[10] === 0x42 &&
+    buffer[11] === 0x50
+  ) {
+    return 'image/webp';
+  }
+  return fallback;
+};
+
 const readFileAsDataUrlSafe = async (targetPath) => {
   try {
     const stat = await fsp.stat(targetPath);
@@ -4312,18 +4510,18 @@ const readFileAsDataUrlSafe = async (targetPath) => {
   }
 };
 
-const readArchiveEntryDataUrl = async (archivePath, matcher) => {
-  if (!yauzl || typeof matcher !== 'function') return '';
+const readArchiveEntryBuffer = async (archivePath, matcher, maxBytes = MAX_LOCAL_ICON_BYTES) => {
+  if (!yauzl || typeof matcher !== 'function') return Buffer.alloc(0);
 
   return new Promise((resolve) => {
     yauzl.open(archivePath, { lazyEntries: true, autoClose: true }, (openError, zipfile) => {
       if (openError || !zipfile) {
-        resolve('');
+        resolve(Buffer.alloc(0));
         return;
       }
 
       let completed = false;
-      const finish = (value = '') => {
+      const finish = (value = Buffer.alloc(0)) => {
         if (completed) return;
         completed = true;
         try {
@@ -4334,22 +4532,22 @@ const readArchiveEntryDataUrl = async (archivePath, matcher) => {
         resolve(value);
       };
 
-      zipfile.on('error', () => finish(''));
-      zipfile.on('end', () => finish(''));
+      zipfile.on('error', () => finish(Buffer.alloc(0)));
+      zipfile.on('end', () => finish(Buffer.alloc(0)));
       zipfile.readEntry();
 
       zipfile.on('entry', (entry) => {
         if (completed) return;
         const entryName = String(entry?.fileName || '');
         const uncompressedSize = Number(entry?.uncompressedSize || 0);
-        if (!matcher(entryName) || uncompressedSize <= 0 || uncompressedSize > MAX_LOCAL_ICON_BYTES) {
+        if (!matcher(entryName) || uncompressedSize <= 0 || uncompressedSize > maxBytes) {
           zipfile.readEntry();
           return;
         }
 
         zipfile.openReadStream(entry, (streamError, stream) => {
           if (streamError || !stream) {
-            finish('');
+            finish(Buffer.alloc(0));
             return;
           }
 
@@ -4357,23 +4555,136 @@ const readArchiveEntryDataUrl = async (archivePath, matcher) => {
           let totalBytes = 0;
           stream.on('data', (chunk) => {
             totalBytes += chunk.length;
-            if (totalBytes > MAX_LOCAL_ICON_BYTES) {
+            if (totalBytes > maxBytes) {
               stream.destroy();
-              finish('');
+              finish(Buffer.alloc(0));
               return;
             }
             chunks.push(chunk);
           });
-          stream.on('error', () => finish(''));
+          stream.on('error', () => finish(Buffer.alloc(0)));
           stream.on('end', () => {
             if (completed) return;
             const data = Buffer.concat(chunks);
-            finish(bufferToDataUrl(data, toIconMimeType(entryName)));
+            finish(data);
           });
         });
       });
     });
   });
+};
+
+const readArchiveEntryDataUrl = async (archivePath, matcher) => {
+  const buffer = await readArchiveEntryBuffer(archivePath, matcher, MAX_LOCAL_ICON_BYTES);
+  if (!Buffer.isBuffer(buffer) || !buffer.length) return '';
+  return bufferToDataUrl(buffer, detectBufferMimeType(buffer));
+};
+
+const readArchiveEntryText = async (archivePath, matcher, maxBytes = 256 * 1024) => {
+  const buffer = await readArchiveEntryBuffer(archivePath, matcher, maxBytes);
+  if (!Buffer.isBuffer(buffer) || !buffer.length) return '';
+  return buffer.toString('utf8');
+};
+
+const normalizeArchiveEntryPath = (value) =>
+  String(value || '')
+    .trim()
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '')
+    .replace(/^\/+/, '')
+    .toLowerCase();
+
+const resolveIconPathFromFabricMeta = (payload) => {
+  if (!payload || typeof payload !== 'object') return '';
+  const icon = payload.icon;
+  if (typeof icon === 'string') return icon;
+  if (!icon || typeof icon !== 'object') return '';
+  const iconEntries = Object.entries(icon)
+    .filter(([, pathValue]) => typeof pathValue === 'string' && pathValue.trim())
+    .sort((left, right) => (Number.parseInt(right[0], 10) || 0) - (Number.parseInt(left[0], 10) || 0));
+  return iconEntries[0]?.[1] || '';
+};
+
+const resolveIconPathFromQuiltMeta = (payload) => {
+  if (!payload || typeof payload !== 'object') return '';
+  const quiltLoader = payload.quilt_loader && typeof payload.quilt_loader === 'object' ? payload.quilt_loader : {};
+  const direct = quiltLoader.icon || quiltLoader?.metadata?.icon || payload.icon;
+  if (typeof direct === 'string') return direct;
+  if (direct && typeof direct === 'object') {
+    const entries = Object.entries(direct)
+      .filter(([, pathValue]) => typeof pathValue === 'string' && pathValue.trim())
+      .sort((left, right) => (Number.parseInt(right[0], 10) || 0) - (Number.parseInt(left[0], 10) || 0));
+    return entries[0]?.[1] || '';
+  }
+  return '';
+};
+
+const resolveIconPathFromMcmodInfo = (payload) => {
+  const list = Array.isArray(payload) ? payload : payload && typeof payload === 'object' ? [payload] : [];
+  for (const entry of list) {
+    const logoFile = String(entry?.logoFile || '').trim();
+    if (logoFile) return logoFile;
+  }
+  return '';
+};
+
+const resolveIconPathFromModsToml = (payloadText) => {
+  const match = String(payloadText || '').match(/logoFile\s*=\s*["']([^"']+)["']/i);
+  return String(match?.[1] || '').trim();
+};
+
+const resolveIconPathFromArchiveMetadata = async (archivePath) => {
+  try {
+    const fabricRaw = await readArchiveEntryText(archivePath, (entryName) => {
+      const lowered = normalizeArchiveEntryPath(entryName);
+      return lowered === 'fabric.mod.json' || lowered.endsWith('/fabric.mod.json');
+    });
+    if (fabricRaw) {
+      const iconPath = resolveIconPathFromFabricMeta(JSON.parse(fabricRaw));
+      if (iconPath) return iconPath;
+    }
+  } catch {
+    // noop
+  }
+
+  try {
+    const quiltRaw = await readArchiveEntryText(archivePath, (entryName) => {
+      const lowered = normalizeArchiveEntryPath(entryName);
+      return lowered === 'quilt.mod.json' || lowered.endsWith('/quilt.mod.json');
+    });
+    if (quiltRaw) {
+      const iconPath = resolveIconPathFromQuiltMeta(JSON.parse(quiltRaw));
+      if (iconPath) return iconPath;
+    }
+  } catch {
+    // noop
+  }
+
+  try {
+    const mcmodRaw = await readArchiveEntryText(archivePath, (entryName) => {
+      const lowered = normalizeArchiveEntryPath(entryName);
+      return lowered === 'mcmod.info' || lowered.endsWith('/mcmod.info');
+    });
+    if (mcmodRaw) {
+      const iconPath = resolveIconPathFromMcmodInfo(JSON.parse(mcmodRaw));
+      if (iconPath) return iconPath;
+    }
+  } catch {
+    // noop
+  }
+
+  try {
+    const modsTomlRaw = await readArchiveEntryText(archivePath, (entryName) => {
+      const lowered = normalizeArchiveEntryPath(entryName);
+      return lowered === 'meta-inf/mods.toml' || lowered.endsWith('/meta-inf/mods.toml');
+    });
+    const iconPath = resolveIconPathFromModsToml(modsTomlRaw);
+    if (iconPath) return iconPath;
+  } catch {
+    // noop
+  }
+
+  return '';
 };
 
 const resolveLocalContentIconDataUrl = async ({ absolutePath, contentType, entryName, isDirectory }) => {
@@ -4392,10 +4703,25 @@ const resolveLocalContentIconDataUrl = async ({ absolutePath, contentType, entry
     const isArchive = /\.(jar|zip|disable|disabled)$/i.test(normalizedName);
     if (isArchive) {
       if (normalizedType === 'mod') {
-        resolved = await readArchiveEntryDataUrl(absolutePath, (name) => {
-          const lowered = String(name || '').toLowerCase().replace(/\\/g, '/');
-          return lowered === 'icon.png' || lowered.endsWith('/icon.png');
-        });
+        const metadataIconPath = normalizeArchiveEntryPath(await resolveIconPathFromArchiveMetadata(absolutePath));
+        if (metadataIconPath) {
+          resolved = await readArchiveEntryDataUrl(absolutePath, (name) => {
+            const lowered = normalizeArchiveEntryPath(name);
+            return lowered === metadataIconPath || lowered.endsWith(`/${metadataIconPath}`);
+          });
+        }
+        if (!resolved) {
+          resolved = await readArchiveEntryDataUrl(absolutePath, (name) => {
+            const lowered = String(name || '').toLowerCase().replace(/\\/g, '/');
+            return (
+              lowered === 'icon.png' ||
+              lowered.endsWith('/icon.png') ||
+              lowered === 'logo.png' ||
+              lowered.endsWith('/logo.png') ||
+              /\/logo[^/]*\.(png|jpg|jpeg|webp)$/i.test(lowered)
+            );
+          });
+        }
       } else {
         resolved = await readArchiveEntryDataUrl(absolutePath, (name) => {
           const lowered = String(name || '').toLowerCase().replace(/\\/g, '/');
@@ -4453,7 +4779,7 @@ const scanContentFolderInternal = async ({ installPath, contentType, items = [] 
     const title = String(existing?.title || '').trim() || toDisplayTitleFromFilename(entry.name);
     const isDisabled = normalizedType === 'mod' ? /\.(disable|disabled)$/i.test(entry.name) : false;
     let iconUrl = existing?.icon_url || null;
-    if (!iconUrl && !hasRemoteProject) {
+    if (!iconUrl) {
       iconUrl = await resolveLocalContentIconDataUrl({
         absolutePath,
         contentType: normalizedType,
@@ -5686,12 +6012,27 @@ const registerMinecraftIpc = () => {
     return getJavaDownloadUrl(Number(requiredMajor) || 17);
   });
 
-  ipcMain.handle('minecraft:list-game-versions', async () => {
+  ipcMain.handle('minecraft:list-game-versions', async (_event, payload = {}) => {
     try {
-      const data = await getGameVersions();
+      const data = await getGameVersions({
+        includeSnapshots: payload?.includeSnapshots === true
+      });
       return { ok: true, data };
     } catch (error) {
       return { ok: false, error: toErrorResult(error, 'Failed to load game versions') };
+    }
+  });
+
+  ipcMain.handle('minecraft:list-loader-versions', async (_event, payload = {}) => {
+    try {
+      const data = await listLoaderVersionsInternal({
+        loader: payload?.loader || 'vanilla',
+        minecraftVersion: payload?.minecraftVersion || '',
+        includePrerelease: payload?.includePrerelease === true
+      });
+      return { ok: true, data };
+    } catch (error) {
+      return { ok: false, error: toErrorResult(error, 'Failed to load loader versions') };
     }
   });
 

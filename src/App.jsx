@@ -487,7 +487,11 @@ const UI_STRINGS = {
     instanceNamePlaceholder: 'Instance name...',
     version: 'Version',
     loader: 'Loader',
+    loaderVersion: 'Loader version',
     loadingVersions: 'Loading versions...',
+    loadingLoaderVersions: 'Loading loader versions...',
+    loaderVersionAuto: 'Auto (latest stable)',
+    showPrereleaseVersions: 'Show preliminary versions',
     installPathPreview: 'Install path: %APPDATA%\\KonLauncher\\profiles\\{name}',
     installPathNamePlaceholder: '<instance-name>',
     create: 'Create',
@@ -521,6 +525,10 @@ const UI_STRINGS = {
     byAuthor: 'by {author}',
     openFolder: 'Open folder',
     updateMod: 'Update mod',
+    updateAvailableBadge: 'Update available',
+    updateQueueTitle: 'Updating content',
+    updateQueueProgress: '{current}/{total}: {name}',
+    updateQueueDone: 'Updated: {done} | Errors: {failed}',
     more: 'More',
     instanceSettings: 'Instance settings',
     instanceName: 'Instance name',
@@ -655,7 +663,8 @@ const UI_STRINGS = {
     updateBannerStatusChecking: 'Checking for updates...',
     updateBannerStatusError: 'Update check failed: {message}',
     updateBannerChangesTitle: 'What changed',
-    updateBannerChangesFallback: 'Custom theme editor, cleaner color cards and smoother cursor trail.',
+    updateBannerChangesFallback:
+      'Bulk content update progress, update badges, better local icons, smoother neon trail, new 26.1/26.1.1/26.1.2 versions and loader selection.',
     updateBannerAction: 'Update',
     updateBannerActionRetry: 'Retry',
     updateBannerHide: 'Hide update banner',
@@ -718,7 +727,11 @@ const UI_STRINGS = {
     instanceNamePlaceholder: 'Название сборки...',
     version: 'Версия',
     loader: 'Ядро',
+    loaderVersion: 'Версия загрузчика',
     loadingVersions: 'Загрузка версий...',
+    loadingLoaderVersions: 'Загрузка версий загрузчика...',
+    loaderVersionAuto: 'Авто (последняя стабильная)',
+    showPrereleaseVersions: 'Показывать предварительные версии',
     installPathPreview: 'Путь установки: %APPDATA%\\KonLauncher\\profiles\\{name}',
     installPathNamePlaceholder: '<название-сборки>',
     create: 'Создать',
@@ -752,6 +765,10 @@ const UI_STRINGS = {
     byAuthor: 'от {author}',
     openFolder: 'Открыть папку',
     updateMod: 'Обновить мод',
+    updateAvailableBadge: 'Доступно обновление',
+    updateQueueTitle: 'Обновление контента',
+    updateQueueProgress: '{current}/{total}: {name}',
+    updateQueueDone: 'Обновлено: {done} | Ошибок: {failed}',
     more: 'Еще',
     instanceSettings: 'Настройки сборки',
     instanceName: 'Название сборки',
@@ -886,7 +903,8 @@ const UI_STRINGS = {
     updateBannerStatusChecking: 'Проверка обновлений...',
     updateBannerStatusError: 'Не удалось проверить обновления: {message}',
     updateBannerChangesTitle: 'Что изменилось',
-    updateBannerChangesFallback: 'Добавлен редактор своей темы, аккуратные цветовые карточки и плавный хвост курсора.',
+    updateBannerChangesFallback:
+      'Добавлены прогресс «Обновить всё», значки доступных обновлений, улучшен показ иконок локального контента, сглажен неоновый хвост, добавлены версии 26.1/26.1.1/26.1.2 и выбор версии загрузчика.',
     updateBannerAction: 'Обновить',
     updateBannerActionRetry: 'Повторить',
     updateBannerHide: 'Скрыть плашку обновления',
@@ -1008,6 +1026,9 @@ const normalizeUpdateNotes = (rawValue, languageCode = 'en') => {
 };
 
 const FALLBACK_GAME_VERSIONS = [
+  '26.1.2',
+  '26.1.1',
+  '26.1',
   '1.21.11',
   '1.21.10',
   '1.21.9',
@@ -1079,6 +1100,7 @@ const FALLBACK_GAME_VERSIONS = [
   '1.8.1',
   '1.8'
 ];
+const FALLBACK_PRERELEASE_GAME_VERSIONS = ['26.2-snapshot-3', '26.2-snapshot-2', '26.2-snapshot-1', '26.1.2-rc-1'];
 
 const MODS_PER_PAGE = 12;
 const CONTENT_TYPES = [
@@ -1567,11 +1589,16 @@ const FALLBACK_HEADER_16_9 =
   );
 
 const parseVersion = (version) => {
-  const match = String(version || '')
-    .trim()
-    .match(/^(\d+)\.(\d+)(?:\.(\d+))?$/);
-  if (!match) return null;
-  return [Number.parseInt(match[1], 10), Number.parseInt(match[2], 10), Number.parseInt(match[3] || '0', 10)];
+  const text = String(version || '').trim();
+  const match = text.match(/(\d+)\.(\d+)(?:\.(\d+))?/);
+  if (match) {
+    return [Number.parseInt(match[1], 10), Number.parseInt(match[2], 10), Number.parseInt(match[3] || '0', 10)];
+  }
+  const snapshotMatch = text.match(/^(\d{2})w(\d{2})[a-z]?$/i);
+  if (snapshotMatch) {
+    return [Number.parseInt(snapshotMatch[1], 10), Number.parseInt(snapshotMatch[2], 10), 0];
+  }
+  return null;
 };
 
 const compareVersion = (left, right) => {
@@ -1730,11 +1757,12 @@ const formatRelativeUpdatedAt = (rawDate, languageCode = 'en') => {
   return rtf.format(Math.round(diffMs / year), 'year');
 };
 
-const makeInstance = ({ id, name, version, loader, ram, installPath = '', importSource = null }) => ({
+const makeInstance = ({ id, name, version, loader, loaderVersion = null, ram, installPath = '', importSource = null }) => ({
   id,
   name,
   version,
   loader,
+  loaderVersion: loaderVersion ? String(loaderVersion) : null,
   ram,
   playTime: '0 min',
   mods: [],
@@ -1757,6 +1785,7 @@ const normalizeInstanceData = (rawInstance) => {
   const source = rawInstance && typeof rawInstance === 'object' ? rawInstance : {};
   return {
     ...source,
+    loaderVersion: source.loaderVersion ? String(source.loaderVersion) : null,
     mods: Array.isArray(source.mods) ? source.mods : [],
     resourcepacks: Array.isArray(source.resourcepacks) ? source.resourcepacks : [],
     shaders: Array.isArray(source.shaders) ? source.shaders : [],
@@ -2080,6 +2109,9 @@ export default function App() {
 
   const [gameVersions, setGameVersions] = useState(FALLBACK_GAME_VERSIONS);
   const [versionsLoading, setVersionsLoading] = useState(false);
+  const [showPrereleaseVersions, setShowPrereleaseVersions] = useState(false);
+  const [loaderVersions, setLoaderVersions] = useState([]);
+  const [loaderVersionsLoading, setLoaderVersionsLoading] = useState(false);
 
   const [mods, setMods] = useState([]);
   const [browseContentType, setBrowseContentType] = useState('mod');
@@ -2095,10 +2127,12 @@ export default function App() {
 
   const [modTransfer, setModTransfer] = useState(null);
   const [modActionBusyId, setModActionBusyId] = useState(null);
+  const [updateAllProgress, setUpdateAllProgress] = useState(null);
 
   const [newName, setNewName] = useState('');
   const [selectedVersion, setSelectedVersion] = useState(FALLBACK_GAME_VERSIONS[0]);
   const [selectedLoader, setSelectedLoader] = useState('vanilla');
+  const [selectedLoaderVersion, setSelectedLoaderVersion] = useState('');
   const [selectedImportLauncher, setSelectedImportLauncher] = useState('');
   const [showImportLauncherPicker, setShowImportLauncherPicker] = useState(false);
   const [isInstallTargetModalOpen, setIsInstallTargetModalOpen] = useState(false);
@@ -2817,11 +2851,7 @@ export default function App() {
     };
 
     const onWindowFocus = () => setIsWindowVisible(true);
-    const onWindowBlur = () => {
-      if (document.visibilityState === 'hidden') {
-        setIsWindowVisible(false);
-      }
-    };
+    const onWindowBlur = () => setIsWindowVisible(false);
 
     updateVisibility();
     document.addEventListener('visibilitychange', updateVisibility);
@@ -2974,7 +3004,7 @@ export default function App() {
     let canvasWidth = 0;
     let canvasHeight = 0;
     let dpr = 1;
-    const pointCount = 16;
+    const pointCount = 12;
 
     const seedPoints = () => {
       const baseX = pointerGlowCurrentRef.current.x || window.innerWidth * 0.5;
@@ -3001,7 +3031,7 @@ export default function App() {
     const drawTrail = () => {
       if (disposed) return;
       const now = performance.now();
-      if (now - neonTrailLastFrameAtRef.current < 22) {
+      if (now - neonTrailLastFrameAtRef.current < 30) {
         neonTrailLoopRef.current = requestAnimationFrame(drawTrail);
         return;
       }
@@ -3013,15 +3043,15 @@ export default function App() {
       const head = points[0];
       const target = pointerGlowCurrentRef.current;
       const velocity = pointerDistortVelocityRef.current;
-      const speed = Math.min(1.35, Math.hypot(velocity.x, velocity.y) * 10);
+      const speed = Math.min(1.15, Math.hypot(velocity.x, velocity.y) * 8);
 
-      head.x += (target.x - head.x) * (0.34 + speed * 0.18);
-      head.y += (target.y - head.y) * (0.34 + speed * 0.18);
+      head.x += (target.x - head.x) * (0.34 + speed * 0.14);
+      head.y += (target.y - head.y) * (0.34 + speed * 0.14);
 
       for (let index = 1; index < points.length; index += 1) {
         const previous = points[index - 1];
         const current = points[index];
-        const followLerp = Math.max(0.12, 0.42 - index * 0.018);
+        const followLerp = Math.max(0.16, 0.5 - index * 0.02);
         current.x += (previous.x - current.x) * followLerp;
         current.y += (previous.y - current.y) * followLerp;
       }
@@ -3033,36 +3063,34 @@ export default function App() {
       context.lineJoin = 'round';
 
       if (points.length > 2) {
-        // Draw a smooth tapered ribbon instead of segmented "snake" circles.
+        context.beginPath();
+        context.moveTo(points[0].x, points[0].y);
         for (let index = 1; index < points.length - 1; index += 1) {
-          const previous = points[index - 1];
           const current = points[index];
           const next = points[index + 1];
-          const ratio = 1 - index / (points.length - 1);
           const midX = (current.x + next.x) * 0.5;
           const midY = (current.y + next.y) * 0.5;
-          const alpha = 0.045 + ratio * 0.24;
-          const blur = 3 + ratio * 17 + speed * 10;
-
-          context.beginPath();
-          context.moveTo(previous.x, previous.y);
           context.quadraticCurveTo(current.x, current.y, midX, midY);
-          context.strokeStyle = `rgba(${red}, ${green}, ${blue}, ${alpha.toFixed(3)})`;
-          context.lineWidth = 0.8 + ratio * (3.9 + speed * 4.4);
-          context.shadowBlur = blur;
-          context.shadowColor = `rgba(${red}, ${green}, ${blue}, ${(0.10 + ratio * 0.33).toFixed(3)})`;
-          context.stroke();
         }
-
-        const tip = points[0];
-        const tipNext = points[1];
-        context.beginPath();
-        context.moveTo(tip.x, tip.y);
-        context.quadraticCurveTo((tip.x + tipNext.x) * 0.5, (tip.y + tipNext.y) * 0.5, tipNext.x, tipNext.y);
-        context.strokeStyle = `rgba(255, 255, 255, ${(0.3 + speed * 0.16).toFixed(3)})`;
-        context.shadowBlur = 10 + speed * 10;
+        context.lineWidth = 2.4 + speed * 4.3;
+        context.strokeStyle = `rgba(${red}, ${green}, ${blue}, ${(0.14 + speed * 0.12).toFixed(3)})`;
+        context.shadowBlur = 16 + speed * 18;
         context.shadowColor = `rgba(${red}, ${green}, ${blue}, ${(0.30 + speed * 0.18).toFixed(3)})`;
-        context.lineWidth = 0.8 + speed * 1.05;
+        context.stroke();
+
+        context.beginPath();
+        context.moveTo(points[0].x, points[0].y);
+        for (let index = 1; index < points.length - 1; index += 1) {
+          const current = points[index];
+          const next = points[index + 1];
+          const midX = (current.x + next.x) * 0.5;
+          const midY = (current.y + next.y) * 0.5;
+          context.quadraticCurveTo(current.x, current.y, midX, midY);
+        }
+        context.lineWidth = 0.9 + speed * 1.2;
+        context.strokeStyle = `rgba(255, 255, 255, ${(0.24 + speed * 0.18).toFixed(3)})`;
+        context.shadowBlur = 6 + speed * 8;
+        context.shadowColor = `rgba(255, 255, 255, ${(0.24 + speed * 0.18).toFixed(3)})`;
         context.stroke();
       }
 
@@ -3102,6 +3130,7 @@ export default function App() {
         setLauncherLanguage(result.data.language === 'ru' ? 'ru' : 'en');
         setCursorGlowEnabled(result.data.cursorGlowEnabled !== false);
         setCursorDistortionEnabled(result.data.cursorDistortionEnabled === true);
+        setShowPrereleaseVersions(result.data.showPrereleaseVersions === true);
         setAmbientEffect(BACKGROUND_FX_OPTIONS.includes(result.data.ambientEffect) ? result.data.ambientEffect : 'stars');
         const persistedThemeId = String(result.data.visualThemeId || '').trim().toLowerCase();
         setVisualThemeId(ALLOWED_VISUAL_THEME_IDS.has(persistedThemeId) ? persistedThemeId : DEFAULT_VISUAL_THEME_ID);
@@ -3225,18 +3254,75 @@ export default function App() {
   useEffect(() => {
     if (!window.launcherMinecraft) return;
 
+    const fallbackList = showPrereleaseVersions
+      ? [...FALLBACK_PRERELEASE_GAME_VERSIONS, ...FALLBACK_GAME_VERSIONS]
+      : FALLBACK_GAME_VERSIONS;
+
+    let cancelled = false;
     setVersionsLoading(true);
     window.launcherMinecraft
-      .listGameVersions()
+      .listGameVersions({ includeSnapshots: showPrereleaseVersions })
       .then((result) => {
+        if (cancelled) return;
         if (result?.ok && Array.isArray(result.data) && result.data.length) {
           setGameVersions(result.data);
           setSelectedVersion((prev) => (result.data.includes(prev) ? prev : result.data[0]));
+          return;
         }
+        setGameVersions(fallbackList);
+        setSelectedVersion((prev) => (fallbackList.includes(prev) ? prev : fallbackList[0]));
       })
-      .catch(() => {})
-      .finally(() => setVersionsLoading(false));
-  }, []);
+      .catch(() => {
+        if (cancelled) return;
+        setGameVersions(fallbackList);
+        setSelectedVersion((prev) => (fallbackList.includes(prev) ? prev : fallbackList[0]));
+      })
+      .finally(() => {
+        if (!cancelled) setVersionsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showPrereleaseVersions]);
+
+  useEffect(() => {
+    if (!window.launcherMinecraft?.listLoaderVersions) return;
+
+    if (!selectedVersion || selectedLoader === 'vanilla') {
+      setLoaderVersions([]);
+      setSelectedLoaderVersion('');
+      setLoaderVersionsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setLoaderVersionsLoading(true);
+    window.launcherMinecraft
+      .listLoaderVersions({
+        loader: selectedLoader,
+        minecraftVersion: selectedVersion,
+        includePrerelease: showPrereleaseVersions
+      })
+      .then((result) => {
+        if (cancelled) return;
+        const nextVersions = result?.ok && Array.isArray(result.data) ? result.data : [];
+        setLoaderVersions(nextVersions);
+        setSelectedLoaderVersion((prev) => (nextVersions.some((entry) => String(entry.id) === String(prev)) ? prev : nextVersions[0]?.id || ''));
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setLoaderVersions([]);
+        setSelectedLoaderVersion('');
+      })
+      .finally(() => {
+        if (!cancelled) setLoaderVersionsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedLoader, selectedVersion, showPrereleaseVersions]);
 
   useEffect(() => {
     if (!window.launcherSystem?.getMemoryInfo) return;
@@ -3356,6 +3442,12 @@ export default function App() {
   }, [instances]);
 
   useEffect(() => {
+    if (!isManageModalOpen) {
+      setUpdateAllProgress(null);
+    }
+  }, [isManageModalOpen]);
+
+  useEffect(() => {
     if (!persistedReadyRef.current || !window.launcherData) return undefined;
 
     const timer = setTimeout(() => {
@@ -3366,6 +3458,7 @@ export default function App() {
           nicknamePresets,
           globalRam,
           language: launcherLanguage,
+          showPrereleaseVersions,
           cursorGlowEnabled,
           cursorDistortionEnabled,
           ambientEffect,
@@ -3377,7 +3470,7 @@ export default function App() {
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [instances, username, nicknamePresets, globalRam, launcherLanguage, cursorGlowEnabled, cursorDistortionEnabled, ambientEffect, visualThemeId, customVisualTheme, latestInstalledUpdate]);
+  }, [instances, username, nicknamePresets, globalRam, launcherLanguage, showPrereleaseVersions, cursorGlowEnabled, cursorDistortionEnabled, ambientEffect, visualThemeId, customVisualTheme, latestInstalledUpdate]);
 
   useEffect(() => {
     if (!window.launcherMinecraft) return undefined;
@@ -3892,6 +3985,7 @@ export default function App() {
   const addInstance = async () => {
     const trimmedName = newName.trim();
     if (!trimmedName) return;
+    const resolvedLoaderVersion = selectedLoader === 'vanilla' ? null : selectedLoaderVersion || loaderVersions[0]?.id || null;
 
     if (!isLoaderSupported(selectedVersion, selectedLoader)) {
       notifyError(t('loaderNotCompatible', { loader: formatLoaderName(selectedLoader), version: selectedVersion }));
@@ -3914,6 +4008,7 @@ export default function App() {
         name: trimmedName,
         version: selectedVersion,
         loader: selectedLoader,
+        loaderVersion: resolvedLoaderVersion,
         ram: globalRam,
         installPath,
         importSource: selectedImportLauncher || null
@@ -3954,6 +4049,8 @@ export default function App() {
       instanceName: instance.name,
       version: instance.version,
       loader: instance.loader,
+      loaderVersion: instance.loaderVersion || null,
+      includePrereleaseLoaders: showPrereleaseVersions,
       installPath: instance.installPath || undefined,
       ramGb: globalRam,
       launcherLanguage
@@ -4022,6 +4119,7 @@ export default function App() {
         installStage: 'done',
         javaPath: result.data?.javaPath || null,
         customVersionId: result.data?.customVersionId || null,
+        loaderVersion: result.data?.loaderVersion || instance.loaderVersion || null,
         forgeJarPath: result.data?.forgeJarPath || null,
         mods: importedContent?.mods || instance.mods,
         resourcepacks: importedContent?.resourcepacks || instance.resourcepacks,
@@ -4065,6 +4163,7 @@ export default function App() {
       instanceName: instance.name,
       version: instance.version,
       loader: instance.loader,
+      loaderVersion: instance.loaderVersion || null,
       installPath: instance.installPath,
       customVersionId: instance.customVersionId || null,
       forgeJarPath: instance.forgeJarPath || null,
@@ -4802,7 +4901,7 @@ export default function App() {
   };
 
   const updateContentInInstance = async (instance, contentType, item) => {
-    if (!window.launcherMinecraft) return;
+    if (!window.launcherMinecraft) return false;
 
     const result = await window.launcherMinecraft.updateMod({
       instanceId: String(instance.id),
@@ -4815,7 +4914,7 @@ export default function App() {
 
     if (!result?.ok) {
       notifyError(result?.error?.message || t('failedUpdateContent', { name: item.title || item.id }));
-      return;
+      return false;
     }
 
     mergeInstanceContent(instance.id, contentType, (items) =>
@@ -4829,9 +4928,10 @@ export default function App() {
           : candidate
       )
     );
+    return true;
   };
 
-  const refreshContentUpdates = async () => {
+  const refreshContentUpdates = useCallback(async () => {
     if (!editingInstance || !window.launcherMinecraft) return;
     const contentType = normalizeContentType(manageContentType);
     await syncInstanceContentFromDisk(editingInstance.id, contentType);
@@ -4874,24 +4974,79 @@ export default function App() {
         };
       })
     );
-  };
+  }, [editingInstance, manageContentType, mergeInstanceContent, notifyError, syncInstanceContentFromDisk, t]);
+
+  useEffect(() => {
+    if (!isManageModalOpen || !editingInstanceId) return;
+    void refreshContentUpdates();
+  }, [editingInstanceId, isManageModalOpen, manageContentType, refreshContentUpdates]);
 
   const updateAllContent = async () => {
-    if (!editingInstance) return;
+    if (!editingInstance || updateAllProgress?.active) return;
     const contentType = normalizeContentType(manageContentType);
     await refreshContentUpdates();
     const latestInstance = instancesRef.current.find((item) => String(item.id) === String(editingInstance.id)) || editingInstance;
     const targets = resolveContentListByType(latestInstance, contentType).filter((item) => item.hasUpdate && !isLocalContentEntry(item));
-    if (!targets.length) return;
+    if (!targets.length) {
+      setUpdateAllProgress(null);
+      return;
+    }
 
-    for (const item of targets) {
+    setUpdateAllProgress({
+      active: true,
+      instanceId: String(latestInstance.id),
+      contentType,
+      total: targets.length,
+      current: 0,
+      currentName: '',
+      currentProjectId: '',
+      done: 0,
+      failed: 0
+    });
+
+    for (let index = 0; index < targets.length; index += 1) {
+      const item = targets[index];
+      const projectId = String(item.projectId || item.id);
+      setUpdateAllProgress((prev) =>
+        prev && String(prev.instanceId) === String(latestInstance.id)
+          ? {
+              ...prev,
+              current: index + 1,
+              currentName: item.title || item.filename || projectId,
+              currentProjectId: projectId
+            }
+          : prev
+      );
       const currentInstance = instancesRef.current.find((entry) => String(entry.id) === String(latestInstance.id)) || latestInstance;
       const currentItem = resolveContentListByType(currentInstance, contentType).find(
-        (entry) => String(entry.projectId || entry.id) === String(item.projectId || item.id)
+        (entry) => String(entry.projectId || entry.id) === projectId
       );
       if (!currentItem) continue;
-      await updateContentInInstance(currentInstance, contentType, currentItem);
+      const updated = await updateContentInInstance(currentInstance, contentType, currentItem);
+      setUpdateAllProgress((prev) =>
+        prev && String(prev.instanceId) === String(latestInstance.id)
+          ? {
+              ...prev,
+              done: prev.done + (updated ? 1 : 0),
+              failed: prev.failed + (updated ? 0 : 1)
+            }
+          : prev
+      );
     }
+
+    setUpdateAllProgress((prev) =>
+      prev && String(prev.instanceId) === String(latestInstance.id)
+        ? {
+            ...prev,
+            active: false,
+            current: prev.total,
+            currentProjectId: ''
+          }
+        : prev
+    );
+    setTimeout(() => {
+      setUpdateAllProgress((prev) => (prev && !prev.active ? null : prev));
+    }, 2200);
   };
 
   const openInstanceFolder = async (instance) => {
@@ -5051,6 +5206,12 @@ export default function App() {
     disabled: !isLoaderSupported(selectedVersion, loader.id)
   }));
 
+  const showLoaderVersionSelect = selectedLoader !== 'vanilla';
+  const loaderVersionOptionsForCreate = loaderVersions.map((entry) => ({
+    id: entry.id,
+    name: entry.prerelease ? `${entry.id} • preview` : entry.id
+  }));
+
   const createVersionOptions = gameVersions.map((version) => ({
     id: version,
     name: version,
@@ -5168,6 +5329,31 @@ export default function App() {
   const allModsCount = currentManageItems.length;
   const allSelected = allModsCount > 0 && selectedModIds.length === allModsCount;
   const hasSelection = selectedModIds.length > 0;
+  const updateAllIsForCurrentManage =
+    Boolean(updateAllProgress && editingInstance) &&
+    String(updateAllProgress.instanceId || '') === String(editingInstance?.id || '') &&
+    normalizeContentType(updateAllProgress.contentType || manageContentType) === normalizeContentType(manageContentType);
+  const activeBatchItemProgress =
+    updateAllIsForCurrentManage &&
+    updateAllProgress?.active &&
+    modTransfer?.operation === 'update' &&
+    String(modTransfer?.projectId || '') === String(updateAllProgress?.currentProjectId || '') &&
+    normalizeContentType(modTransfer?.contentType || manageContentType) === normalizeContentType(manageContentType)
+      ? Math.max(0, Math.min(100, Number(modTransfer?.percent || 0)))
+      : 0;
+  const updateAllProgressPercent = updateAllIsForCurrentManage
+    ? Math.round(
+        Math.max(
+          0,
+          Math.min(
+            100,
+            (((Number(updateAllProgress?.done || 0) + Number(updateAllProgress?.failed || 0)) + activeBatchItemProgress / 100) /
+              Math.max(1, Number(updateAllProgress?.total || 1))) *
+              100
+          )
+        )
+      )
+    : 0;
   const totalModPages = Math.max(1, Math.ceil(totalMods / MODS_PER_PAGE));
   const canGoPrevPage = currentPage > 0;
   const canGoNextPage = currentPage < totalModPages - 1;
@@ -5662,6 +5848,14 @@ export default function App() {
                             </button>
                             <button
                               onMouseDown={(event) => event.stopPropagation()}
+                              onClick={() => openInstanceFolder(inst)}
+                              className="rounded-2xl p-2.5 text-zinc-500 transition-all hover:bg-white/5 hover:text-white"
+                              title={t('openFolder')}
+                            >
+                              <FolderOpen size={20} />
+                            </button>
+                            <button
+                              onMouseDown={(event) => event.stopPropagation()}
                               onClick={() => requestDeleteInstance(inst)}
                               className="rounded-2xl p-2.5 text-zinc-500 transition-all hover:bg-red-500/10 hover:text-red-500"
                             >
@@ -5678,6 +5872,11 @@ export default function App() {
                           >
                             {formatLoaderName(inst.loader)}
                           </span>
+                          {inst.loaderVersion ? (
+                            <span className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-[9px] font-black text-cyan-300">
+                              {inst.loaderVersion}
+                            </span>
+                          ) : null}
                         </div>
 
                         {getLoaderShortDescription(inst.loader, languageCode) ? (
@@ -6948,6 +7147,31 @@ export default function App() {
                 <CustomSelect value={selectedLoader} options={loaderOptionsForCreate} onChange={setSelectedLoader} placeholder={t('loader')} />
               </div>
 
+              <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/8 bg-zinc-900/40 px-3 py-2 text-[11px] font-semibold text-zinc-300">
+                <input
+                  type="checkbox"
+                  className="launcher-checkbox"
+                  checked={showPrereleaseVersions}
+                  onChange={(event) => setShowPrereleaseVersions(event.target.checked)}
+                />
+                {t('showPrereleaseVersions')}
+              </label>
+
+              {showLoaderVersionSelect && (
+                loaderVersionsLoading ? (
+                  <div className="rounded-xl border border-white/5 bg-zinc-900/40 px-4 py-3 text-[11px] text-zinc-400">{t('loadingLoaderVersions')}</div>
+                ) : loaderVersionOptionsForCreate.length ? (
+                  <CustomSelect
+                    value={selectedLoaderVersion || loaderVersionOptionsForCreate[0]?.id || ''}
+                    options={loaderVersionOptionsForCreate}
+                    onChange={setSelectedLoaderVersion}
+                    placeholder={t('loaderVersion')}
+                  />
+                ) : (
+                  <div className="rounded-xl border border-white/5 bg-zinc-900/40 px-4 py-3 text-[11px] text-zinc-400">{t('loaderVersionAuto')}</div>
+                )
+              )}
+
               <div className="rounded-xl border border-white/5 bg-zinc-900/40 px-4 py-3 text-[11px] text-zinc-400">
                 {versionsLoading
                   ? t('loadingVersions')
@@ -7184,8 +7408,17 @@ export default function App() {
                 >
                   <FolderOpen size={14} /> {t('folder')}
                 </button>
-                <button onClick={updateAllContent} className="flex items-center gap-2 rounded-xl border border-green-500/20 bg-green-500/10 px-3 py-2 text-[10px] font-black text-green-400">
-                  <ArrowDownToLine size={14} /> {t('updateAll')}
+                <button
+                  onClick={updateAllContent}
+                  disabled={Boolean(updateAllProgress?.active)}
+                  className="flex items-center gap-2 rounded-xl border border-green-500/20 bg-green-500/10 px-3 py-2 text-[10px] font-black text-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {updateAllProgress?.active ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <ArrowDownToLine size={14} />
+                  )}{' '}
+                  {t('updateAll')}
                 </button>
                 <button
                   onClick={() => {
@@ -7201,6 +7434,30 @@ export default function App() {
                 </button>
               </div>
             </div>
+
+            {updateAllIsForCurrentManage && updateAllProgress && (
+              <div className="mx-6 mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-3">
+                <div className="flex items-center justify-between gap-3 text-[11px] font-bold">
+                  <span className="text-emerald-200">{t('updateQueueTitle')}</span>
+                  <span className="text-emerald-300">{updateAllProgressPercent}%</span>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-zinc-950/60">
+                  <div className="h-full bg-emerald-400 transition-all duration-150" style={{ width: `${updateAllProgressPercent}%` }} />
+                </div>
+                <p className="mt-2 truncate text-[11px] font-semibold text-zinc-200">
+                  {updateAllProgress.active
+                    ? t('updateQueueProgress', {
+                        current: Math.max(1, Number(updateAllProgress.current || 1)),
+                        total: Math.max(1, Number(updateAllProgress.total || 1)),
+                        name: updateAllProgress.currentName || '...'
+                      })
+                    : t('updateQueueDone', {
+                        done: Number(updateAllProgress.done || 0),
+                        failed: Number(updateAllProgress.failed || 0)
+                      })}
+                </p>
+              </div>
+            )}
 
             <div className="mx-6 grid grid-cols-[40px_1fr_220px_220px] gap-4 border-b border-white/5 py-3 text-[10px] font-black uppercase text-zinc-600">
               <div className="col-span-4 mb-2 flex items-center gap-2">
@@ -7276,12 +7533,22 @@ export default function App() {
                               <span className="font-semibold text-emerald-300">{authorValue}</span>
                             </p>
                           ) : null}
+                          {mod.hasUpdate ? (
+                            <button
+                              onClick={() => updateContentInInstance(editingInstance, contentType, mod)}
+                              disabled={isUpdating}
+                              className="mt-1 inline-flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-black text-emerald-300 transition-colors hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              <AlertCircle size={10} /> {t('updateAvailableBadge')}
+                            </button>
+                          ) : null}
                         </div>
                       </div>
 
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-zinc-400">{mod.version}</p>
                         <p className="truncate text-[9px] text-zinc-600">{mod.filename}</p>
+                        {mod.hasUpdate && mod.latestVersion ? <p className="mt-0.5 text-[9px] font-bold text-emerald-300">→ {mod.latestVersion}</p> : null}
                       </div>
 
                       <div className="flex items-center justify-end gap-2">
