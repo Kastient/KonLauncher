@@ -475,6 +475,12 @@ const UI_STRINGS = {
     globalRamHint: 'Global value applies to all instances.',
     offlineProfile: 'Offline profile',
     offlineProfileHint: 'The same nickname will be used in offline mode in-game.',
+    nicknameManagerTitle: 'Nicknames',
+    nicknameAdd: 'Add',
+    nicknamePlaceholder: 'Enter nickname...',
+    nicknameDelete: 'Delete nickname',
+    nicknameEmpty: 'Nickname cannot be empty.',
+    nicknameAlreadyExists: 'This nickname already exists.',
     launcherLanguage: 'Launcher language',
     launcherLanguageHint: 'New installations will use this game language automatically.',
     createInstanceTitle: 'Create instance',
@@ -555,6 +561,7 @@ const UI_STRINGS = {
     primaryInstall: 'INSTALL',
     primaryInstalling: 'INSTALL {percent}%',
     primaryRunning: 'RUNNING',
+    primaryStop: 'STOP',
     primaryPlay: 'PLAY',
     primaryRetryInstall: 'RETRY INSTALL',
     deleteInstanceConfirm: 'Delete instance "{name}" and remove its profile folder from disk?',
@@ -568,6 +575,7 @@ const UI_STRINGS = {
     installFailed: 'Installation failed',
     failedInstallMinecraft: 'Failed to install Minecraft',
     failedLaunchMinecraft: 'Failed to launch Minecraft',
+    failedStopMinecraft: 'Failed to close Minecraft',
     unavailableSuffix: 'Unavailable',
     windowMinimize: 'Minimize window',
     windowRestore: 'Restore window',
@@ -655,7 +663,12 @@ const UI_STRINGS = {
     latestUpdateTitle: 'What changed',
     latestUpdateVersion: 'Installed build: {version}',
     latestUpdateEmpty: 'No installed updates yet.',
-    failedStartUpdate: 'Failed to start update.'
+    failedStartUpdate: 'Failed to start update.',
+    installTargetTitle: 'Install Content',
+    installTargetHint: 'Choose an installed instance compatible with this content.',
+    installTargetLoading: 'Checking compatible instances...',
+    installTargetNone: 'No compatible installed instances found.',
+    installTargetVersionLabel: 'Minecraft {version} • {loader}'
   },
   ru: {
     navLibrary: 'Библиотека',
@@ -693,6 +706,12 @@ const UI_STRINGS = {
     globalRamHint: 'Глобальное значение применяется ко всем сборкам.',
     offlineProfile: 'Оффлайн профиль',
     offlineProfileHint: 'Этот ник будет использован в оффлайн-режиме в игре.',
+    nicknameManagerTitle: 'Никнеймы',
+    nicknameAdd: 'Добавить',
+    nicknamePlaceholder: 'Введи ник...',
+    nicknameDelete: 'Удалить ник',
+    nicknameEmpty: 'Ник не может быть пустым.',
+    nicknameAlreadyExists: 'Такой ник уже есть.',
     launcherLanguage: 'Язык лаунчера',
     launcherLanguageHint: 'Для новых установок язык игры выставляется автоматически.',
     createInstanceTitle: 'Создание сборки',
@@ -773,6 +792,7 @@ const UI_STRINGS = {
     primaryInstall: 'УСТАНОВИТЬ',
     primaryInstalling: 'УСТАНОВКА {percent}%',
     primaryRunning: 'ЗАПУЩЕНО',
+    primaryStop: 'ВЫКЛЮЧИТЬ',
     primaryPlay: 'ИГРАТЬ',
     primaryRetryInstall: 'ПОВТОРИТЬ УСТАНОВКУ',
     deleteInstanceConfirm: 'Удалить сборку "{name}" и ее папку профиля с диска?',
@@ -786,6 +806,7 @@ const UI_STRINGS = {
     installFailed: 'Установка не удалась',
     failedInstallMinecraft: 'Не удалось установить Minecraft',
     failedLaunchMinecraft: 'Не удалось запустить Minecraft',
+    failedStopMinecraft: 'Не удалось закрыть Minecraft',
     unavailableSuffix: 'Недоступно',
     windowMinimize: 'Свернуть окно',
     windowRestore: 'Восстановить окно',
@@ -873,7 +894,12 @@ const UI_STRINGS = {
     latestUpdateTitle: 'Что изменилось',
     latestUpdateVersion: 'Установлена сборка: {version}',
     latestUpdateEmpty: 'Пока нет установленных обновлений.',
-    failedStartUpdate: 'Не удалось запустить обновление.'
+    failedStartUpdate: 'Не удалось запустить обновление.',
+    installTargetTitle: 'Установка контента',
+    installTargetHint: 'Выбери установленную сборку, совместимую с этим контентом.',
+    installTargetLoading: 'Проверка совместимых сборок...',
+    installTargetNone: 'Подходящие установленные сборки не найдены.',
+    installTargetVersionLabel: 'Minecraft {version} • {loader}'
   }
 };
 
@@ -1581,6 +1607,63 @@ const toModrinthLoader = (loader) => {
   return String(loader || '').toLowerCase();
 };
 
+const resolveModrinthLoaders = (loader) => {
+  const normalized = toModrinthLoader(loader);
+  if (!normalized || normalized === 'vanilla') return [];
+  if (normalized === 'quilt') return ['quilt', 'fabric'];
+  if (normalized === 'neoforge') return ['neoforge', 'forge'];
+  return [normalized];
+};
+
+const isModrinthVersionCompatible = (release, instance, contentType) => {
+  const gameVersions = Array.isArray(release?.game_versions)
+    ? release.game_versions.map((entry) => String(entry || '').trim()).filter(Boolean)
+    : [];
+  const instanceVersion = String(instance?.version || '').trim();
+  if (!instanceVersion || !gameVersions.includes(instanceVersion)) return false;
+
+  if (normalizeContentType(contentType) !== 'mod') {
+    return true;
+  }
+
+  const loaders = Array.isArray(release?.loaders)
+    ? release.loaders.map((entry) => String(entry || '').trim().toLowerCase()).filter(Boolean)
+    : [];
+  const expectedLoaders = resolveModrinthLoaders(instance?.loader);
+  if (!expectedLoaders.length) return true;
+  return expectedLoaders.some((loader) => loaders.includes(loader));
+};
+
+const normalizeNicknameValue = (value) => {
+  return String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 16);
+};
+
+const normalizeNicknameList = (value, fallback = 'Player') => {
+  const fallbackName = normalizeNicknameValue(fallback) || 'Player';
+  const raw = Array.isArray(value) ? value : [];
+  const used = new Set();
+  const normalized = [];
+
+  for (const item of raw) {
+    const candidate = normalizeNicknameValue(item);
+    if (!candidate) continue;
+    const key = candidate.toLowerCase();
+    if (used.has(key)) continue;
+    used.add(key);
+    normalized.push(candidate);
+    if (normalized.length >= 24) break;
+  }
+
+  if (!normalized.some((item) => item.toLowerCase() === fallbackName.toLowerCase())) {
+    normalized.unshift(fallbackName);
+  }
+
+  return normalized.slice(0, 24);
+};
+
 const formatDownloads = (value) => {
   const num = Number(value || 0);
   if (!Number.isFinite(num) || num <= 0) return '0';
@@ -1978,6 +2061,9 @@ export default function App() {
   const [editingInstanceId, setEditingInstanceId] = useState(null);
 
   const [username, setUsername] = useState('Player');
+  const [nicknamePresets, setNicknamePresets] = useState(['Player']);
+  const [isNicknameMenuOpen, setIsNicknameMenuOpen] = useState(false);
+  const [nicknameDraft, setNicknameDraft] = useState('');
   const [globalRam, setGlobalRam] = useState(4);
   const [launcherLanguage, setLauncherLanguage] = useState('en');
   const [cursorGlowEnabled, setCursorGlowEnabled] = useState(true);
@@ -2015,9 +2101,19 @@ export default function App() {
   const [selectedLoader, setSelectedLoader] = useState('vanilla');
   const [selectedImportLauncher, setSelectedImportLauncher] = useState('');
   const [showImportLauncherPicker, setShowImportLauncherPicker] = useState(false);
+  const [isInstallTargetModalOpen, setIsInstallTargetModalOpen] = useState(false);
+  const [installTargetEntry, setInstallTargetEntry] = useState(null);
+  const [compatibleInstallTargets, setCompatibleInstallTargets] = useState([]);
+  const [selectedInstallTargetId, setSelectedInstallTargetId] = useState('');
+  const [installTargetLoading, setInstallTargetLoading] = useState(false);
+  const [installTargetBusy, setInstallTargetBusy] = useState(false);
 
   const [selectedModIds, setSelectedModIds] = useState([]);
   const [isWindowMaximized, setIsWindowMaximized] = useState(false);
+  const [isWindowVisible, setIsWindowVisible] = useState(() => {
+    if (typeof document === 'undefined') return true;
+    return document.visibilityState !== 'hidden';
+  });
   const [installBanner, setInstallBanner] = useState(null);
   const [installLogs, setInstallLogs] = useState([]);
   const [updaterBanner, setUpdaterBanner] = useState({
@@ -2084,8 +2180,12 @@ export default function App() {
   const skinDragLastTargetRef = useRef(null);
   const instanceDragLastTargetRef = useRef(null);
   const launcherRootRef = useRef(null);
+  const nicknameMenuRef = useRef(null);
+  const installTargetRequestRef = useRef(0);
   const pointerGlowLoopRef = useRef(null);
   const neonTrailLoopRef = useRef(null);
+  const pointerGlowLastFrameAtRef = useRef(0);
+  const neonTrailLastFrameAtRef = useRef(0);
   const pointerGlowTargetRef = useRef({ x: 0, y: 0 });
   const pointerGlowCurrentRef = useRef({ x: 0, y: 0 });
   const pointerDistortVelocityRef = useRef({ x: 0, y: 0 });
@@ -2098,8 +2198,17 @@ export default function App() {
   const hasUpdaterApi = typeof window !== 'undefined' && Boolean(window.launcherUpdater);
   const languageCode = launcherLanguage === 'ru' ? 'ru' : 'en';
   const t = useCallback((key, params = {}) => translateTemplate(languageCode, key, params), [languageCode]);
-  const offlineUsername = useMemo(() => username.trim() || 'Player', [username]);
+  const offlineUsername = useMemo(() => normalizeNicknameValue(username) || 'Player', [username]);
+  const nicknameOptions = useMemo(() => normalizeNicknameList([offlineUsername, ...nicknamePresets], offlineUsername), [nicknamePresets, offlineUsername]);
   const activeMinecraftUsername = offlineUsername;
+  const installedInstances = useMemo(
+    () =>
+      instances
+        .filter((instance) => instance.installState === 'installed' && String(instance.installPath || '').trim())
+        .sort((left, right) => compareVersion(String(right.version || ''), String(left.version || ''))),
+    [instances]
+  );
+  const realtimeEffectsEnabled = isWindowVisible;
   const customVisualThemePreset = useMemo(() => buildCustomVisualThemePreset(customVisualTheme), [customVisualTheme]);
   const activeVisualTheme = useMemo(() => {
     if (visualThemeId === CUSTOM_VISUAL_THEME_ID) {
@@ -2654,6 +2763,41 @@ export default function App() {
     setCurrentPage(0);
   }, [browseContentType]);
 
+  const applyNickname = useCallback((nextNickname) => {
+    const normalized = normalizeNicknameValue(nextNickname);
+    if (!normalized) return;
+    setUsername(normalized);
+    setNicknamePresets((prev) => normalizeNicknameList([normalized, ...prev], normalized));
+  }, []);
+
+  const addNicknamePreset = useCallback(() => {
+    const normalized = normalizeNicknameValue(nicknameDraft);
+    if (!normalized) {
+      notifyError(t('nicknameEmpty'));
+      return;
+    }
+    if (nicknameOptions.some((entry) => entry.toLowerCase() === normalized.toLowerCase())) {
+      notifyError(t('nicknameAlreadyExists'));
+      return;
+    }
+    applyNickname(normalized);
+    setNicknameDraft('');
+  }, [applyNickname, nicknameDraft, nicknameOptions, notifyError, t]);
+
+  const removeNicknamePreset = useCallback(
+    (targetNickname) => {
+      const normalizedTarget = normalizeNicknameValue(targetNickname);
+      if (!normalizedTarget) return;
+      const next = nicknameOptions.filter((entry) => entry.toLowerCase() !== normalizedTarget.toLowerCase());
+      const fallback = next[0] || 'Player';
+      setNicknamePresets(normalizeNicknameList(next, fallback));
+      if (offlineUsername.toLowerCase() === normalizedTarget.toLowerCase()) {
+        setUsername(fallback);
+      }
+    },
+    [nicknameOptions, offlineUsername]
+  );
+
   useEffect(() => {
     if (!window.launcherWindow) return undefined;
 
@@ -2668,6 +2812,43 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const updateVisibility = () => {
+      setIsWindowVisible(document.visibilityState !== 'hidden');
+    };
+
+    const onWindowFocus = () => setIsWindowVisible(true);
+    const onWindowBlur = () => {
+      if (document.visibilityState === 'hidden') {
+        setIsWindowVisible(false);
+      }
+    };
+
+    updateVisibility();
+    document.addEventListener('visibilitychange', updateVisibility);
+    window.addEventListener('focus', onWindowFocus);
+    window.addEventListener('blur', onWindowBlur);
+    return () => {
+      document.removeEventListener('visibilitychange', updateVisibility);
+      window.removeEventListener('focus', onWindowFocus);
+      window.removeEventListener('blur', onWindowBlur);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isNicknameMenuOpen) return undefined;
+    const onPointerDown = (event) => {
+      const node = nicknameMenuRef.current;
+      if (!node) return;
+      if (node.contains(event.target)) return;
+      setIsNicknameMenuOpen(false);
+    };
+    window.addEventListener('pointerdown', onPointerDown);
+    return () => {
+      window.removeEventListener('pointerdown', onPointerDown);
+    };
+  }, [isNicknameMenuOpen]);
+
+  useEffect(() => {
     const root = launcherRootRef.current;
     if (!root) return undefined;
 
@@ -2678,10 +2859,10 @@ export default function App() {
     pointerDistortVelocityRef.current = { x: 0, y: 0 };
     root.style.setProperty('--pointer-x', `${centerX}px`);
     root.style.setProperty('--pointer-y', `${centerY}px`);
-    root.style.setProperty('--pointer-opacity', cursorGlowEnabled ? '0.72' : '0');
-    root.style.setProperty('--pointer-distort-opacity', cursorDistortionEnabled ? '0.54' : '0');
+    root.style.setProperty('--pointer-opacity', cursorGlowEnabled && realtimeEffectsEnabled ? '0.72' : '0');
+    root.style.setProperty('--pointer-distort-opacity', cursorDistortionEnabled && realtimeEffectsEnabled ? '0.54' : '0');
 
-    if (!cursorGlowEnabled && !cursorDistortionEnabled) {
+    if ((!cursorGlowEnabled && !cursorDistortionEnabled) || !realtimeEffectsEnabled) {
       if (pointerGlowLoopRef.current) {
         cancelAnimationFrame(pointerGlowLoopRef.current);
         pointerGlowLoopRef.current = null;
@@ -2714,6 +2895,12 @@ export default function App() {
 
     const tick = () => {
       if (disposed) return;
+      const now = performance.now();
+      if (now - pointerGlowLastFrameAtRef.current < 24) {
+        pointerGlowLoopRef.current = requestAnimationFrame(tick);
+        return;
+      }
+      pointerGlowLastFrameAtRef.current = now;
 
       const current = pointerGlowCurrentRef.current;
       const target = pointerGlowTargetRef.current;
@@ -2762,7 +2949,7 @@ export default function App() {
         pointerGlowLoopRef.current = null;
       }
     };
-  }, [cursorGlowEnabled, cursorDistortionEnabled]);
+  }, [cursorGlowEnabled, cursorDistortionEnabled, realtimeEffectsEnabled]);
 
   useEffect(() => {
     const canvas = neonTrailCanvasRef.current;
@@ -2776,7 +2963,7 @@ export default function App() {
       neonTrailLoopRef.current = null;
     }
 
-    if (!cursorDistortionEnabled) {
+    if (!cursorDistortionEnabled || !realtimeEffectsEnabled) {
       context.clearRect(0, 0, canvas.width, canvas.height);
       neonTrailPointsRef.current = [];
       return undefined;
@@ -2813,6 +3000,12 @@ export default function App() {
 
     const drawTrail = () => {
       if (disposed) return;
+      const now = performance.now();
+      if (now - neonTrailLastFrameAtRef.current < 22) {
+        neonTrailLoopRef.current = requestAnimationFrame(drawTrail);
+        return;
+      }
+      neonTrailLastFrameAtRef.current = now;
 
       const points = neonTrailPointsRef.current;
       if (!points.length) seedPoints();
@@ -2890,7 +3083,7 @@ export default function App() {
       }
       context.clearRect(0, 0, canvas.width, canvas.height);
     };
-  }, [cursorDistortionEnabled, neonTrailRgb]);
+  }, [cursorDistortionEnabled, neonTrailRgb, realtimeEffectsEnabled]);
 
   useEffect(() => {
     const loadInitialState = async () => {
@@ -2902,7 +3095,9 @@ export default function App() {
       const result = await window.launcherData.loadState();
       if (result?.ok && result.data) {
         setInstances(Array.isArray(result.data.instances) ? result.data.instances.map(normalizeInstanceData) : []);
-        setUsername(result.data.username || 'Player');
+        const savedUsername = normalizeNicknameValue(result.data.username || 'Player') || 'Player';
+        setUsername(savedUsername);
+        setNicknamePresets(normalizeNicknameList(result.data.nicknamePresets, savedUsername));
         setGlobalRam(Number(result.data.globalRam || 4));
         setLauncherLanguage(result.data.language === 'ru' ? 'ru' : 'en');
         setCursorGlowEnabled(result.data.cursorGlowEnabled !== false);
@@ -2932,7 +3127,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (ambientEffect !== 'stars') {
+    if (ambientEffect !== 'stars' || !realtimeEffectsEnabled) {
       setComets([]);
       return undefined;
     }
@@ -2941,13 +3136,13 @@ export default function App() {
     let cometTimer = null;
 
     const scheduleNextComet = () => {
-      const nextDelayMs = 8000;
+      const nextDelayMs = 9000;
       cometTimer = setTimeout(() => {
         if (disposed) return;
-        const spawnCount = Math.floor(randomBetween(1, 4));
+        const spawnCount = Math.floor(randomBetween(1, 3));
         const nextComets = Array.from({ length: spawnCount }, () => createCometParticle());
         setComets((prev) => {
-          const recent = prev.slice(-9);
+          const recent = prev.slice(-6);
           return [...recent, ...nextComets];
         });
         scheduleNextComet();
@@ -2960,10 +3155,10 @@ export default function App() {
       disposed = true;
       if (cometTimer) clearTimeout(cometTimer);
     };
-  }, [ambientEffect]);
+  }, [ambientEffect, realtimeEffectsEnabled]);
 
   useEffect(() => {
-    if (ambientEffect !== 'rain') {
+    if (ambientEffect !== 'rain' || !realtimeEffectsEnabled) {
       setRainWindDrift(-18);
       return undefined;
     }
@@ -2996,7 +3191,7 @@ export default function App() {
       if (calmTimer) clearTimeout(calmTimer);
       if (gustTimer) clearTimeout(gustTimer);
     };
-  }, [ambientEffect]);
+  }, [ambientEffect, realtimeEffectsEnabled]);
 
   useEffect(() => {
     refreshSkins().catch(() => {});
@@ -3168,6 +3363,7 @@ export default function App() {
         .saveState({
           instances,
           username,
+          nicknamePresets,
           globalRam,
           language: launcherLanguage,
           cursorGlowEnabled,
@@ -3181,7 +3377,7 @@ export default function App() {
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [instances, username, globalRam, launcherLanguage, cursorGlowEnabled, cursorDistortionEnabled, ambientEffect, visualThemeId, customVisualTheme, latestInstalledUpdate]);
+  }, [instances, username, nicknamePresets, globalRam, launcherLanguage, cursorGlowEnabled, cursorDistortionEnabled, ambientEffect, visualThemeId, customVisualTheme, latestInstalledUpdate]);
 
   useEffect(() => {
     if (!window.launcherMinecraft) return undefined;
@@ -3909,8 +4105,27 @@ export default function App() {
     await ensureJavaPrompt(error);
   };
 
+  const stopInstance = async (instance) => {
+    if (!window.launcherMinecraft || !instance) return;
+    const result = await window.launcherMinecraft.stopInstance({
+      instanceId: String(instance.id)
+    });
+    if (!result?.ok) {
+      notifyError(result?.error?.message || t('failedStopMinecraft'), result?.error?.code || '');
+      return;
+    }
+
+    updateInstance(instance.id, {
+      isRunning: false
+    });
+  };
+
   const handleInstancePrimaryAction = async (instance) => {
     if (instance.installState === 'installed') {
+      if (instance.isRunning) {
+        await stopInstance(instance);
+        return;
+      }
       await launchInstance(instance);
       return;
     }
@@ -4420,23 +4635,93 @@ export default function App() {
     };
   }, [draggingInstanceId, reorderInstancesByIds, resolveReorderTargetId]);
 
-  const installContentToInstance = async (entry) => {
-    if (!editingInstance || !window.launcherMinecraft) return;
-    if (editingInstance.installState !== 'installed') {
+  const closeInstallTargetModal = useCallback(() => {
+    setIsInstallTargetModalOpen(false);
+    setInstallTargetEntry(null);
+    setCompatibleInstallTargets([]);
+    setSelectedInstallTargetId('');
+    setInstallTargetLoading(false);
+    setInstallTargetBusy(false);
+  }, []);
+
+  const resolveCompatibleInstancesForEntry = useCallback(
+    async (entry, contentType) => {
+      const normalizedType = normalizeContentType(contentType);
+      const projectId = String(entry?.project_id || '').trim();
+      if (!projectId || !installedInstances.length) return [];
+
+      const response = await fetch(`https://api.modrinth.com/v2/project/${encodeURIComponent(projectId)}/version`);
+      if (!response.ok) {
+        throw new Error(`Compatibility request failed (${response.status})`);
+      }
+      const releases = await response.json();
+      const releaseList = Array.isArray(releases) ? releases : [];
+      const compatible = installedInstances.filter((instance) =>
+        releaseList.some((release) => isModrinthVersionCompatible(release, instance, normalizedType))
+      );
+      return compatible;
+    },
+    [installedInstances]
+  );
+
+  const openInstallTargetModal = useCallback(
+    async (entry) => {
+      if (!entry?.project_id) return;
+      if (!installedInstances.length) {
+        notifyError(t('installFirstForMods'));
+        return;
+      }
+
+      const normalizedType = normalizeContentType(browseContentType);
+      setInstallTargetEntry({
+        ...entry,
+        contentType: normalizedType
+      });
+      setIsInstallTargetModalOpen(true);
+      setInstallTargetLoading(true);
+      setInstallTargetBusy(false);
+      setCompatibleInstallTargets([]);
+      setSelectedInstallTargetId('');
+
+      const requestId = Date.now();
+      installTargetRequestRef.current = requestId;
+
+      try {
+        const compatible = await resolveCompatibleInstancesForEntry(entry, normalizedType);
+        if (installTargetRequestRef.current !== requestId) return;
+        setCompatibleInstallTargets(compatible);
+        if (compatible.length > 0) {
+          setSelectedInstallTargetId(String(compatible[0].id));
+        }
+      } catch (error) {
+        if (installTargetRequestRef.current !== requestId) return;
+        notifyError(error?.message || t('failedCheckUpdates'));
+      } finally {
+        if (installTargetRequestRef.current === requestId) {
+          setInstallTargetLoading(false);
+        }
+      }
+    },
+    [browseContentType, installedInstances, notifyError, resolveCompatibleInstancesForEntry, t]
+  );
+
+  const installContentToInstance = async (entry, targetInstance = editingInstance, explicitContentType = browseContentType) => {
+    if (!targetInstance || !window.launcherMinecraft) return false;
+    if (targetInstance.installState !== 'installed') {
       notifyError(t('installFirstForMods'));
-      return;
+      return false;
     }
 
-    const contentType = normalizeContentType(browseContentType);
+    const contentType = normalizeContentType(explicitContentType);
     const projectId = String(entry.project_id || '').trim();
-    if (!projectId) return;
+    if (!projectId) return false;
 
     setModActionBusyId(projectId);
     const result = await window.launcherMinecraft.installMod({
-      instanceId: String(editingInstance.id),
-      installPath: editingInstance.installPath,
-      version: editingInstance.version,
-      loader: editingInstance.loader,
+      instanceId: String(targetInstance.id),
+      installPath: targetInstance.installPath,
+      version: targetInstance.version,
+      loader: targetInstance.loader,
       contentType,
       projectId,
       title: entry.title,
@@ -4451,16 +4736,34 @@ export default function App() {
 
     if (!result?.ok) {
       notifyError(result?.error?.message || t('failedInstallContent'));
-      return;
+      return false;
     }
 
-    mergeInstanceContent(editingInstance.id, contentType, (prevList) => {
+    mergeInstanceContent(targetInstance.id, contentType, (prevList) => {
       const hasExisting = prevList.some((item) => String(item.projectId || item.id) === projectId);
       if (hasExisting) {
         return prevList.map((item) => (String(item.projectId || item.id) === projectId ? { ...item, ...result.data } : item));
       }
       return [...prevList, result.data];
     });
+    setEditingInstanceId(String(targetInstance.id));
+    return true;
+  };
+
+  const installToSelectedTarget = async () => {
+    if (!installTargetEntry || !selectedInstallTargetId || installTargetBusy) return;
+    const target = compatibleInstallTargets.find((instance) => String(instance.id) === String(selectedInstallTargetId));
+    if (!target) return;
+
+    setInstallTargetBusy(true);
+    try {
+      const installed = await installContentToInstance(installTargetEntry, target, installTargetEntry.contentType || browseContentType);
+      if (installed) {
+        closeInstallTargetModal();
+      }
+    } finally {
+      setInstallTargetBusy(false);
+    }
   };
 
   const toggleMod = async (instanceId, mod) => {
@@ -4576,11 +4879,18 @@ export default function App() {
   const updateAllContent = async () => {
     if (!editingInstance) return;
     const contentType = normalizeContentType(manageContentType);
-    const targets = resolveContentListByType(editingInstance, contentType).filter((item) => item.hasUpdate && !isLocalContentEntry(item));
+    await refreshContentUpdates();
+    const latestInstance = instancesRef.current.find((item) => String(item.id) === String(editingInstance.id)) || editingInstance;
+    const targets = resolveContentListByType(latestInstance, contentType).filter((item) => item.hasUpdate && !isLocalContentEntry(item));
     if (!targets.length) return;
 
     for (const item of targets) {
-      await updateContentInInstance(editingInstance, contentType, item);
+      const currentInstance = instancesRef.current.find((entry) => String(entry.id) === String(latestInstance.id)) || latestInstance;
+      const currentItem = resolveContentListByType(currentInstance, contentType).find(
+        (entry) => String(entry.projectId || entry.id) === String(item.projectId || item.id)
+      );
+      if (!currentItem) continue;
+      await updateContentInInstance(currentInstance, contentType, currentItem);
     }
   };
 
@@ -4627,7 +4937,7 @@ export default function App() {
 
   const getPrimaryButtonLabel = (instance) => {
     if (instance.installState === 'installing') return t('primaryInstalling', { percent: Math.round(instance.installProgress || 0) });
-    if (instance.installState === 'installed' && instance.isRunning) return t('primaryRunning');
+    if (instance.installState === 'installed' && instance.isRunning) return t('primaryStop');
     if (instance.installState === 'installed') return t('primaryPlay');
     if (instance.installState === 'error') return t('primaryRetryInstall');
     return t('primaryInstall');
@@ -4635,11 +4945,16 @@ export default function App() {
 
   const getPrimaryButtonIcon = (instance) => {
     if (instance.installState === 'installing') return <Loader2 size={18} className="animate-spin" />;
+    if (instance.installState === 'installed' && instance.isRunning) return <Square size={16} fill="currentColor" />;
     if (instance.installState === 'installed') return <Play size={18} fill="currentColor" />;
     return <Download size={18} />;
   };
 
   const getPrimaryButtonClassName = (instance) => {
+    if (instance.installState === 'installed' && instance.isRunning) {
+      return 'border border-red-400/40 bg-red-500/15 text-red-100 hover:bg-red-500/25';
+    }
+
     if (instance.installState === 'installed') {
       return 'primary-installed-theme border border-white/15 bg-white text-black';
     }
@@ -4822,6 +5137,13 @@ export default function App() {
   );
   const getPrimaryButtonStyle = useCallback(
     (instance) => {
+      if (instance.installState === 'installed' && instance.isRunning) {
+        return {
+          borderColor: 'rgba(248, 113, 113, 0.55)',
+          background: 'linear-gradient(90deg, rgba(220, 38, 38, 0.26) 0%, rgba(248, 113, 113, 0.18) 100%)',
+          color: '#fee2e2'
+        };
+      }
       if (instance.installState === 'installed') {
         return {
           '--play-hover-bg': `linear-gradient(90deg, ${themeAccentSoftHex} 0%, ${themeAccentHex} 100%)`,
@@ -4903,9 +5225,11 @@ export default function App() {
         '--pointer-opacity': cursorGlowEnabled ? '0.72' : '0',
         '--pointer-distort-opacity': cursorDistortionEnabled ? '0.54' : '0'
       }}
-      className="relative flex h-screen w-screen select-none flex-col overflow-hidden bg-[#080808] font-sans text-white"
+      className={`relative flex h-screen w-screen select-none flex-col overflow-hidden bg-[#080808] font-sans text-white ${
+        realtimeEffectsEnabled ? '' : 'effects-paused'
+      }`}
     >
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      <div className={`pointer-events-none fixed inset-0 z-0 overflow-hidden ${realtimeEffectsEnabled ? '' : 'ambient-effects--paused'}`}>
         <div className="absolute inset-0 bg-[#05070d]" />
         <div
           className="absolute inset-0 animate-[auroraPulse_18s_ease-in-out_infinite] transition-[background] duration-500"
@@ -5132,12 +5456,74 @@ export default function App() {
           </nav>
 
           <div className="p-6">
-            <div className="flex items-center gap-3 rounded-3xl border border-white/10 bg-gradient-to-r from-white/[0.03] to-emerald-400/[0.03] p-3.5">
-              <img src={getAvatarUrl(activeMinecraftUsername)} alt="avatar" className="h-10 w-10 rounded-xl bg-zinc-800 p-1" />
-              <div className="min-w-0">
-                <p className="truncate text-xs font-bold">{offlineUsername}</p>
-                <p className="text-[8px] font-black uppercase tracking-widest text-green-500">{t('statusOffline')}</p>
-              </div>
+            <div ref={nicknameMenuRef} className="relative">
+              {isNicknameMenuOpen && (
+                <div className="absolute bottom-[calc(100%+10px)] left-0 right-0 z-[220] rounded-2xl border border-white/15 bg-[#0c121b]/95 p-3 shadow-[0_20px_42px_rgba(0,0,0,0.58)] backdrop-blur-md">
+                  <p className="mb-2 text-[10px] font-black uppercase tracking-[0.08em] text-zinc-400">{t('nicknameManagerTitle')}</p>
+                  <div className="custom-scrollbar max-h-48 space-y-1.5 overflow-y-auto pr-1">
+                    {nicknameOptions.map((nick) => {
+                      const selected = nick.toLowerCase() === offlineUsername.toLowerCase();
+                      return (
+                        <div
+                          key={nick}
+                          className={`flex items-center gap-2 rounded-xl border px-2.5 py-2 ${selected ? 'border-emerald-400/40 bg-emerald-500/10' : 'border-white/10 bg-white/[0.03]'}`}
+                        >
+                          <button
+                            onClick={() => {
+                              applyNickname(nick);
+                              setIsNicknameMenuOpen(false);
+                            }}
+                            className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                          >
+                            <span className={`truncate text-xs font-bold ${selected ? 'text-emerald-200' : 'text-zinc-200'}`}>{nick}</span>
+                            {selected && <Check size={12} className="shrink-0 text-emerald-300" />}
+                          </button>
+                          <img src={getAvatarUrl(nick)} alt="" className="h-7 w-7 shrink-0 rounded-lg bg-zinc-900 p-0.5" />
+                          <button
+                            onClick={() => removeNicknamePreset(nick)}
+                            className="rounded-md border border-white/10 p-1 text-zinc-400 transition-colors hover:border-red-400/40 hover:text-red-300"
+                            title={t('nicknameDelete')}
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-3 flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={nicknameDraft}
+                      onChange={(event) => setNicknameDraft(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          event.preventDefault();
+                          addNicknamePreset();
+                        }
+                      }}
+                      placeholder={t('nicknamePlaceholder')}
+                      className="h-9 min-w-0 flex-1 rounded-xl border border-zinc-700 bg-black/30 px-3 text-xs font-semibold outline-none focus:border-emerald-400/55"
+                    />
+                    <button
+                      onClick={addNicknamePreset}
+                      className="inline-flex h-9 items-center rounded-xl border border-emerald-400/35 bg-emerald-500/12 px-3 text-[11px] font-black text-emerald-200 transition-colors hover:bg-emerald-500/20"
+                    >
+                      {t('nicknameAdd')}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={() => setIsNicknameMenuOpen((prev) => !prev)}
+                className="flex w-full items-center gap-3 rounded-3xl border border-white/10 bg-gradient-to-r from-white/[0.03] to-emerald-400/[0.03] p-3.5 text-left transition-colors hover:border-emerald-400/35"
+              >
+                <img src={getAvatarUrl(activeMinecraftUsername)} alt="avatar" className="h-10 w-10 rounded-xl bg-zinc-800 p-1" />
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-bold">{offlineUsername}</p>
+                  <p className="text-[8px] font-black uppercase tracking-widest text-green-500">{t('statusOffline')}</p>
+                </div>
+              </button>
             </div>
           </div>
         </aside>
@@ -5311,7 +5697,7 @@ export default function App() {
                         <button
                           onMouseDown={(event) => event.stopPropagation()}
                           onClick={() => handleInstancePrimaryAction(inst)}
-                          disabled={inst.installState === 'installing' || inst.isRunning || !hasMinecraftApi}
+                          disabled={inst.installState === 'installing' || !hasMinecraftApi}
                           className={`flex w-full items-center justify-center gap-3 rounded-2xl py-3.5 font-black transition-all active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 ${getPrimaryButtonClassName(
                             inst
                           )}`}
@@ -5476,7 +5862,7 @@ export default function App() {
                                   <div className="relative px-4 pb-4 pt-3">
                                     <div className="absolute -top-7 left-4 h-14 w-14 overflow-hidden rounded-2xl border border-white/15 bg-zinc-900 shadow-lg">
                                       <img
-                                        src={mod.icon_url || FALLBACK_ICON_80}
+                                        src={toImageSrc(mod.icon_url) || FALLBACK_ICON_80}
                                         onError={(e) => {
                                           e.currentTarget.onerror = null;
                                           e.currentTarget.src = FALLBACK_ICON_80;
@@ -5542,8 +5928,8 @@ export default function App() {
                                         ) : null}
                                       </div>
                                       <button
-                                        disabled={isBusy || isDownloading || !editingInstanceId || alreadyHas || editingInstance?.installState !== 'installed'}
-                                        onClick={() => installContentToInstance(mod)}
+                                        disabled={isBusy || isDownloading || alreadyHas || installedInstances.length === 0}
+                                        onClick={() => openInstallTargetModal(mod)}
                                         className={`rounded-xl p-2 transition-all active:scale-90 ${
                                           alreadyHas ? 'bg-green-500/20 text-green-500' : 'bg-white/5 hover:bg-green-600 disabled:opacity-20'
                                         }`}
@@ -5564,7 +5950,7 @@ export default function App() {
                               >
                                 <div className="relative shrink-0">
                                   <img
-                                    src={mod.icon_url || FALLBACK_ICON_80}
+                                    src={toImageSrc(mod.icon_url) || FALLBACK_ICON_80}
                                     onError={(e) => {
                                       e.currentTarget.onerror = null;
                                       e.currentTarget.src = FALLBACK_ICON_80;
@@ -5623,8 +6009,8 @@ export default function App() {
                                       {formatDownloads(mod.downloads)}
                                     </div>
                                     <button
-                                      disabled={isBusy || isDownloading || !editingInstanceId || alreadyHas || editingInstance?.installState !== 'installed'}
-                                      onClick={() => installContentToInstance(mod)}
+                                      disabled={isBusy || isDownloading || alreadyHas || installedInstances.length === 0}
+                                      onClick={() => openInstallTargetModal(mod)}
                                       className={`rounded-xl p-2 transition-all active:scale-90 ${
                                         alreadyHas ? 'bg-green-500/20 text-green-500' : 'bg-white/5 hover:bg-green-600 disabled:opacity-20'
                                       }`}
@@ -5944,12 +6330,13 @@ export default function App() {
                 <div className="space-y-4">
                   <label className="ml-2 text-[10px] font-black uppercase tracking-widest text-zinc-500">{t('offlineProfile')}</label>
                   <div className="flex items-center gap-6 rounded-[2rem] border border-white/5 bg-zinc-900/40 p-8">
-                    <img src={getAvatarUrl(username)} className="h-16 w-16 rounded-2xl border border-white/5 bg-zinc-950 p-1.5" alt="avatar" />
+                    <img src={getAvatarUrl(offlineUsername)} className="h-16 w-16 rounded-2xl border border-white/5 bg-zinc-950 p-1.5" alt="avatar" />
                     <div className="flex-1 space-y-3">
                       <input
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        onBlur={() => setUsername((prev) => normalizeNicknameValue(prev) || 'Player')}
                         className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 px-4 py-2 text-sm outline-none focus:border-green-500/50"
                       />
                       <p className="text-[11px] font-medium text-zinc-500">{t('offlineProfileHint')}</p>
@@ -6631,6 +7018,98 @@ export default function App() {
         </div>
       )}
 
+      {isInstallTargetModalOpen && (
+        <div className="fixed inset-x-0 bottom-0 top-11 z-[180] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md animate-[fadeInSoft_220ms_ease-out]">
+          <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-[#10151f] p-6 shadow-2xl animate-[modalRise_260ms_cubic-bezier(0.22,1,0.36,1)]">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-lg font-black text-zinc-100">{t('installTargetTitle')}</p>
+                <p className="mt-1 text-[11px] font-medium text-zinc-400">{t('installTargetHint')}</p>
+              </div>
+              <button
+                onClick={closeInstallTargetModal}
+                className="rounded-lg border border-white/10 bg-zinc-900/70 p-2 text-zinc-400 transition-colors hover:text-zinc-200"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {installTargetEntry && (
+              <div className="mt-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/25 p-3">
+                <img
+                  src={toImageSrc(installTargetEntry.icon_url) || FALLBACK_ICON_80}
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = FALLBACK_ICON_80;
+                  }}
+                  className="h-12 w-12 rounded-xl bg-zinc-900 object-cover"
+                  alt=""
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-black text-zinc-100">{installTargetEntry.title}</p>
+                  <p className="text-[11px] font-semibold text-zinc-500">{getContentTypeLabel(installTargetEntry.contentType || browseContentType)}</p>
+                </div>
+              </div>
+            )}
+
+            {installTargetLoading ? (
+              <div className="mt-5 flex items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-semibold text-zinc-300">
+                <Loader2 size={14} className="animate-spin" />
+                {t('installTargetLoading')}
+              </div>
+            ) : compatibleInstallTargets.length === 0 ? (
+              <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-semibold text-zinc-400">{t('installTargetNone')}</div>
+            ) : (
+              <div className="custom-scrollbar mt-5 max-h-72 space-y-2 overflow-y-auto pr-1">
+                {compatibleInstallTargets.map((instance) => {
+                  const selected = String(instance.id) === String(selectedInstallTargetId);
+                  return (
+                    <button
+                      key={instance.id}
+                      onClick={() => setSelectedInstallTargetId(String(instance.id))}
+                      className={`flex w-full items-center gap-3 rounded-2xl border px-3 py-2.5 text-left transition-colors ${
+                        selected
+                          ? 'border-emerald-400/45 bg-emerald-500/12'
+                          : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      <InstanceAvatar instance={instance} className="h-11 w-11 rounded-xl border-white/10 bg-zinc-900" iconClassName="h-6 w-6" alt="instance" />
+                      <div className="min-w-0 flex-1">
+                        <p className={`truncate text-sm font-black ${selected ? 'text-emerald-200' : 'text-zinc-100'}`}>{instance.name}</p>
+                        <p className="text-[10px] font-semibold text-zinc-500">
+                          {t('installTargetVersionLabel', {
+                            version: instance.version,
+                            loader: formatLoaderName(instance.loader)
+                          })}
+                        </p>
+                      </div>
+                      {selected ? <Check size={14} className="text-emerald-300" /> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button
+                onClick={closeInstallTargetModal}
+                className="rounded-xl border border-white/10 bg-zinc-900/70 px-4 py-2 text-xs font-black text-zinc-300 transition-colors hover:bg-zinc-800"
+              >
+                {t('cancel')}
+              </button>
+              <button
+                onClick={installToSelectedTarget}
+                disabled={!selectedInstallTargetId || installTargetLoading || compatibleInstallTargets.length === 0 || installTargetBusy}
+                className="inline-flex items-center gap-2 rounded-xl border border-emerald-400/35 bg-emerald-500/15 px-4 py-2 text-xs font-black text-emerald-200 transition-colors hover:bg-emerald-500/22 disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                {installTargetBusy ? <Loader2 size={13} className="animate-spin" /> : <ArrowDownToLine size={13} />}
+                {t('installContent')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isManageModalOpen && editingInstance && (
         <div className="fixed inset-x-0 bottom-0 top-11 z-[200] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md animate-[fadeInSoft_220ms_ease-out]">
           <div className="flex h-[85vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-white/5 bg-[#141414] animate-[modalRise_260ms_cubic-bezier(0.22,1,0.36,1)]">
@@ -6653,7 +7132,7 @@ export default function App() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleInstancePrimaryAction(editingInstance)}
-                  disabled={editingInstance.installState === 'installing' || editingInstance.isRunning || !hasMinecraftApi}
+                  disabled={editingInstance.installState === 'installing' || !hasMinecraftApi}
                   className={`flex items-center gap-2 rounded-xl px-5 py-2.5 font-black transition-all disabled:cursor-not-allowed disabled:opacity-60 ${getPrimaryButtonClassName(
                     editingInstance
                   )}`}
@@ -6710,10 +7189,11 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => {
-                    setActiveFilter({ version: editingInstance.version, loader: '' });
+                    setActiveFilter({ version: '', loader: '' });
                     setBrowseContentType(manageContentType);
                     setActiveTab('browse');
                     setIsManageModalOpen(false);
+                    setEditingInstanceId(null);
                   }}
                   className="flex items-center gap-2 rounded-xl border border-white/5 bg-zinc-800/80 px-3 py-2 text-[10px] font-black"
                 >
@@ -6780,7 +7260,7 @@ export default function App() {
 
                       <div className="flex min-w-0 items-center gap-3">
                         <img
-                          src={mod.icon_url || FALLBACK_ICON_40}
+                          src={toImageSrc(mod.icon_url) || FALLBACK_ICON_40}
                           onError={(e) => {
                             e.currentTarget.onerror = null;
                             e.currentTarget.src = FALLBACK_ICON_40;
@@ -6984,6 +7464,15 @@ export default function App() {
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); }
+
+        .ambient-effects--paused *,
+        .effects-paused .star-particle,
+        .effects-paused .comet-particle,
+        .effects-paused .rain-drop,
+        .effects-paused .snow-flake,
+        .effects-paused .snow-dust {
+          animation-play-state: paused !important;
+        }
 
         .star-particle {
           position: absolute;

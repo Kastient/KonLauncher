@@ -11,6 +11,13 @@ const { createHash, randomUUID } = require('node:crypto');
 const { ipcMain, dialog, shell, BrowserWindow, app, nativeImage, safeStorage } = require('electron');
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const Handler = require('minecraft-launcher-core/components/handler');
+let yauzl = null;
+try {
+  // Optional dependency (available through electron -> extract-zip).
+  yauzl = require('yauzl');
+} catch {
+  yauzl = null;
+}
 
 const execFileAsync = promisify(execFile);
 
@@ -200,6 +207,7 @@ const officialProfileCache = new Map();
 let cachedSecureAuthSession = null;
 let offlineMultiplayerServicesServer = null;
 let offlineMultiplayerServicesServerPromise = null;
+const localContentIconCache = new Map();
 
 const normalizeId = (value) => String(value ?? '').trim();
 
@@ -2437,6 +2445,61 @@ const launchInstanceInternal = async (event, payload) => {
     launchingGames.delete(instanceId);
   }
 };
+
+const stopInstanceInternal = async (payload) => {
+  const instanceId = normalizeId(payload?.instanceId);
+  if (!instanceId) {
+    const error = new Error('instanceId is required to stop Minecraft.');
+    error.code = 'INVALID_STOP_PAYLOAD';
+    throw error;
+  }
+
+  const runningEntry = runningGames.get(instanceId);
+  const child = runningEntry?.child;
+  if (!runningEntry || !child) {
+    return {
+      instanceId,
+      requested: false,
+      running: false
+    };
+  }
+
+  if (child.exitCode !== null || child.killed) {
+    runningGames.delete(instanceId);
+    return {
+      instanceId,
+      requested: false,
+      running: false
+    };
+  }
+
+  const pid = Number(child.pid || 0);
+
+  if (process.platform === 'win32' && pid > 0) {
+    try {
+      await execFileAsync('taskkill', ['/PID', String(pid), '/T', '/F']);
+    } catch {
+      try {
+        child.kill('SIGTERM');
+      } catch {
+        // noop
+      }
+    }
+  } else {
+    try {
+      child.kill('SIGTERM');
+    } catch {
+      // noop
+    }
+  }
+
+  return {
+    instanceId,
+    pid: pid || null,
+    requested: true,
+    running: true
+  };
+};
 const getGameVersions = async () => {
   if (Date.now() < cachedVersions.expiresAt && cachedVersions.values?.length) {
     return cachedVersions.values;
@@ -2539,6 +2602,34 @@ const normalizeLatestInstalledUpdate = (value) => {
   return { version, notes };
 };
 
+const normalizeOfflineNickname = (value) =>
+  String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 16);
+
+const normalizeNicknamePresets = (value, fallback = 'Player') => {
+  const fallbackName = normalizeOfflineNickname(fallback) || 'Player';
+  const list = Array.isArray(value) ? value : [];
+  const seen = new Set();
+  const normalized = [];
+
+  for (const entry of list) {
+    const nickname = normalizeOfflineNickname(entry);
+    if (!nickname) continue;
+    const key = nickname.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    normalized.push(nickname);
+    if (normalized.length >= 24) break;
+  }
+
+  if (!normalized.some((item) => item.toLowerCase() === fallbackName.toLowerCase())) {
+    normalized.unshift(fallbackName);
+  }
+  return normalized.slice(0, 24);
+};
+
 const HEX_COLOR_RE = /^#[0-9a-f]{6}$/i;
 
 const normalizeHexColor = (value, fallback = '#22c55e') => {
@@ -2561,6 +2652,7 @@ const normalizeCustomVisualTheme = (value) => {
 
 const normalizeLauncherState = (rawState) => {
   const source = rawState && typeof rawState === 'object' ? rawState : {};
+  const username = normalizeOfflineNickname(source.username || 'Player') || 'Player';
   const language = String(source.language || '').toLowerCase() === 'ru' ? 'ru' : 'en';
   const visualThemeIdRaw = String(source.visualThemeId || '').trim().toLowerCase();
   const visualThemeId = ALLOWED_VISUAL_THEME_IDS.has(visualThemeIdRaw) ? visualThemeIdRaw : DEFAULT_VISUAL_THEME_ID;
@@ -2569,7 +2661,8 @@ const normalizeLauncherState = (rawState) => {
   const ambientEffect = ALLOWED_AMBIENT_EFFECTS.has(ambientEffectRaw) ? ambientEffectRaw : 'stars';
 
   return {
-    username: typeof source.username === 'string' && source.username.trim() ? source.username.trim() : 'Player',
+    username,
+    nicknamePresets: normalizeNicknamePresets(source.nicknamePresets, username),
     globalRam: Number.isFinite(Number(source.globalRam)) ? Math.max(1, Math.round(Number(source.globalRam))) : 4,
     language,
     cursorGlowEnabled: source.cursorGlowEnabled !== false,
@@ -4194,6 +4287,128 @@ const isSupportedContentEntry = (entry, contentType) => {
   return /\.(zip|jar)$/i.test(name);
 };
 
+const MAX_LOCAL_ICON_BYTES = 512 * 1024;
+
+const toIconMimeType = (name) => {
+  const ext = path.extname(String(name || '')).toLowerCase();
+  if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
+  if (ext === '.webp') return 'image/webp';
+  return 'image/png';
+};
+
+const bufferToDataUrl = (buffer, mime = 'image/png') => {
+  if (!Buffer.isBuffer(buffer) || buffer.length === 0) return '';
+  return `data:${mime};base64,${buffer.toString('base64')}`;
+};
+
+const readFileAsDataUrlSafe = async (targetPath) => {
+  try {
+    const stat = await fsp.stat(targetPath);
+    if (!stat.isFile() || stat.size <= 0 || stat.size > MAX_LOCAL_ICON_BYTES) return '';
+    const buffer = await fsp.readFile(targetPath);
+    return bufferToDataUrl(buffer, toIconMimeType(targetPath));
+  } catch {
+    return '';
+  }
+};
+
+const readArchiveEntryDataUrl = async (archivePath, matcher) => {
+  if (!yauzl || typeof matcher !== 'function') return '';
+
+  return new Promise((resolve) => {
+    yauzl.open(archivePath, { lazyEntries: true, autoClose: true }, (openError, zipfile) => {
+      if (openError || !zipfile) {
+        resolve('');
+        return;
+      }
+
+      let completed = false;
+      const finish = (value = '') => {
+        if (completed) return;
+        completed = true;
+        try {
+          zipfile.close();
+        } catch {
+          // noop
+        }
+        resolve(value);
+      };
+
+      zipfile.on('error', () => finish(''));
+      zipfile.on('end', () => finish(''));
+      zipfile.readEntry();
+
+      zipfile.on('entry', (entry) => {
+        if (completed) return;
+        const entryName = String(entry?.fileName || '');
+        const uncompressedSize = Number(entry?.uncompressedSize || 0);
+        if (!matcher(entryName) || uncompressedSize <= 0 || uncompressedSize > MAX_LOCAL_ICON_BYTES) {
+          zipfile.readEntry();
+          return;
+        }
+
+        zipfile.openReadStream(entry, (streamError, stream) => {
+          if (streamError || !stream) {
+            finish('');
+            return;
+          }
+
+          const chunks = [];
+          let totalBytes = 0;
+          stream.on('data', (chunk) => {
+            totalBytes += chunk.length;
+            if (totalBytes > MAX_LOCAL_ICON_BYTES) {
+              stream.destroy();
+              finish('');
+              return;
+            }
+            chunks.push(chunk);
+          });
+          stream.on('error', () => finish(''));
+          stream.on('end', () => {
+            if (completed) return;
+            const data = Buffer.concat(chunks);
+            finish(bufferToDataUrl(data, toIconMimeType(entryName)));
+          });
+        });
+      });
+    });
+  });
+};
+
+const resolveLocalContentIconDataUrl = async ({ absolutePath, contentType, entryName, isDirectory }) => {
+  const cacheKey = `${String(absolutePath || '').toLowerCase()}::${normalizeContentType(contentType)}`;
+  if (localContentIconCache.has(cacheKey)) {
+    return localContentIconCache.get(cacheKey) || '';
+  }
+
+  const normalizedType = normalizeContentType(contentType);
+  let resolved = '';
+
+  if (isDirectory) {
+    resolved = await readFileAsDataUrlSafe(path.join(absolutePath, 'pack.png'));
+  } else {
+    const normalizedName = String(entryName || '').toLowerCase();
+    const isArchive = /\.(jar|zip|disable|disabled)$/i.test(normalizedName);
+    if (isArchive) {
+      if (normalizedType === 'mod') {
+        resolved = await readArchiveEntryDataUrl(absolutePath, (name) => {
+          const lowered = String(name || '').toLowerCase().replace(/\\/g, '/');
+          return lowered === 'icon.png' || lowered.endsWith('/icon.png');
+        });
+      } else {
+        resolved = await readArchiveEntryDataUrl(absolutePath, (name) => {
+          const lowered = String(name || '').toLowerCase().replace(/\\/g, '/');
+          return lowered === 'pack.png' || lowered.endsWith('/pack.png');
+        });
+      }
+    }
+  }
+
+  localContentIconCache.set(cacheKey, resolved || '');
+  return resolved || '';
+};
+
 const scanContentFolderInternal = async ({ installPath, contentType, items = [] }) => {
   const normalizedType = normalizeContentType(contentType);
   const basePath = path.resolve(String(installPath || '').trim());
@@ -4237,6 +4452,15 @@ const scanContentFolderInternal = async ({ installPath, contentType, items = [] 
     const organization = String(existing?.organization || '').trim();
     const title = String(existing?.title || '').trim() || toDisplayTitleFromFilename(entry.name);
     const isDisabled = normalizedType === 'mod' ? /\.(disable|disabled)$/i.test(entry.name) : false;
+    let iconUrl = existing?.icon_url || null;
+    if (!iconUrl && !hasRemoteProject) {
+      iconUrl = await resolveLocalContentIconDataUrl({
+        absolutePath,
+        contentType: normalizedType,
+        entryName: entry.name,
+        isDirectory: entry.isDirectory?.() === true
+      });
+    }
 
     nextItems.push({
       id: hasRemoteProject ? projectId : localId,
@@ -4250,7 +4474,7 @@ const scanContentFolderInternal = async ({ installPath, contentType, items = [] 
       versionId: hasRemoteProject ? existing?.versionId || null : null,
       filename: entry.name,
       filePath: absolutePath,
-      icon_url: existing?.icon_url || null,
+      icon_url: iconUrl || null,
       enabled: normalizedType === 'mod' ? !isDisabled : true,
       hasUpdate: hasRemoteProject ? Boolean(existing?.hasUpdate) : false,
       latestVersionId: hasRemoteProject ? existing?.latestVersionId || null : null,
@@ -5606,6 +5830,15 @@ const registerMinecraftIpc = () => {
       return { ok: true, data };
     } catch (error) {
       return { ok: false, error: toErrorResult(error, 'Launch failed') };
+    }
+  });
+
+  ipcMain.handle('minecraft:stop-instance', async (_event, payload) => {
+    try {
+      const data = await stopInstanceInternal(payload);
+      return { ok: true, data };
+    } catch (error) {
+      return { ok: false, error: toErrorResult(error, 'Failed to stop Minecraft') };
     }
   });
 

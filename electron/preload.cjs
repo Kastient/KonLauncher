@@ -61,6 +61,7 @@ contextBridge.exposeInMainWorld('launcherWindow', {
 contextBridge.exposeInMainWorld('launcherMinecraft', {
   installInstance: (payload) => ipcRenderer.invoke('minecraft:install-instance', payload),
   launchInstance: (payload) => ipcRenderer.invoke('minecraft:launch-instance', payload),
+  stopInstance: (payload) => ipcRenderer.invoke('minecraft:stop-instance', payload),
   listGameVersions: () => ipcRenderer.invoke('minecraft:list-game-versions'),
   getLoaderAvailability: (version) => ipcRenderer.invoke('minecraft:get-loader-availability', version),
   getDefaultInstallPath: (payload) => ipcRenderer.invoke('minecraft:get-default-install-path', payload),
