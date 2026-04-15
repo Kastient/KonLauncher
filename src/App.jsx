@@ -1886,6 +1886,13 @@ const CustomSelect = ({ value, options, onChange, placeholder, icon: Icon }) => 
   const selectedFlag = selected && typeof selected === 'object' ? selected.flag : null;
   const selectedOptionIcon = selected && typeof selected === 'object' ? selected.icon : null;
   const leadingIcon = selectedOptionIcon || Icon;
+  const renderSelectIcon = (iconValue) => {
+    if (!iconValue) return null;
+    if (typeof iconValue === 'string') {
+      return <span className="shrink-0 text-sm leading-none text-zinc-400">{iconValue}</span>;
+    }
+    return React.createElement(iconValue, { size: 14, className: 'shrink-0 text-zinc-500' });
+  };
 
   return (
     <div className="relative" ref={ref}>
@@ -1894,12 +1901,12 @@ const CustomSelect = ({ value, options, onChange, placeholder, icon: Icon }) => 
         className={`flex w-full items-center justify-between gap-3 rounded-xl border bg-zinc-900/80 px-4 py-2.5 transition-all ${
           isOpen ? 'border-green-500/50 ring-2 ring-green-500/10' : 'border-white/5 hover:border-white/20'
         }`}
-      >
-        <div className="flex items-center gap-2 overflow-hidden">
-          {leadingIcon ? React.createElement(leadingIcon, { size: 14, className: 'shrink-0 text-zinc-500' }) : null}
-          {selectedFlag ? <FlagBadge code={selectedFlag} /> : null}
-          <span className="truncate whitespace-nowrap text-xs font-bold">{label}</span>
-        </div>
+        >
+          <div className="flex items-center gap-2 overflow-hidden">
+            {renderSelectIcon(leadingIcon)}
+            {selectedFlag ? <FlagBadge code={selectedFlag} /> : null}
+            <span className="truncate whitespace-nowrap text-xs font-bold">{label}</span>
+          </div>
         <ChevronDown size={14} className={`shrink-0 text-zinc-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
@@ -1931,7 +1938,7 @@ const CustomSelect = ({ value, options, onChange, placeholder, icon: Icon }) => 
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    {optionIcon ? React.createElement(optionIcon, { size: 14, className: 'shrink-0 text-zinc-500' }) : null}
+                    {renderSelectIcon(optionIcon)}
                     {flag ? <FlagBadge code={flag} /> : null}
                     <span>{name}</span>
                   </span>

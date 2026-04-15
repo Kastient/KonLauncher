@@ -1828,6 +1828,7 @@ const compareDotVersions = (left, right) => {
 };
 
 const compareDotVersionsDesc = (left, right) => compareDotVersions(right, left);
+const isLikelyPrereleaseLoaderVersion = (version) => /(?:^|[-._])(alpha|beta|pre|preview|rc|snapshot|dev|nightly)\d*/i.test(String(version || ''));
 
 const listNeoForgeVersionsForMinecraft = async (minecraftVersion) => {
   const tuple = parseGameVersion(minecraftVersion);
@@ -1901,28 +1902,28 @@ const listLoaderVersionsInternal = async ({ loader, minecraftVersion, includePre
         return {
           id,
           stable,
-          prerelease: !stable
+          prerelease: isLikelyPrereleaseLoaderVersion(id)
         };
       })
       .filter(Boolean);
-    const stableOnly = mapped.filter((item) => item.stable);
-    values = (withPrerelease ? mapped : stableOnly.length ? stableOnly : mapped).sort((a, b) => compareDotVersionsDesc(a.id, b.id));
+    const releaseOnly = mapped.filter((item) => !item.prerelease);
+    values = (withPrerelease ? mapped : releaseOnly.length ? releaseOnly : mapped).sort((a, b) => compareDotVersionsDesc(a.id, b.id));
   } else if (normalizedLoader === 'quilt') {
     const loaders = await fetchJson(`https://meta.quiltmc.org/v3/versions/loader/${encodeURIComponent(targetVersion)}`);
     const mapped = (Array.isArray(loaders) ? loaders : [])
       .map((item) => {
         const id = String(item?.loader?.version || '').trim();
         if (!id) return null;
-        const stable = item?.loader?.stable === true;
+        const stable = item?.loader?.stable !== false;
         return {
           id,
           stable,
-          prerelease: !stable
+          prerelease: isLikelyPrereleaseLoaderVersion(id)
         };
       })
       .filter(Boolean);
-    const stableOnly = mapped.filter((item) => item.stable);
-    values = (withPrerelease ? mapped : stableOnly.length ? stableOnly : mapped).sort((a, b) => compareDotVersionsDesc(a.id, b.id));
+    const releaseOnly = mapped.filter((item) => !item.prerelease);
+    values = (withPrerelease ? mapped : releaseOnly.length ? releaseOnly : mapped).sort((a, b) => compareDotVersionsDesc(a.id, b.id));
   } else if (normalizedLoader === 'forge') {
     const payload = await parseForgePromotions();
     const promos = payload?.promos || {};
