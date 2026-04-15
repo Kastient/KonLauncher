@@ -3,7 +3,7 @@
   "description": "KonLauncher - Minecraft launcher with offline and Microsoft online sessions",
   "author": "KonLauncher Team",
   "private": true,
-  "version": "1.0.27",
+  "version": "1.0.28",
   "main": "electron/main.cjs",
   "repository": {
     "type": "git",
