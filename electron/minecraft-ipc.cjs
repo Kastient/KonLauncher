@@ -2849,6 +2849,7 @@ const normalizeLauncherState = (rawState) => {
     nicknamePresets: normalizeNicknamePresets(source.nicknamePresets, username),
     globalRam: Number.isFinite(Number(source.globalRam)) ? Math.max(1, Math.round(Number(source.globalRam))) : 4,
     language,
+    showPrereleaseVersions: source.showPrereleaseVersions === true,
     cursorGlowEnabled: source.cursorGlowEnabled !== false,
     cursorDistortionEnabled: source.cursorDistortionEnabled === true,
     visualThemeId,
@@ -2859,19 +2860,150 @@ const normalizeLauncherState = (rawState) => {
   };
 };
 
+const detectCustomVersionIdFromInstallPath = async (installPath) => {
+  const versionsPath = path.join(installPath, 'versions');
+  if (!(await pathExists(versionsPath))) return null;
+
+  try {
+    const entries = await fsp.readdir(versionsPath, { withFileTypes: true });
+    const dirs = entries.filter((entry) => entry.isDirectory());
+    if (!dirs.length) return null;
+    if (dirs.length === 1) return dirs[0].name;
+
+    const withTime = await Promise.all(
+      dirs.map(async (entry) => {
+        try {
+          const stat = await fsp.stat(path.join(versionsPath, entry.name));
+          return { name: entry.name, mtimeMs: Number(stat?.mtimeMs || 0) };
+        } catch {
+          return { name: entry.name, mtimeMs: 0 };
+        }
+      })
+    );
+
+    withTime.sort((a, b) => b.mtimeMs - a.mtimeMs);
+    return withTime[0]?.name || null;
+  } catch {
+    return null;
+  }
+};
+
+const recoverLauncherInstancesFromProfiles = async (defaultRam = 4) => {
+  const profilesRoot = getProfilesRoot();
+  if (!(await pathExists(profilesRoot))) return [];
+
+  let entries = [];
+  try {
+    entries = await fsp.readdir(profilesRoot, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const recovered = [];
+  let fallbackIndex = 0;
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+
+    const installPath = path.join(profilesRoot, entry.name);
+    const instanceName = String(entry.name || '').trim();
+    if (!instanceName) continue;
+
+    const meta = await readProfileMeta(installPath);
+    const metaInstanceId = normalizeId(meta?.instanceId || '');
+    const instanceId = metaInstanceId || `recovered-${Date.now()}-${++fallbackIndex}`;
+    const minecraftVersion = String(meta?.minecraftVersion || '').trim();
+    const loader = normalizeLoader(meta?.loader || 'vanilla');
+    const loaderVersion = normalizeVersionSelection(meta?.loaderVersion || '') || null;
+    let customVersionId = String(meta?.customVersionId || '').trim() || null;
+    if (!customVersionId) {
+      customVersionId = await detectCustomVersionIdFromInstallPath(installPath);
+    }
+
+    let updatedAtMs = 0;
+    try {
+      const stat = await fsp.stat(installPath);
+      updatedAtMs = Number(stat?.mtimeMs || 0);
+    } catch {
+      updatedAtMs = 0;
+    }
+
+    recovered.push({
+      id: instanceId,
+      name: instanceName,
+      version: minecraftVersion,
+      loader,
+      loaderVersion,
+      ram: Math.max(1, Math.round(Number(defaultRam) || 4)),
+      playTime: '0 min',
+      mods: [],
+      resourcepacks: [],
+      shaders: [],
+      avatarPath: '',
+      installPath,
+      installState: 'installed',
+      installProgress: 0,
+      installStage: null,
+      customVersionId: customVersionId || null,
+      forgeJarPath: null,
+      javaPath: null,
+      isRunning: false,
+      lastError: '',
+      importSource: null,
+      updatedAtMs
+    });
+  }
+
+  recovered.sort((left, right) => Number(right.updatedAtMs || 0) - Number(left.updatedAtMs || 0));
+  return recovered.map(({ updatedAtMs, ...instance }) => instance);
+};
+
 const loadLauncherState = async () => {
   await ensureLauncherDirectories();
   const stateFile = getStateFilePath();
 
   try {
     const raw = await fsp.readFile(stateFile, 'utf8');
-    return normalizeLauncherState(JSON.parse(raw));
-  } catch (error) {
-    if (error && error.code !== 'ENOENT') {
-      throw error;
+    const normalized = normalizeLauncherState(JSON.parse(raw));
+    if (Array.isArray(normalized.instances) && normalized.instances.length) {
+      return normalized;
     }
 
-    return normalizeLauncherState({});
+    const recoveredInstances = await recoverLauncherInstancesFromProfiles(normalized.globalRam);
+    if (!recoveredInstances.length) {
+      return normalized;
+    }
+
+    const recoveredState = {
+      ...normalized,
+      instances: recoveredInstances
+    };
+    await fsp.writeFile(stateFile, `${JSON.stringify(recoveredState, null, 2)}\n`, 'utf8');
+    return recoveredState;
+  } catch (error) {
+    const fallback = normalizeLauncherState({});
+    const recoveredInstances = await recoverLauncherInstancesFromProfiles(fallback.globalRam);
+    const recoveredState = {
+      ...fallback,
+      instances: recoveredInstances.length ? recoveredInstances : []
+    };
+
+    if (error && error.code !== 'ENOENT') {
+      try {
+        const corruptedFile = `${stateFile}.corrupted-${Date.now()}`;
+        await fsp.rename(stateFile, corruptedFile);
+      } catch {
+        // noop
+      }
+    }
+
+    try {
+      await fsp.writeFile(stateFile, `${JSON.stringify(recoveredState, null, 2)}\n`, 'utf8');
+    } catch {
+      // noop
+    }
+
+    return recoveredState;
   }
 };
 
