@@ -984,6 +984,16 @@ const localizeFallbackUpdateNote = (note, languageCode = 'en') => {
   if (normalized.includes('update reliability') && normalized.includes('bug fixes')) {
     return 'Повышена надежность обновлений и исправлены ошибки.';
   }
+  if (
+    normalized.includes('java/bedrock')
+    && normalized.includes('drag')
+    && normalized.includes('.jar')
+  ) {
+    return 'Добавлен полноценный раздел Bedrock и импорт .jar файлов в моды Java-сборок через drag & drop.';
+  }
+  if (normalized.includes('bedrock') && normalized.includes('online') && normalized.includes('header')) {
+    return 'Добавлены счётчики онлайна и использования лаунчера в шапке.';
+  }
   if (normalized.includes('bulk content update progress') && normalized.includes('update badges') && normalized.includes('loader selection')) {
     return 'Добавлены прогресс «Обновить всё», значки доступных обновлений, улучшен показ иконок локального контента, сглажен неоновый хвост, добавлены версии 26.1/26.1.1/26.1.2 и выбор версии загрузчика.';
   }
