@@ -72,6 +72,7 @@ contextBridge.exposeInMainWorld('launcherMinecraft', {
   importFromLauncher: (payload) => ipcRenderer.invoke('minecraft:import-from-launcher', payload),
   pickInstanceAvatar: (payload) => ipcRenderer.invoke('minecraft:pick-instance-avatar', payload),
   installMod: (payload) => ipcRenderer.invoke('minecraft:install-mod', payload),
+  importLocalContent: (payload) => ipcRenderer.invoke('minecraft:import-local-content', payload),
   updateMod: (payload) => ipcRenderer.invoke('minecraft:update-mod', payload),
   deleteMod: (payload) => ipcRenderer.invoke('minecraft:delete-mod', payload),
   toggleMod: (payload) => ipcRenderer.invoke('minecraft:toggle-mod', payload),
@@ -110,4 +111,30 @@ contextBridge.exposeInMainWorld('launcherUpdater', {
   download: () => ipcRenderer.invoke('updater:download'),
   install: () => ipcRenderer.invoke('updater:install'),
   onState: (callback) => subscribe('updater:state', callback)
+});
+
+contextBridge.exposeInMainWorld('bedrockApi', {
+  getVersions: () => ipcRenderer.invoke('bedrock:versions:list'),
+  getInstalled: () => ipcRenderer.invoke('bedrock:installed:list'),
+  getClientInfo: () => ipcRenderer.invoke('bedrock:client:info'),
+  getStoragePaths: () => ipcRenderer.invoke('bedrock:storage:paths'),
+  getResourcePacks: () => ipcRenderer.invoke('bedrock:resourcepacks:list'),
+  pickResourcePacks: () => ipcRenderer.invoke('bedrock:resourcepacks:pick'),
+  addResourcePacks: (filePaths) => ipcRenderer.invoke('bedrock:resourcepacks:add', filePaths),
+  addResourcePacksBuffered: (items) => ipcRenderer.invoke('bedrock:resourcepacks:add-buffered', items),
+  removeResourcePack: (resourcePackId) => ipcRenderer.invoke('bedrock:resourcepack:remove', resourcePackId),
+  installVersion: (versionId) => ipcRenderer.invoke('bedrock:install:start', versionId),
+  installResourcePack: (resourcePackId) => ipcRenderer.invoke('bedrock:resourcepack:install', resourcePackId),
+  playVersion: (versionId) => ipcRenderer.invoke('bedrock:version:play', versionId),
+  removeVersion: (versionId) => ipcRenderer.invoke('bedrock:version:remove', versionId),
+  onInstallEvent: (handler) => subscribe('bedrock:install:event', handler),
+  windowControls: {
+    minimize: () => ipcRenderer.send('window:minimize'),
+    maximizeToggle: async () => {
+      const isMaximized = await ipcRenderer.invoke('window:is-maximized');
+      if (isMaximized) ipcRenderer.send('window:unmaximize');
+      else ipcRenderer.send('window:maximize');
+    },
+    close: () => ipcRenderer.send('window:close')
+  }
 });

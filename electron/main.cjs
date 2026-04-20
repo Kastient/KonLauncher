@@ -3,6 +3,7 @@ const path = require('node:path');
 const { app, BrowserWindow, Menu, shell, ipcMain } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const { registerMinecraftIpc } = require('./minecraft-ipc.cjs');
+const { registerBedrockIpc } = require('./bedrock-ipc.cjs');
 
 const DEV_SERVER_URL = process.env.KON_DEV_SERVER_URL || '';
 const shouldUseDevServer = Boolean(DEV_SERVER_URL);
@@ -407,6 +408,7 @@ function createMainWindow() {
 app.whenReady().then(async () => {
   await clearChromiumCacheDirs();
   registerMinecraftIpc();
+  registerBedrockIpc();
   configureAutoUpdater();
   Menu.setApplicationMenu(null);
   createMainWindow();

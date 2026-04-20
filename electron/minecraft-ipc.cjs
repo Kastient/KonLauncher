@@ -4960,6 +4960,125 @@ const scanContentFolderInternal = async ({ installPath, contentType, items = [] 
   };
 };
 
+const resolveUniqueFilePath = async (targetPath) => {
+  if (!(await pathExists(targetPath))) return targetPath;
+  const parsed = path.parse(targetPath);
+  for (let index = 2; index <= 9999; index += 1) {
+    const candidate = path.join(parsed.dir, `${parsed.name} (${index})${parsed.ext}`);
+    if (!(await pathExists(candidate))) {
+      return candidate;
+    }
+  }
+  const error = new Error('Cannot resolve a unique destination filename.');
+  error.code = 'LOCAL_CONTENT_DESTINATION_CONFLICT';
+  throw error;
+};
+
+const importLocalContentFileInternal = async (payload = {}) => {
+  const instanceId = normalizeId(payload?.instanceId);
+  const installPathRaw = String(payload?.installPath || '').trim();
+  const installPath = installPathRaw ? path.resolve(installPathRaw) : '';
+  const contentType = normalizeContentType(payload?.contentType || 'mod');
+  const sourcePathRaw = String(payload?.sourcePath || '').trim();
+  const sourcePath = sourcePathRaw ? path.resolve(sourcePathRaw) : '';
+  const sourceNameRaw = String(payload?.sourceName || '').trim();
+  const sourceName = path.basename(sourceNameRaw || (sourcePath ? path.basename(sourcePath) : 'content.jar'));
+  const rawBuffer = payload?.buffer;
+  const knownItems = Array.isArray(payload?.items) ? payload.items : [];
+
+  let fileBuffer = null;
+  if (rawBuffer instanceof ArrayBuffer) {
+    fileBuffer = Buffer.from(rawBuffer);
+  } else if (ArrayBuffer.isView(rawBuffer)) {
+    fileBuffer = Buffer.from(rawBuffer.buffer, rawBuffer.byteOffset, rawBuffer.byteLength);
+  } else if (typeof payload?.base64 === 'string' && payload.base64.length > 0) {
+    fileBuffer = Buffer.from(payload.base64, 'base64');
+  }
+  const hasSourcePath = Boolean(sourcePath);
+  const hasInlineBuffer = Boolean(fileBuffer && fileBuffer.length > 0);
+
+  if (!instanceId || !installPath || (!hasSourcePath && !hasInlineBuffer)) {
+    const error = new Error('instanceId, installPath and local file source are required for local content import.');
+    error.code = 'INVALID_LOCAL_CONTENT_IMPORT_PAYLOAD';
+    throw error;
+  }
+
+  if (hasSourcePath) {
+    let sourceStat = null;
+    try {
+      sourceStat = await fsp.stat(sourcePath);
+    } catch {
+      sourceStat = null;
+    }
+    if (!sourceStat?.isFile?.()) {
+      const error = new Error('Local file to import was not found.');
+      error.code = 'LOCAL_CONTENT_SOURCE_NOT_FOUND';
+      throw error;
+    }
+  }
+
+  const sourceExt = path.extname(sourceName || sourcePath).toLowerCase();
+  if (contentType === 'mod' && sourceExt !== '.jar') {
+    const error = new Error('Only .jar files are supported for local mod import.');
+    error.code = 'LOCAL_CONTENT_EXTENSION_UNSUPPORTED';
+    throw error;
+  }
+
+  const contentDir = path.join(installPath, resolveContentFolderName(contentType));
+  await fsp.mkdir(contentDir, { recursive: true });
+
+  const preferredDestination = path.join(contentDir, sourceName);
+  const sourceResolved = hasSourcePath ? path.resolve(sourcePath) : '';
+  const sameAsDestination = hasSourcePath && sourceResolved === path.resolve(preferredDestination);
+  const destinationPath = sameAsDestination ? preferredDestination : await resolveUniqueFilePath(preferredDestination);
+  if (!sameAsDestination) {
+    if (hasSourcePath) {
+      await fsp.copyFile(sourcePath, destinationPath);
+    } else {
+      await fsp.writeFile(destinationPath, fileBuffer);
+    }
+  }
+
+  const scanned = await scanContentFolderInternal({
+    installPath,
+    contentType,
+    items: knownItems
+  });
+
+  const destinationResolved = path.resolve(destinationPath);
+  const imported =
+    scanned.items.find((item) => path.resolve(String(item?.filePath || '')) === destinationResolved) ||
+    scanned.items.find((item) => String(item?.filename || '').toLowerCase() === String(path.basename(destinationPath)).toLowerCase()) ||
+    null;
+
+  if (imported) {
+    return imported;
+  }
+
+  const relativePath = path.relative(installPath, destinationPath).replace(/\\/g, '/');
+  const localId = toSafeLocalContentId(contentType, relativePath);
+  return {
+    id: localId,
+    projectId: localId,
+    contentType,
+    title: toDisplayTitleFromFilename(path.basename(destinationPath)),
+    author: '',
+    creator: '',
+    organization: null,
+    version: 'local',
+    versionId: null,
+    filename: path.basename(destinationPath),
+    filePath: destinationPath,
+    icon_url: null,
+    enabled: true,
+    hasUpdate: false,
+    latestVersionId: null,
+    latestVersion: null,
+    localOnly: true,
+    updatedAt: new Date().toISOString()
+  };
+};
+
 const normalizeImportSource = (value) => {
   const normalized = String(value || '').trim().toLowerCase();
   if (IMPORT_SOURCE_IDS.has(normalized)) return normalized;
@@ -6326,6 +6445,15 @@ const registerMinecraftIpc = () => {
       return { ok: true, data };
     } catch (error) {
       return { ok: false, error: toErrorResult(error, 'Failed to install mod') };
+    }
+  });
+
+  ipcMain.handle('minecraft:import-local-content', async (_event, payload) => {
+    try {
+      const data = await importLocalContentFileInternal(payload);
+      return { ok: true, data };
+    } catch (error) {
+      return { ok: false, error: toErrorResult(error, 'Failed to import local content') };
     }
   });
 
