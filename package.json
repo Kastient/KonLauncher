@@ -3,7 +3,7 @@
   "description": "KonLauncher - Minecraft launcher with offline and Microsoft online sessions",
   "author": "KonLauncher Team",
   "private": true,
-  "version": "1.0.29",
+  "version": "1.0.30",
   "main": "electron/main.cjs",
   "repository": {
     "type": "git",
@@ -88,11 +88,11 @@
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
     "nsis": {
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": false,
       "allowElevation": false,
-      "allowToChangeInstallationDirectory": false,
-      "createDesktopShortcut": "always",
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "runAfterFinish": false
     }

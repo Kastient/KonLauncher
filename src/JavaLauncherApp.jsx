@@ -668,7 +668,7 @@ const UI_STRINGS = {
     updateBannerStatusError: 'Update check failed: {message}',
     updateBannerChangesTitle: 'What changed',
     updateBannerChangesFallback:
-      'Unified Java/Bedrock launcher UI, full Bedrock switcher integration, and drag & drop .jar import to instance mods.',
+      'Added full Bedrock section, live online/usage counters in header, and drag & drop .jar import into Java instance mods.',
     updateBannerAction: 'Update',
     updateBannerActionRetry: 'Retry',
     updateBannerHide: 'Hide update banner',
@@ -912,7 +912,7 @@ const UI_STRINGS = {
     updateBannerStatusError: 'Не удалось проверить обновления: {message}',
     updateBannerChangesTitle: 'Что изменилось',
     updateBannerChangesFallback:
-      'Объединён Java/Bedrock интерфейс, полностью интегрирован Bedrock переключатель и добавлен drag & drop импорт .jar в mods сборки.',
+      'Добавлен полноценный раздел Bedrock, счётчики онлайна/использования в шапке и drag & drop импорт .jar в mods Java-сборок.',
     updateBannerAction: 'Обновить',
     updateBannerActionRetry: 'Повторить',
     updateBannerHide: 'Скрыть плашку обновления',
@@ -944,6 +944,11 @@ const translateTemplate = (language, key, params = {}) => {
 
 const normalizeUpdateNoteText = (rawValue) =>
   String(rawValue || '')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/p>/gi, '\n')
     .replace(/<[^>]*>/g, ' ')
@@ -954,7 +959,7 @@ const normalizeUpdateNoteText = (rawValue) =>
 const splitUpdateNoteLines = (rawValue) =>
   normalizeUpdateNoteText(rawValue)
     .split(/\n+/)
-    .map((line) => line.replace(/^\s*[-*•]+\s*/, '').trim())
+    .map((line) => line.replace(/^\s*[-*•]+\s*/, '').replace(/^\s*\.{3,}\s*/, '').trim())
     .filter((line) => {
       if (!line) return false;
       if (/^[.|\-_/\\\s]+\(v?\d+\.\d+\.\d+\)$/i.test(line)) return false;

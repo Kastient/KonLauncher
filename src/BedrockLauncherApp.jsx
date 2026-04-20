@@ -77,6 +77,35 @@ function versionsEqual(left, right) {
   return true;
 }
 
+function toLegacyBedrockDisplayId(value) {
+  const parts = parseVersionParts(value);
+  if (parts.length < 3) return "";
+  const [major, minor, patch] = parts;
+
+  if (major === 1 && minor === 21) {
+    if (patch >= 100 && patch <= 199) {
+      return `26.${patch - 100}`;
+    }
+    if (patch >= 0 && patch < 100) {
+      return `25.${patch}`;
+    }
+  }
+
+  return "";
+}
+
+function resolveVersionDisplayId(version) {
+  const base = String(version?.displayId || version?.shortId || version?.id || "-").trim();
+  const legacy = String(
+    version?.legacyDisplayId
+      || toLegacyBedrockDisplayId(version?.shortId || version?.displayId || version?.id)
+      || ""
+  ).trim();
+
+  if (!legacy || legacy === base) return base;
+  return `${legacy} • ${base}`;
+}
+
 const MINECRAFT_COLOR_CODES = {
   0: "#000000",
   1: "#0000AA",
@@ -206,7 +235,7 @@ const UI_TEXT = {
     sidebarResourcePacks: "Ресурспаки",
     sidebarInstalled: "Установлено",
     sidebarLanguage: "Язык",
-    sidebarSwitcher: "Bedrock switcher",
+    sidebarSwitcher: "Переключатель Bedrock",
     launcherErrorPrefix: "Ошибка загрузки данных: {error}",
     apiUnavailable: "API Electron недоступен. Запусти desktop-приложение .exe",
     versionNoDirectDownload: "Для этой версии нет прямой загрузки. Используй официальный лаунчер.",
@@ -236,6 +265,7 @@ const UI_TEXT = {
     badgeSwitcher: "Лаунчер для смены версий Bedrock",
     selectedVersion: "Выбрана версия",
     source: "Источник",
+    sourceUnknown: "UWP",
     statusInstalled: "Установлено",
     statusNotInstalled: "Не установлено",
     clientVersionLabel: "Клиент Minecraft",
@@ -247,6 +277,8 @@ const UI_TEXT = {
     chooseVersionPlaceholder: "Выбери версию",
     resourcePacksTitle: "Ресурспаки",
     resourcePacksSubtitle: "Импорт через запуск `.mcpack` без авто-закрытия Minecraft",
+    heroClientLabel: "Клиент Bedrock для Windows",
+    heroSwitchMethodLabel: "Переключение через Add-AppxPackage",
     loadingResourcePacks: "Загрузка списка ресурспаков...",
     launcherPackTag: "Рп от лаунчера",
     descriptionMissing: "Описание отсутствует.",
@@ -268,6 +300,7 @@ const UI_TEXT = {
     cancel: "Отмена",
     delete: "Удалить",
     versionRemoved: "Версия {id} удалена",
+    packIconAlt: "Иконка ресурспака",
   },
   en: {
     sidebarLibrary: "Library",
@@ -304,6 +337,7 @@ const UI_TEXT = {
     badgeSwitcher: "Bedrock version switcher",
     selectedVersion: "Selected version",
     source: "Source",
+    sourceUnknown: "UWP",
     statusInstalled: "Installed",
     statusNotInstalled: "Not installed",
     clientVersionLabel: "Minecraft client",
@@ -315,6 +349,8 @@ const UI_TEXT = {
     chooseVersionPlaceholder: "Choose version",
     resourcePacksTitle: "Resource Packs",
     resourcePacksSubtitle: "Import by launching `.mcpack` without auto-closing Minecraft",
+    heroClientLabel: "Windows Bedrock Client",
+    heroSwitchMethodLabel: "Switch via Add-AppxPackage",
     loadingResourcePacks: "Loading resource packs list...",
     launcherPackTag: "Launcher RP",
     descriptionMissing: "No description provided.",
@@ -336,13 +372,14 @@ const UI_TEXT = {
     cancel: "Cancel",
     delete: "Delete",
     versionRemoved: "Version {id} removed",
+    packIconAlt: "Resource pack icon",
   },
   uk: {
     sidebarLibrary: "Бібліотека",
     sidebarResourcePacks: "Ресурспаки",
     sidebarInstalled: "Встановлено",
     sidebarLanguage: "Мова",
-    sidebarSwitcher: "Bedrock switcher",
+    sidebarSwitcher: "Перемикач Bedrock",
     launcherErrorPrefix: "Помилка завантаження даних: {error}",
     apiUnavailable: "API Electron недоступний. Запусти desktop .exe застосунок.",
     versionNoDirectDownload: "Для цієї версії немає прямого завантаження. Використай офіційний лаунчер.",
@@ -372,6 +409,7 @@ const UI_TEXT = {
     badgeSwitcher: "Лаунчер для зміни версій Bedrock",
     selectedVersion: "Обрана версія",
     source: "Джерело",
+    sourceUnknown: "UWP",
     statusInstalled: "Встановлено",
     statusNotInstalled: "Не встановлено",
     clientVersionLabel: "Клієнт Minecraft",
@@ -383,6 +421,8 @@ const UI_TEXT = {
     chooseVersionPlaceholder: "Вибери версію",
     resourcePacksTitle: "Ресурспаки",
     resourcePacksSubtitle: "Імпорт через запуск `.mcpack` без авто-закриття Minecraft",
+    heroClientLabel: "Клієнт Bedrock для Windows",
+    heroSwitchMethodLabel: "Перемикання через Add-AppxPackage",
     loadingResourcePacks: "Завантаження списку ресурспаків...",
     launcherPackTag: "Рп від лаунчера",
     descriptionMissing: "Опис відсутній.",
@@ -404,6 +444,7 @@ const UI_TEXT = {
     cancel: "Скасувати",
     delete: "Видалити",
     versionRemoved: "Версію {id} видалено",
+    packIconAlt: "Іконка ресурспака",
   },
 };
 
@@ -486,7 +527,7 @@ export default function App({ headerCenterSlot = null }) {
     const template = dictionary[key] ?? UI_TEXT.ru[key] ?? key;
     return formatUiText(template, params);
   }, [language]);
-  const selectedDisplayId = selectedVerObj?.displayId || selectedVerObj?.shortId || selectedVerObj?.id || "-";
+  const selectedDisplayId = selectedVerObj ? resolveVersionDisplayId(selectedVerObj) : "-";
   const isCurrentInstalling = installing === selectedVersion;
   const showConsole = true;
   const hasDesktopWindowApi = Boolean(api?.windowControls);
@@ -1072,19 +1113,19 @@ export default function App({ headerCenterSlot = null }) {
                       <div className="mb-3 flex items-center gap-4 text-zinc-400">
                         <div className="flex items-center gap-2">
                           <Cpu size={16} className="text-zinc-600" />
-                          <span className="text-sm font-medium">Windows Bedrock Client</span>
+                          <span className="text-sm font-medium">{t("heroClientLabel")}</span>
                         </div>
                         <div className="h-3 w-px bg-zinc-700" />
                         <div className="flex items-center gap-2">
                           <FileCode size={16} className="text-zinc-600" />
-                          <span className="text-sm font-medium">Switch via Add-AppxPackage</span>
+                          <span className="text-sm font-medium">{t("heroSwitchMethodLabel")}</span>
                         </div>
                       </div>
 
                       <p className="mb-2 text-xs text-zinc-500">
                         {t("selectedVersion")}: <span className="text-zinc-300">{selectedDisplayId}</span>
                         {" • "}
-                        {t("source")}: <span className="text-zinc-300">{selectedVerObj?.source || "UWP"}</span>
+                        {t("source")}: <span className="text-zinc-300">{selectedVerObj?.source || t("sourceUnknown")}</span>
                       </p>
                       <p className="mb-2 text-xs">
                         {isInstalled ? (
@@ -1161,7 +1202,7 @@ export default function App({ headerCenterSlot = null }) {
                         <div className="custom-scrollbar absolute bottom-full left-0 z-40 mb-4 max-h-[320px] w-full overflow-y-auto rounded-2xl border border-white/10 bg-zinc-800 p-2 shadow-2xl">
                           {versions.map((version) => {
                             const rowInstalled = installedIdSet.has(version.id);
-                            const rowDisplayId = version.displayId || version.shortId || version.id;
+                            const rowDisplayId = resolveVersionDisplayId(version);
                             return (
                               <button
                                 key={version.id}
@@ -1256,7 +1297,7 @@ export default function App({ headerCenterSlot = null }) {
                             {launcherResourcePack.iconDataUrl ? (
                               <img
                                 src={launcherResourcePack.iconDataUrl}
-                                alt="Pack icon"
+                                alt={t("packIconAlt")}
                                 className="h-[210px] w-[210px] rounded-2xl object-contain"
                               />
                             ) : (
@@ -1392,7 +1433,7 @@ export default function App({ headerCenterSlot = null }) {
                                   <div className="flex gap-3">
                                     <div className="flex h-[84px] w-[84px] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-zinc-800 p-1.5">
                                       {pack.iconDataUrl ? (
-                                        <img src={pack.iconDataUrl} alt="Pack icon" className="h-full w-full rounded-xl object-contain" />
+                                        <img src={pack.iconDataUrl} alt={t("packIconAlt")} className="h-full w-full rounded-xl object-contain" />
                                       ) : (
                                         <Box size={26} className="text-zinc-500" />
                                       )}

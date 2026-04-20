@@ -24,6 +24,29 @@ let latestDownloadedVersion = '';
 let latestAvailableNotes = [];
 let latestDownloadedNotes = [];
 let updaterDownloadPromise = null;
+const COUNT_API_BASE_URL = 'https://api.countapi.xyz';
+const STATS_NAMESPACE = 'konlauncher_presence';
+const STATS_ONLINE_KEY = 'online_v1';
+const STATS_USERS_KEY = 'users_total_v1';
+const STATS_POLL_INTERVAL_MS = 30 * 1000;
+const STATS_NETWORK_TIMEOUT_MS = 7000;
+const DOWNLOADS_CACHE_TTL_MS = 10 * 60 * 1000;
+const STATS_LOCAL_STATE_FILE = 'launcher-stats-state.json';
+const GITHUB_RELEASES_URL = 'https://api.github.com/repos/Kastient/KonLauncher/releases?per_page=20';
+let launcherStatsSessionOpened = false;
+let launcherStatsPollTimer = null;
+let launcherStatsShutdownStarted = false;
+let launcherStatsLocalStateLoaded = false;
+let launcherStatsLocalState = {
+  usageRegistered: false
+};
+let launcherDownloadsCache = { value: 0, updatedAt: 0 };
+let launcherStatsState = {
+  online: 0,
+  users: 0,
+  downloads: 0,
+  updatedAt: null
+};
 
 const redactSensitiveText = (value) => {
   let text = String(value || '');
@@ -57,6 +80,11 @@ const sanitizePayload = (value, depth = 0) => {
 
 const normalizeReleaseNoteText = (value) =>
   String(value || '')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/p>/gi, '\n')
     .replace(/<[^>]*>/g, ' ')
@@ -90,6 +118,181 @@ const extractReleaseNotes = (info) => {
   }
 
   return notes.slice(0, 4);
+};
+
+const emitLauncherStats = (payload) => {
+  const windows = BrowserWindow.getAllWindows();
+  windows.forEach((win) => {
+    if (!win || win.isDestroyed()) return;
+    win.webContents.send('launcher:stats', payload);
+  });
+};
+
+const getStatsLocalStatePath = () => path.join(app.getPath('userData'), STATS_LOCAL_STATE_FILE);
+
+const ensureStatsLocalStateLoaded = async () => {
+  if (launcherStatsLocalStateLoaded) return;
+
+  try {
+    const parsed = JSON.parse(await fs.promises.readFile(getStatsLocalStatePath(), 'utf8'));
+    launcherStatsLocalState = {
+      usageRegistered: parsed?.usageRegistered === true
+    };
+  } catch {
+    launcherStatsLocalState = { usageRegistered: false };
+  }
+  launcherStatsLocalStateLoaded = true;
+};
+
+const persistStatsLocalState = async () => {
+  try {
+    const payload = {
+      usageRegistered: launcherStatsLocalState.usageRegistered === true,
+      updatedAt: new Date().toISOString()
+    };
+    await fs.promises.writeFile(getStatsLocalStatePath(), JSON.stringify(payload, null, 2), 'utf8');
+  } catch {
+    // noop
+  }
+};
+
+const fetchJsonWithTimeout = async (url, options = {}, timeoutMs = STATS_NETWORK_TIMEOUT_MS) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    if (!response.ok) {
+      throw new Error(`Request failed (${response.status})`);
+    }
+    return await response.json();
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
+const parseCounterValue = (value, fallback = 0) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return Math.max(0, Math.round(Number(fallback) || 0));
+  return Math.max(0, Math.round(parsed));
+};
+
+const readCounterValue = async (key) => {
+  const encodedNamespace = encodeURIComponent(STATS_NAMESPACE);
+  const encodedKey = encodeURIComponent(String(key || '').trim());
+  const payload = await fetchJsonWithTimeout(`${COUNT_API_BASE_URL}/get/${encodedNamespace}/${encodedKey}`);
+  return parseCounterValue(payload?.value, 0);
+};
+
+const hitCounterValue = async (key, amount) => {
+  const encodedNamespace = encodeURIComponent(STATS_NAMESPACE);
+  const encodedKey = encodeURIComponent(String(key || '').trim());
+  const parsedAmount = Number(amount) || 0;
+  const payload = await fetchJsonWithTimeout(
+    `${COUNT_API_BASE_URL}/hit/${encodedNamespace}/${encodedKey}?amount=${encodeURIComponent(String(parsedAmount))}`
+  );
+  return parseCounterValue(payload?.value, 0);
+};
+
+const fetchGithubDownloadsTotal = async () => {
+  const now = Date.now();
+  if (launcherDownloadsCache.updatedAt && now - launcherDownloadsCache.updatedAt < DOWNLOADS_CACHE_TTL_MS) {
+    return launcherDownloadsCache.value;
+  }
+
+  try {
+    const releases = await fetchJsonWithTimeout(
+      GITHUB_RELEASES_URL,
+      {
+        headers: {
+          'User-Agent': `${APP_NAME}/${app.getVersion()}`,
+          Accept: 'application/vnd.github+json'
+        }
+      },
+      STATS_NETWORK_TIMEOUT_MS
+    );
+    const releaseList = Array.isArray(releases) ? releases : [];
+    const total = releaseList.reduce((sum, release) => {
+      if (release?.draft) return sum;
+      const assets = Array.isArray(release?.assets) ? release.assets : [];
+      const releaseDownloads = assets.reduce((assetSum, asset) => assetSum + parseCounterValue(asset?.download_count || 0, 0), 0);
+      return sum + releaseDownloads;
+    }, 0);
+    launcherDownloadsCache = {
+      value: parseCounterValue(total, launcherDownloadsCache.value),
+      updatedAt: now
+    };
+  } catch {
+    // Keep previous cached value if GitHub API is temporarily unavailable.
+  }
+
+  return launcherDownloadsCache.value;
+};
+
+const updateLauncherStatsState = (partial = {}) => {
+  launcherStatsState = {
+    online: parseCounterValue(partial.online, launcherStatsState.online),
+    users: parseCounterValue(partial.users, launcherStatsState.users),
+    downloads: parseCounterValue(partial.downloads, launcherStatsState.downloads),
+    updatedAt: partial.updatedAt || new Date().toISOString()
+  };
+  emitLauncherStats(launcherStatsState);
+  return launcherStatsState;
+};
+
+const refreshLauncherStats = async () => {
+  const [onlineResult, usersResult, downloadsResult] = await Promise.allSettled([
+    readCounterValue(STATS_ONLINE_KEY),
+    readCounterValue(STATS_USERS_KEY),
+    fetchGithubDownloadsTotal()
+  ]);
+  return updateLauncherStatsState({
+    online: onlineResult.status === 'fulfilled' ? onlineResult.value : launcherStatsState.online,
+    users: usersResult.status === 'fulfilled' ? usersResult.value : launcherStatsState.users,
+    downloads: downloadsResult.status === 'fulfilled' ? downloadsResult.value : launcherStatsState.downloads,
+    updatedAt: new Date().toISOString()
+  });
+};
+
+const registerLauncherStatsSession = async () => {
+  if (launcherStatsSessionOpened) return launcherStatsState;
+  await ensureStatsLocalStateLoaded();
+
+  launcherStatsSessionOpened = true;
+  const shouldRegisterUsage = launcherStatsLocalState.usageRegistered !== true;
+  const operations = [hitCounterValue(STATS_ONLINE_KEY, 1)];
+  if (shouldRegisterUsage) {
+    operations.push(hitCounterValue(STATS_USERS_KEY, 1));
+  }
+
+  const results = await Promise.allSettled(operations);
+  if (shouldRegisterUsage && results[1]?.status === 'fulfilled') {
+    launcherStatsLocalState.usageRegistered = true;
+    void persistStatsLocalState();
+  }
+
+  return refreshLauncherStats();
+};
+
+const unregisterLauncherStatsSession = async () => {
+  if (!launcherStatsSessionOpened) return;
+  launcherStatsSessionOpened = false;
+  await Promise.allSettled([hitCounterValue(STATS_ONLINE_KEY, -1)]);
+};
+
+const startLauncherStatsPolling = () => {
+  if (launcherStatsPollTimer) return;
+  launcherStatsPollTimer = setInterval(() => {
+    void refreshLauncherStats();
+  }, STATS_POLL_INTERVAL_MS);
+};
+
+const stopLauncherStatsPolling = () => {
+  if (!launcherStatsPollTimer) return;
+  clearInterval(launcherStatsPollTimer);
+  launcherStatsPollTimer = null;
 };
 
 const emitUpdaterState = (payload) => {
@@ -339,6 +542,28 @@ ipcMain.handle('updater:install', async () => {
   }
 });
 
+ipcMain.handle('launcher:stats:get', async () => {
+  return {
+    ok: true,
+    data: launcherStatsState
+  };
+});
+
+ipcMain.handle('launcher:stats:refresh', async () => {
+  try {
+    const data = await refreshLauncherStats();
+    return { ok: true, data };
+  } catch (error) {
+    return {
+      ok: false,
+      error: {
+        code: 'LAUNCHER_STATS_REFRESH_FAILED',
+        message: redactSensitiveText(error?.message || 'Failed to refresh launcher stats')
+      }
+    };
+  }
+});
+
 function createMainWindow() {
   const debugEnabled = process.env.KON_DEBUG_ELECTRON === '1';
   const win = new BrowserWindow({
@@ -368,6 +593,14 @@ function createMainWindow() {
     emitMaximizedState(win);
   });
 
+  win.webContents.on('did-finish-load', () => {
+    if (win.isDestroyed()) return;
+    win.webContents.send('launcher:stats', launcherStatsState);
+    if (debugEnabled) {
+      console.log('[renderer did-finish-load]');
+    }
+  });
+
   if (debugEnabled) {
     win.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
       console.error('[renderer did-fail-load]', {
@@ -381,9 +614,6 @@ function createMainWindow() {
     });
     win.webContents.on('console-message', (_event, level, message, line, sourceId) => {
       console.log(`[renderer console:${level}] ${redactSensitiveText(sourceId)}:${line} ${redactSensitiveText(message)}`);
-    });
-    win.webContents.on('did-finish-load', () => {
-      console.log('[renderer did-finish-load]');
     });
   }
 
@@ -410,6 +640,8 @@ app.whenReady().then(async () => {
   registerMinecraftIpc();
   registerBedrockIpc();
   configureAutoUpdater();
+  await registerLauncherStatsSession().catch(() => {});
+  startLauncherStatsPolling();
   Menu.setApplicationMenu(null);
   createMainWindow();
 
@@ -425,3 +657,13 @@ app.whenReady().then(async () => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
+
+const shutdownLauncherStats = () => {
+  if (launcherStatsShutdownStarted) return;
+  launcherStatsShutdownStarted = true;
+  stopLauncherStatsPolling();
+  void unregisterLauncherStatsSession();
+};
+
+app.on('before-quit', shutdownLauncherStats);
+process.on('exit', shutdownLauncherStats);

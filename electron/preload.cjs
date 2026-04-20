@@ -113,6 +113,12 @@ contextBridge.exposeInMainWorld('launcherUpdater', {
   onState: (callback) => subscribe('updater:state', callback)
 });
 
+contextBridge.exposeInMainWorld('launcherStats', {
+  get: () => ipcRenderer.invoke('launcher:stats:get'),
+  refresh: () => ipcRenderer.invoke('launcher:stats:refresh'),
+  onUpdate: (callback) => subscribe('launcher:stats', callback)
+});
+
 contextBridge.exposeInMainWorld('bedrockApi', {
   getVersions: () => ipcRenderer.invoke('bedrock:versions:list'),
   getInstalled: () => ipcRenderer.invoke('bedrock:installed:list'),
