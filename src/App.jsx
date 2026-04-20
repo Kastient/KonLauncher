@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Download } from 'lucide-react';
 import JavaLauncherApp from './JavaLauncherApp';
 import BedrockLauncherApp from './BedrockLauncherApp';
 
@@ -82,10 +81,7 @@ export default function App() {
 
   const clientSwitch = (
     <div className="inline-flex items-center gap-4 px-1 text-[12px] font-black uppercase tracking-[0.18em]">
-      <div className="flex items-center gap-1.5 text-[10px] text-zinc-400">
-        <Download size={11} className="text-zinc-400" />
-        <span>{usageCountLabel}</span>
-      </div>
+      <span className="text-[10px] text-zinc-400">users {usageCountLabel}</span>
       <button
         type="button"
         onClick={() => setActiveClient(CLIENT_MODES.JAVA)}

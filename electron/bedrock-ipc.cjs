@@ -10,6 +10,16 @@ const unzipper = require("unzipper");
 const VERSIONS_FILE = path.join(__dirname, "bedrock-data", "versions.json");
 const INSTALL_EVENT_CHANNEL = "bedrock:install:event";
 const UWP_SOURCE_URL = "https://raw.githubusercontent.com/ddf8196/mc-w10-versiondb-auto-update/master/versions.json.min";
+const GDK_SOURCE_URL = "https://raw.githubusercontent.com/MinecraftBedrockArchiver/GdkLinks/master/urls.min.json";
+const USER_HOME = process.env.USERPROFILE || process.env.HOME || "";
+const LOCAL_UWP_CANDIDATES = [
+  path.join(USER_HOME, "Desktop", "Новая папка (2)", "versions_uwp.json"),
+  path.join(process.cwd(), "versions_uwp.json"),
+];
+const LOCAL_GDK_CANDIDATES = [
+  path.join(USER_HOME, "Desktop", "Новая папка (2)", "versions_gdk.json"),
+  path.join(process.cwd(), "versions_gdk.json"),
+];
 
 let versions = [];
 let activeInstallId = null;
@@ -31,6 +41,18 @@ function loadVersions() {
   } catch {
     versions = [];
   }
+}
+
+async function readFirstExistingJson(candidatePaths) {
+  for (const filePath of candidatePaths || []) {
+    try {
+      const raw = await fsPromises.readFile(filePath, "utf8");
+      return { data: JSON.parse(raw), source: filePath, local: true };
+    } catch {
+      // try next path
+    }
+  }
+  return null;
 }
 
 function compareVersionDesc(a, b) {
@@ -109,6 +131,62 @@ function buildUwpEntryFromRemoteRow(row) {
   });
 }
 
+function buildGdkEntry(version, urls, type) {
+  const id = String(version || "").trim();
+  if (!id) return null;
+  const links = Array.isArray(urls)
+    ? urls.map((value) => String(value || "").trim()).filter(Boolean)
+    : [];
+  const displayId = formatDisplayVersionId(id);
+
+  return normalizeVersionEntry({
+    id,
+    shortId: displayId,
+    displayId,
+    family: familyOf(id),
+    clientVersion: id,
+    type: String(type || "Release"),
+    source: "GDK",
+    name: `Bedrock ${displayId}${type === "Preview" ? " Preview" : ""}`,
+    date: "",
+    downloadable: links.length > 0,
+    updateId: null,
+    revisionNumber: 1,
+    directUrls: links,
+    downloadUrl: links[0] || null,
+  });
+}
+
+async function loadUwpRows() {
+  const local = await readFirstExistingJson(LOCAL_UWP_CANDIDATES);
+  if (local?.data) {
+    return local;
+  }
+
+  const response = await fetch(UWP_SOURCE_URL);
+  if (!response.ok) {
+    throw new Error(`Не удалось обновить каталог UWP версий (${response.status}).`);
+  }
+  return { data: await response.json(), source: UWP_SOURCE_URL, local: false };
+}
+
+async function loadGdkRows() {
+  const local = await readFirstExistingJson(LOCAL_GDK_CANDIDATES);
+  if (local?.data && typeof local.data === "object") {
+    return local;
+  }
+
+  try {
+    const response = await fetch(GDK_SOURCE_URL);
+    if (!response.ok) {
+      throw new Error(`status ${response.status}`);
+    }
+    return { data: await response.json(), source: GDK_SOURCE_URL, local: false };
+  } catch {
+    return { data: null, source: "not-found", local: false };
+  }
+}
+
 function sortVersionsList(items) {
   return [...items].sort((left, right) => {
     const typeRankLeft = String(left?.type || "Release") === "Release" ? 0 : 1;
@@ -131,7 +209,7 @@ function mergeVersionCatalog(currentVersions, incomingVersions) {
   for (const entry of currentVersions || []) {
     const normalized = normalizeVersionEntry(entry);
     if (!normalized) continue;
-    map.set(`${normalized.id}::${normalized.type}::${normalized.source}`, normalized);
+    map.set(`${normalized.id}::${normalized.type}`, normalized);
   }
 
   let added = 0;
@@ -140,7 +218,7 @@ function mergeVersionCatalog(currentVersions, incomingVersions) {
   for (const entry of incomingVersions || []) {
     const normalized = normalizeVersionEntry(entry);
     if (!normalized) continue;
-    const key = `${normalized.id}::${normalized.type}::${normalized.source}`;
+    const key = `${normalized.id}::${normalized.type}`;
     const existing = map.get(key);
     if (!existing) {
       map.set(key, normalized);
@@ -151,10 +229,16 @@ function mergeVersionCatalog(currentVersions, incomingVersions) {
     const merged = {
       ...existing,
       ...normalized,
-      updateId: normalized.updateId || existing.updateId,
+      source: existing.updateId ? existing.source : (normalized.updateId ? normalized.source : (existing.source || normalized.source)),
+      downloadable: existing.downloadable || normalized.downloadable,
+      updateId: normalized.updateId || existing.updateId || null,
       revisionNumber: Number.isFinite(Number(normalized.revisionNumber))
         ? Number(normalized.revisionNumber)
         : existing.revisionNumber,
+      directUrls: Array.isArray(normalized.directUrls) && normalized.directUrls.length > 0
+        ? normalized.directUrls
+        : existing.directUrls,
+      downloadUrl: normalized.downloadUrl || existing.downloadUrl || (Array.isArray(normalized.directUrls) ? normalized.directUrls[0] : null) || (Array.isArray(existing.directUrls) ? existing.directUrls[0] : null),
     };
     if (JSON.stringify(existing) !== JSON.stringify(merged)) {
       changed += 1;
@@ -173,19 +257,30 @@ async function refreshVersionsCatalogFromRemote() {
   if (versionsRefreshPromise) return versionsRefreshPromise;
 
   versionsRefreshPromise = (async () => {
-    const response = await fetch(UWP_SOURCE_URL);
-    if (!response.ok) {
-      throw new Error(`Не удалось обновить каталог версий (${response.status}).`);
+    const remoteEntries = [];
+
+    const uwp = await loadUwpRows();
+    if (!Array.isArray(uwp.data)) {
+      throw new Error("Некорректный ответ источника UWP версий.");
+    }
+    remoteEntries.push(...uwp.data.map((row) => buildUwpEntryFromRemoteRow(row)).filter(Boolean));
+
+    const gdk = await loadGdkRows();
+    if (gdk?.data && typeof gdk.data === "object") {
+      const releaseMap = gdk.data.release || {};
+      const previewMap = gdk.data.preview || {};
+      for (const [version, urls] of Object.entries(releaseMap)) {
+        const entry = buildGdkEntry(version, urls, "Release");
+        if (entry) remoteEntries.push(entry);
+      }
+      for (const [version, urls] of Object.entries(previewMap)) {
+        const entry = buildGdkEntry(version, urls, "Preview");
+        if (entry) remoteEntries.push(entry);
+      }
     }
 
-    const payload = await response.json();
-    if (!Array.isArray(payload)) {
-      throw new Error("Некорректный ответ источника версий.");
-    }
-
-    const remoteEntries = payload.map((row) => buildUwpEntryFromRemoteRow(row)).filter(Boolean);
     if (remoteEntries.length === 0) {
-      throw new Error("Источник версий вернул пустой список.");
+      throw new Error("Источники версий вернули пустой список.");
     }
 
     const merged = mergeVersionCatalog(versions, remoteEntries);
@@ -194,7 +289,7 @@ async function refreshVersionsCatalogFromRemote() {
 
     return {
       ok: true,
-      source: UWP_SOURCE_URL,
+      source: `${uwp.source}${gdk?.data ? ` + ${gdk.source}` : ""}`,
       total: versions.length,
       added: merged.added,
       changed: merged.changed,
