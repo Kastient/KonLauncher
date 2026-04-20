@@ -315,7 +315,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3738c248-0603-4560-abf4-fdd66e7cd852",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.113.1",
@@ -329,7 +330,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "346dba67-b58d-4244-9f4e-d250a5ee52ac",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.111.1",
@@ -343,7 +345,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "85aed8c1-14a5-4f3f-8a66-66e86c29e588",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.101.1",
@@ -357,7 +360,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "14d05069-3d90-457b-a8e9-9381a5055705",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.100.6",
@@ -371,7 +375,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "213d6b06-68c5-499f-b92d-780d6df543ba",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.94.1",
@@ -385,7 +390,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fcc1d727-bc59-40d1-b4e8-1591817179ff",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.93.1",
@@ -399,7 +405,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9a1e10b3-e8e1-4d01-a2c0-c3ecac48fd13",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.92.1",
@@ -413,7 +420,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "dc64b3e1-d003-4bf8-b4d7-6599be79ba72",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.90.3",
@@ -427,7 +435,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ccb572fb-8c43-4ee9-8bba-ec16bcc78615",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.82.1",
@@ -441,7 +450,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fa36217a-0da7-4a6d-b854-3b4d5e4d3bd9",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.81.2",
@@ -455,7 +465,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0389b5a3-28fa-45e0-9c86-246cdb089a43",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.80.3",
@@ -469,7 +480,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "afc8f48e-9e81-4fb2-8c46-b17ab1f17762",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.73.1",
@@ -483,7 +495,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "302e73b6-83ad-4936-9f84-e72bccb04f8a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.72.1",
@@ -497,7 +510,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "618f3ac5-5baf-4101-9056-3d35cc357f4b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.71.1",
@@ -511,7 +525,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ef201305-1f6e-45e9-847b-f388c7c714f0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.70.3",
@@ -525,7 +540,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "511e0381-93bd-4273-a639-4a17b8895029",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.62.1",
@@ -539,7 +555,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "52a8f5ac-2ae0-4f1c-8fc3-95b85fe243bc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.61.1",
@@ -553,7 +570,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "70effb62-003b-4eb7-9451-49cbfc1a7b65",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.60.10",
@@ -567,7 +585,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b884aa9d-b3a2-44e9-8cf0-146842d2c1cc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.51.1",
@@ -581,7 +600,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f1d6a02f-046a-4907-a3d7-88a3b59c70d2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.50.7",
@@ -595,7 +615,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "bf5c09f1-e88a-4b4c-b0bf-2faf43db7659",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.44.1",
@@ -609,7 +630,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7bc58f5c-adbc-4ff1-8e1a-6707c5b39d09",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.43.1",
@@ -623,7 +645,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c655d39c-af91-4a81-8ffb-48b086ea0abf",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.41.1",
@@ -637,7 +660,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ff00fd54-08c1-4df8-bc64-5640112e40d8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.40.3",
@@ -651,7 +675,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d6d15520-b8c6-4252-b12b-c6c3a98aedc1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.31.4",
@@ -665,7 +690,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e0189674-e1af-47aa-88b7-309686b635e2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.30.3",
@@ -679,7 +705,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "bf5746e4-6844-4124-8bc9-2fb979863c0e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.23.1",
@@ -693,7 +720,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d0c8c626-8539-4ce0-a6fc-bae9db69727d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.22.1",
@@ -707,7 +735,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "206c607e-73ba-4710-a698-6776c4f280a1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.21.1",
@@ -721,7 +750,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c90d2602-5730-4276-be4a-7c0e507718e2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.20.3",
@@ -735,7 +765,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5eeae3dd-bf5d-4b38-aa59-6e00686ddd89",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.2.2",
@@ -749,7 +780,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9a8e324e-7240-403a-a404-b7420421138c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.1.3",
@@ -763,7 +795,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4ea8aafa-50c8-474e-9641-90c102f6641c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.0.3",
@@ -777,7 +810,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "21c7d413-83d5-45de-b8b2-e9e6f87fb5fe",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.81.1",
@@ -791,7 +825,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "39b4a4c9-cd0a-49c2-971f-156aa4dbbc01",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.80.5",
@@ -805,7 +840,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ddc36e8c-1b81-49a5-bcb6-b76c3a160c25",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.73.1",
@@ -819,7 +855,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1ead88d5-ebff-413a-be8a-71349421129b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.72.1",
@@ -833,7 +870,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b7101d23-4658-48b0-a5c5-24202162309b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.71.1",
@@ -847,7 +885,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4e001eeb-5e8d-4cc2-9bfb-2fe52c8ecf70",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.62.1",
@@ -861,7 +900,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "64892e07-231b-4b4f-8427-d5181eaa54ca",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.60.4",
@@ -875,7 +915,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0052663e-3323-4fc9-9ead-84567336093a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.51.1",
@@ -889,7 +930,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "58c5f0cd-09d7-4e99-a6b6-c3829fd62ac9",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.50.3",
@@ -903,7 +945,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ae199742-9485-4902-911f-8988c36d41df",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.41.2",
@@ -917,7 +960,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "01c280b1-675d-486d-b22b-12bc9c732b22",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.40.1",
@@ -931,7 +975,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cf4bd0ca-bcac-4b31-b09b-7973c61643d1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.32.3",
@@ -945,7 +990,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1160615f-ca91-45f5-b0ef-40e17c13d57f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.31.1",
@@ -959,7 +1005,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cc2071ae-99fd-4112-b1e2-ff8ce34b9f6d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.30.2",
@@ -973,7 +1020,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e1ed9eb0-6611-4bf8-adf1-4df55b21a950",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.15.1",
@@ -987,7 +1035,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cf81ad8f-d5fb-4ed6-a910-36e9011e170a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.12.1",
@@ -1001,7 +1050,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8cd36a7b-2da0-4389-ad6e-06f975a336ca",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.10.1",
@@ -1015,7 +1065,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ea354812-8e56-4eb9-9530-fb7c86fe305d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.1.2",
@@ -1029,7 +1080,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "38640519-dd50-4e80-8139-4607b7307761",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.0.1",
@@ -1043,7 +1095,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6c853155-c111-4054-9833-f206e37ca7d5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.83.1",
@@ -1057,7 +1110,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "383fa522-5568-48d1-94fa-dd44b31f02b3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.81.1",
@@ -1071,7 +1125,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "950a8a92-a558-48b7-872b-41dbd663f29a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.80.2",
@@ -1085,7 +1140,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0998daff-f3f9-4887-aef5-d15f9e461604",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.73.2",
@@ -1099,7 +1155,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0ff7b03e-9748-47a9-b6be-4fd6a37e9c33",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.71.2",
@@ -1113,7 +1170,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ef4368c0-2166-4a80-8135-9482da48cbdf",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.70.2",
@@ -1127,7 +1185,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "eb4ebf86-915f-4bbf-a50f-2d327558c98e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.63.1",
@@ -1141,7 +1200,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "19477670-0d51-47de-99bd-8140dc6812ed",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.62.1",
@@ -1155,7 +1215,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "835f6541-b076-4515-8792-05f91792f999",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.60.3",
@@ -1169,7 +1230,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b77467c8-05e5-4196-9e1c-eab38286c98f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.51.1",
@@ -1183,7 +1245,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "916e7a8f-5899-4fe8-970c-9ec39f361241",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.50.2",
@@ -1197,7 +1260,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ce5fcdc1-5b4c-49e5-94d6-afef3282e58c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.41.1",
@@ -1211,7 +1275,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "93b0b8d8-1787-44c5-8ca4-825fada0f105",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.40.2",
@@ -1225,7 +1290,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8e3cf94f-ab8d-45e7-b7dd-1f2a670d2e65",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.31.1",
@@ -1239,7 +1305,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3702b4c4-d244-4e7c-9566-d5fa97df02ef",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.30.4",
@@ -1253,7 +1320,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "226b8035-899a-4a58-a1af-d4341568d96f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.22.1",
@@ -1267,7 +1335,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c5ab1807-ef8b-46f8-837e-7929820121bc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.21.1",
@@ -1281,7 +1350,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7a67b807-6e27-468e-8d3d-372364364eb9",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.20.2",
@@ -1295,7 +1365,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6fbce732-132a-4fcd-af47-d9ae4152380a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.11.1",
@@ -1309,7 +1380,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "57c66c18-ae99-4776-9deb-4a0bf98b2425",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.10.3",
@@ -1323,7 +1395,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "de502964-5528-4665-80bf-47e43a4082a1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.2.2",
@@ -1337,7 +1410,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "61cab36e-3b4b-483c-9633-3915a3bd4f12",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.5",
@@ -1351,7 +1425,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "28d2f975-a0fc-401a-9987-9a6a117f8922",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.31.4",
@@ -1365,7 +1440,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "05098106-ffcf-4b13-8e59-8608547501c1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.4",
@@ -1379,7 +1455,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "63e6744c-e38f-4c0f-bcb9-56b863cf1ab8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.12.1",
@@ -1393,7 +1470,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ec829b28-dee8-4886-9194-f0641ba2b669",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.10.4",
@@ -1407,7 +1485,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "661f0eb8-1345-46b8-8682-42454c9e3c43",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.2.3",
@@ -1421,7 +1500,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "2b5252f5-9271-4ed8-9739-e0fb14ffcae8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.1.2",
@@ -1435,7 +1515,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4a33b451-ac0f-44eb-8773-6d2c10a240b8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.0.2",
@@ -1449,7 +1530,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c4a7d44d-eec2-4f5f-bdba-8f3fe0aee7fc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.41.1",
@@ -1463,7 +1545,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ad386d9f-fde0-4a00-b1aa-627f90d5eaa4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.40.6",
@@ -1477,7 +1560,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "23ae1916-3419-4c12-a0e6-be478a0984b3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.34.2",
@@ -1491,7 +1575,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "50632099-9e31-4f34-8b7b-7627bdcc9820",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.32.2",
@@ -1505,7 +1590,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d2c451fa-9e16-4906-9c86-3ca389290d26",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.30.4",
@@ -1519,7 +1605,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a2d318b1-f699-4a24-9314-35ade861c3d1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.11.1",
@@ -1533,7 +1620,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a0dcfb59-7e5e-49ca-9ab8-0958cf12b889",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.10.4",
@@ -1547,7 +1635,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e156df1e-3d33-4aa1-9fdb-d074ca37e3cb",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.2.1",
@@ -1561,7 +1650,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "509fff69-8614-40e8-add8-c4cb594bb7b2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.0.2",
@@ -1575,7 +1665,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "24c14b31-634d-4dfc-a185-15878cee9dc6",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.221.1",
@@ -1589,7 +1680,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "bc9ded47-a0be-4bcd-a008-2f1c247a22ef",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.220.2",
@@ -1603,7 +1695,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "96d47f16-d0ad-453c-aa68-6f394f4c521b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.5",
@@ -1617,7 +1710,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8bc5ce35-7f7c-4980-8015-4041e3500abd",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.201.2",
@@ -1631,7 +1725,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d252bd3c-7331-43cc-a67c-3e5519bdb792",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.200.2",
@@ -1645,7 +1740,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "53cad706-4191-4289-8eee-c401a486ad1a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.4",
@@ -1659,7 +1755,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d8107807-40f7-4552-a78c-f410fe1ae1df",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.40.2",
@@ -1673,7 +1770,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "49968828-1578-4f5a-b182-1455ec2b57d6",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.20.3",
@@ -1687,7 +1785,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a3306a97-5e87-4a00-8327-5d44b27ead8b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.10.2",
@@ -1701,7 +1800,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fa089b11-1468-428e-8762-8b7bc8adfc17",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.1.2",
@@ -1715,7 +1815,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b76ea735-b1a3-4ffc-b4ca-f5ad67e9e45f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.0.2",
@@ -1729,7 +1830,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8ecef46e-e8be-473c-bfe3-db35ef3c173d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.60.5",
@@ -1743,7 +1845,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a7048ece-24fa-429a-8df4-dc19a7ca751d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.30.2",
@@ -1757,7 +1860,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d2785376-3c4b-4e7f-b903-9293180769e7",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.20.1",
@@ -1771,7 +1875,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d807bbf1-c63a-4d67-a53a-cc7d78398ffc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.1.5",
@@ -1785,7 +1890,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "28e6e288-5296-42ed-b086-0a629a4f68aa",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.0.9",
@@ -1799,7 +1905,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e67df0cc-2a09-44c1-ba77-c441c331dae0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.1.5",
@@ -1813,7 +1920,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "01fb9b77-507d-420d-8116-0a1042c1e680",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.0.34",
@@ -1827,7 +1935,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "29de2df8-a8fd-43c7-9594-09fd8c9ae8a1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.1.1",
@@ -1841,7 +1950,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "afa14647-f21b-4191-aa98-b88f164c5201",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.28",
@@ -1855,7 +1965,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "dd4e7be3-57f9-47fe-aeea-8caab07e6469",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.4.2",
@@ -1869,7 +1980,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fc1de9e4-cf9f-47c3-8654-2835ec993964",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.3.1",
@@ -1883,7 +1995,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c1f34823-2e07-4af0-940a-184cfffd076e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.1.2",
@@ -1897,7 +2010,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ce39153e-e937-454a-9fb0-70b35c723062",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.0.23",
@@ -1911,7 +2025,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0a6af6d0-3ef4-47bd-b105-07b91a1d23ee",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.10.1.1",
@@ -1925,7 +2040,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "47f37eee-fa8e-442c-8edd-e9f28a2497cf",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.10.0.7",
@@ -1939,7 +2055,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cf55c488-6839-4888-b892-562f92bb3dce",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.9.0.15",
@@ -1953,7 +2070,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "DDB8196F-A608-4436-B3BD-CC60D5A9D1AD",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.8.1.2",
@@ -1967,7 +2085,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3276661D-8B7A-4A30-A325-AE05A6B9CBB1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.8.0.24",
@@ -1981,7 +2100,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "659F8B59-3FC7-4242-A06E-DA1AB4BDE3C4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.7.1.0",
@@ -1995,7 +2115,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "AC26D7E8-AEEB-43CA-9F09-01E082EF2D2D",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.7.0.13",
@@ -2009,7 +2130,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "E88DE30C-8981-4D92-8141-435689A237F4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.6.1.0",
@@ -2023,7 +2145,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3AFBABDD-876F-4C5F-8054-90210EC05AF8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.6.0.14",
@@ -2037,7 +2160,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5808C125-7001-47EF-871D-A38B20FE8D79",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.5.3.0",
@@ -2051,7 +2175,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "39EA04C0-CAB0-4859-A2BC-BFEBB18E68F4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.5.2.1",
@@ -2065,7 +2190,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "F5C3D6B3-AE74-47CA-9579-5C324B0BAD17",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.5.0.14",
@@ -2079,7 +2205,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9BC7BE70-4F65-44A5-A83D-B60CEE491A6D",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.4.2.0",
@@ -2093,7 +2220,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "E361D881-AED0-44E3-9D13-D4AA943F6463",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.2.10.2",
@@ -2107,7 +2235,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "825166E1-197B-4845-ADE7-D12A1B8A18D0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.2.8.0",
@@ -2121,7 +2250,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "A2612767-B607-49E0-9145-6BD4AEC49FE7",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.2.3.6",
@@ -2135,7 +2265,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "57586DDC-3E4D-43BC-8DF2-7DC7F5EAAA57",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.2.2.3",
@@ -2149,7 +2280,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "2A36511E-3221-41D1-8BE4-8D49E05CB669",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.1.5.0",
@@ -2163,7 +2295,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "60C20FD7-B456-4FF6-AD66-7E7AB62527BA",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.0.0.16",
@@ -2177,7 +2310,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4234690B-30B9-46A4-A5F9-811953A151D5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.16.1.0",
@@ -2191,7 +2325,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "786FA001-04F9-42DE-A556-E98AF3684525",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.16.0.5",
@@ -2205,7 +2340,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "88FCAC52-F717-442E-A667-2B1943F7DAD3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.15.10.0",
@@ -2219,7 +2355,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "C2FC6B6E-7548-4FDA-8936-C105C740B1E7",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.15.9.0",
@@ -2233,7 +2370,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7E035D83-C675-4248-BED1-2087F739356E",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.15.8.0",
@@ -2247,7 +2385,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "367BE4B5-A71C-4D36-BC46-D11468777F7F",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.15.7.1",
@@ -2261,7 +2400,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7EBC0F58-4AF1-4893-9465-FCBF57FDDE99",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.15.6.0",
@@ -2275,7 +2415,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8FC80FC6-192C-4C50-8533-C5B49A5D3901",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.15.4.1",
@@ -2289,7 +2430,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "EC51A839-B3EE-44E6-BB8F-C75154547E66",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.15.0.0",
@@ -2303,7 +2445,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "28354370-EB00-498C-B6CB-1B2DBBDD8042",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.14.2.1",
@@ -2317,7 +2460,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "A4A7A7D3-9739-43A1-8668-1556DDDB4CD4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.14.0.1",
@@ -2331,7 +2475,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "B17C2923-587A-442B-9BC6-76A13C02978C",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.13.2.0",
@@ -2345,7 +2490,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "B114152D-E4A6-4A35-8C18-EC079EB4A17F",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.13.1.0",
@@ -2359,7 +2505,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4B64779C-D1CD-4659-B1C5-03C858232579",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "0.13.0.0",
@@ -2373,7 +2520,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "985D1EE4-0E9D-49DE-9A99-E208ADC08D0C",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.26.20.27",
@@ -2957,7 +3105,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c1872dc3-ddf8-4a91-844b-8dca1b681324",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.110.26",
@@ -2971,7 +3120,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a334dabf-51c3-405d-bbeb-48c1d86f4b67",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.110.25",
@@ -2985,7 +3135,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d1df6680-05a6-4e7a-87db-88754f3216fa",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.110.24",
@@ -2999,7 +3150,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a6b6cc17-8947-40e9-9195-fa23419797da",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.110.23",
@@ -3013,7 +3165,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "10bea09c-e101-4ca1-9647-2dd637dfc03d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.110.22",
@@ -3027,7 +3180,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "45d7617c-a250-449e-a326-aade7096cb4a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.110.20",
@@ -3041,7 +3195,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c1312e5d-95e2-42bd-9ea4-abc75aa5c1f6",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.100.24",
@@ -3055,7 +3210,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7952cc8f-44e9-4ef9-89ed-b9c709a84001",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.100.23",
@@ -3069,7 +3225,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4121c3a9-2469-4b39-9167-2885d1a3a2fb",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.100.22",
@@ -3083,7 +3240,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "260f0765-0b26-49cc-bb15-7298004ac7ad",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.100.21",
@@ -3097,7 +3255,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "dd86bb3b-e988-4d64-b902-d8b8ce9224b5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.100.20",
@@ -3111,7 +3270,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3c69b2fb-b4bc-414c-a8f1-f6dbc0748340",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.90.28",
@@ -3125,7 +3285,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "df974c76-2f0e-45e9-ae92-7fb759b60827",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.90.27",
@@ -3139,7 +3300,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5a142e02-a73c-49cc-acb8-6627d3b1769b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.90.26",
@@ -3153,7 +3315,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "646f5eb1-2eaf-441e-9ce6-44010f00a3b9",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.90.25",
@@ -3167,7 +3330,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "738d551d-1a96-4826-857f-2a888d03e326",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.90.23",
@@ -3181,7 +3345,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fef2e8d1-f58f-4a47-b1b5-ff821130c27d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.90.21",
@@ -3195,7 +3360,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "115c06da-6cc2-43c1-9cfa-8d390f3048ef",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.90.20",
@@ -3209,7 +3375,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c90ac7e3-0098-44fc-9d7c-411893115b54",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.80.28",
@@ -3223,7 +3390,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "70d34307-7df6-4aac-9d84-76b38a814af3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.80.27",
@@ -3237,7 +3405,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ac6989bf-8614-4dbb-8598-58eb60dc7735",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.80.25",
@@ -3251,7 +3420,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f6fba6c5-48ad-4e53-90f2-485aed8bbcf4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.80.22",
@@ -3265,7 +3435,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fbbfe21c-1c3a-476b-98f5-55f09c5588a2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.80.21",
@@ -3279,7 +3450,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "47204794-0ca8-4141-8aef-384b586d1721",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.80.20",
@@ -3293,7 +3465,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "57543f5b-e520-4a95-84bd-0c614a0e395a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.70.26",
@@ -3307,7 +3480,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d709f990-3350-4d3f-84df-f958376e561c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.70.25",
@@ -3321,7 +3495,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "bf70c1b2-4ab2-4db7-a83e-7d7de8190243",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.70.24",
@@ -3335,7 +3510,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a9c1a01d-468a-4d14-b4c5-e13fb8e2b11b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.70.23",
@@ -3349,7 +3525,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5252dfe7-2e69-4ef6-b119-ee623acfd117",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.70.22",
@@ -3363,7 +3540,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fa4bd43d-54cd-4545-8b77-5705fed08f16",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.70.20",
@@ -3377,7 +3555,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "22deedff-5beb-4f8a-848d-33a588173637",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.60.28",
@@ -3391,7 +3570,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1d8746cd-7496-44c4-a17f-7d8e19c6d50c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.60.27",
@@ -3405,7 +3585,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cb9e9c53-0f74-4585-b25f-10a5e12f0e2c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.60.25",
@@ -3419,7 +3600,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "11186fd0-c4a2-4da6-8b25-74dab41acaf1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.60.24",
@@ -3433,7 +3615,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f5a9d362-7b9d-488c-a1f5-7aa05fc0a7fa",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.60.23",
@@ -3447,7 +3630,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6e1eaea0-b349-4448-b8d0-0398107e521a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.60.21",
@@ -3461,7 +3645,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f85a073c-afcf-4425-a2b4-3e8438bdba5b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.50.29",
@@ -3475,7 +3660,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "94660687-f733-4dde-bb46-f0c76a1ede58",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.50.28",
@@ -3489,7 +3675,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a1d35bd4-0c05-463f-9370-78edcdd56af7",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.50.26",
@@ -3503,7 +3690,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6c937c28-22da-4033-9f7f-f7ae28c6a2c5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.50.25",
@@ -3517,7 +3705,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ef4de330-2359-4ae2-af2d-6cf6279f6b60",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.50.24",
@@ -3531,7 +3720,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "db9faf0e-52c0-4600-979e-9d251784a217",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.50.20",
@@ -3545,7 +3735,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c1b51cd7-dd29-4711-93c0-14a440381c9b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.40.25",
@@ -3559,7 +3750,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d23a8014-20a8-46a0-b0ad-537da42709de",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.40.23",
@@ -3573,7 +3765,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "304dc436-ce1d-46b1-bae1-3073e2c04461",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.40.22",
@@ -3587,7 +3780,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8303ae30-23ef-4d61-8a58-5e24efa8d2b4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.40.21",
@@ -3601,7 +3795,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4a365f93-c9d5-4ab8-84a6-3002cf93c0f8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.40.20",
@@ -3615,7 +3810,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b596745b-2c9c-419d-a811-23bb8a958e1d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.30.25",
@@ -3629,7 +3825,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "dbf1bf47-35b3-43aa-9207-4743ea58ff4a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.30.24",
@@ -3643,7 +3840,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cb444d33-f48c-49f7-887d-91ee99a6fbb1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.30.23",
@@ -3657,7 +3855,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "2d5d523e-0688-4901-a39d-dd51418c0332",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.30.22",
@@ -3671,7 +3870,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "41423e27-d370-452b-8d89-65ffb962bf2d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.30.21",
@@ -3685,7 +3885,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d86bf0ac-516d-4f01-978e-dbf404fa78f0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.20.24",
@@ -3699,7 +3900,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5c93cc57-8cfd-49a6-92f5-e586c7774895",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.20.23",
@@ -3713,7 +3915,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a5d102fd-9a2d-4163-a256-dab50fc60efa",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.20.22",
@@ -3727,7 +3930,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f4c61bb4-8744-41d2-8b50-e244e402d621",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.20.21",
@@ -3741,7 +3945,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8e0e59e2-bae6-4970-9d01-3bc5e0cdfc9b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.10.24",
@@ -3755,7 +3960,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b2787c57-a583-4846-bb4b-dfe9c3778054",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.10.23",
@@ -3769,7 +3975,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "98f6b51b-a5b5-434d-a273-680e36a19a52",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.10.20",
@@ -3783,7 +3990,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "691e3f47-e8f5-41e9-b085-2a1d48233d5f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.0.26",
@@ -3797,7 +4005,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "073caaaf-4480-49fe-903a-9a57d76c921f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.0.25",
@@ -3811,7 +4020,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "dd5c06b0-b249-4e2a-b46c-322c33c58f27",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.0.23",
@@ -3825,7 +4035,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ceff03fb-d202-40ec-a158-4e26949ad91f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.0.22",
@@ -3839,7 +4050,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9cbdf7b6-c381-4fef-8306-a584ac2128f3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.21.0.21",
@@ -3853,7 +4065,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "144cbbe7-09d4-4a14-b310-2f5c2f93a482",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.80.24",
@@ -3867,7 +4080,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "edb31b61-e4a8-4589-8666-cdf1a9703915",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.80.23",
@@ -3881,7 +4095,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0a83cf55-dc93-48e7-b948-c34291954a44",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.80.22",
@@ -3895,7 +4110,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6da8bba8-ff80-4594-b62b-3926d341d93c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.80.21",
@@ -3909,7 +4125,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "bc2e37d0-34c8-4659-88e5-89422e77eecf",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.80.20",
@@ -3923,7 +4140,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "11b5f04d-52a1-4640-ac97-9c9cf118940e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.70.25",
@@ -3937,7 +4155,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "16307f78-6a59-4f93-b79e-5bec9a8da46b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.70.24",
@@ -3951,7 +4170,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "79304725-0740-47f2-8922-f8f80e0cb40e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.70.22",
@@ -3965,7 +4185,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1079afec-087a-4599-a7c9-3b40ec7b0322",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.70.21",
@@ -3979,7 +4200,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6735c30c-d93d-42a5-8fd8-cd393be3f758",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.60.26",
@@ -3993,7 +4215,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ddb0b769-d45f-41b3-b4f2-42f68fcfce21",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.60.25",
@@ -4007,7 +4230,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "dc202ed1-e02d-4d04-84e9-ad33641417e8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.60.24",
@@ -4021,7 +4245,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6bfbebae-b3ac-42c2-b4d1-c468fb750df8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.60.23",
@@ -4035,7 +4260,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "290a2a81-a041-4dcd-8b67-53cd9bab06b0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.60.22",
@@ -4049,7 +4275,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7e939aea-c6a0-4b02-a0a0-ff6e39fddb2b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.60.21",
@@ -4063,7 +4290,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8a596ec6-2ef2-47b7-bed4-927bad6f5252",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.50.24",
@@ -4077,7 +4305,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "de3a5817-be6f-491e-b172-41bdbcdfe11d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.50.23",
@@ -4091,7 +4320,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "07ad7d91-c18b-4224-8012-e5d05e496eef",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.50.22",
@@ -4105,7 +4335,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b737517b-57c9-46be-bb1a-9d7d1f9e75eb",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.50.21",
@@ -4119,7 +4350,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "048f67a3-633a-401e-8a91-2aeac15d0d0d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.50.20",
@@ -4133,7 +4365,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "00f89f8f-72a2-4f6e-9eba-8d0217aa5e6d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.40.24",
@@ -4147,7 +4380,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "675fa666-dcd6-4fc7-8b04-8ca8071ee982",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.40.23",
@@ -4161,7 +4395,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3b9f5141-ceb6-4525-ad9c-a903637eb091",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.40.22",
@@ -4175,7 +4410,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b39ad698-6e5e-40f8-8568-e597c9f4ba4e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.40.21",
@@ -4189,7 +4425,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6037df8b-8cf7-4b6a-b1a2-ee70dc8eb87e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.40.20",
@@ -4203,7 +4440,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6ed1a3ae-11d4-4e51-8ff6-befb7079d760",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.30.25",
@@ -4217,7 +4455,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d53407c7-88d3-4125-adab-7342af5ddcd3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.30.22",
@@ -4231,7 +4470,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4e2ca821-6448-44f3-b766-fb741d8c4939",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.30.21",
@@ -4245,7 +4485,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7c79089e-6a33-4431-b5ea-2678adee97fd",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.30.20",
@@ -4259,7 +4500,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "51d6ffa2-1b5d-4f63-87d8-000f43307bcd",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.20.23",
@@ -4273,7 +4515,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e5a5da27-03b9-41f3-80dc-4762d2a24479",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.20.22",
@@ -4287,7 +4530,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "14eb9b19-c129-444a-ad64-b9f8c9cbd149",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.20.21",
@@ -4301,7 +4545,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e07dacf5-0654-4cc2-a3b0-9222d623b791",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.20.20",
@@ -4315,7 +4560,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "55ce5b86-05d6-452d-a53c-572e8a6f6884",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.10.21",
@@ -4329,7 +4575,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1298a141-4501-4d91-9fd8-98ccf965bc33",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.10.20",
@@ -4343,7 +4590,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a4e6c359-6e08-4fba-bb09-d21809081512",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.0.23",
@@ -4357,7 +4605,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5c43c764-b8d8-4744-a03b-dea76c2860d1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.0.22",
@@ -4371,7 +4620,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a07daa93-aa15-4e78-971e-f771e2f8d603",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.0.21",
@@ -4385,7 +4635,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5c15f066-f83d-4fdb-a0a8-627d1ae21672",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.20.0.20",
@@ -4399,7 +4650,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e048c0b3-cb39-4fe3-a467-296b23a4cf67",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.80.24",
@@ -4413,7 +4665,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "df155426-f980-493c-b73b-fdc652c12273",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.80.23",
@@ -4427,7 +4680,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "80dbcd81-cd11-4a93-b570-08c7c7d7f5e5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.80.22",
@@ -4441,7 +4695,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "46e9d597-e8b9-49e3-ad13-e036921b2c7c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.80.21",
@@ -4455,7 +4710,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e619437b-ec7e-4805-95c2-440b57d7c0c0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.80.20",
@@ -4469,7 +4725,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7e97da4f-1afe-4c3c-a73f-accc8abefb59",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.70.24",
@@ -4483,7 +4740,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8c06d1cf-ef90-4090-a4be-750600ac1b47",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.70.23",
@@ -4497,7 +4755,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1a858916-b95f-4efd-8d2c-76ce4604df5d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.70.22",
@@ -4511,7 +4770,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "542de049-3f15-4e52-8f10-73894d0e0922",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.70.21",
@@ -4525,7 +4785,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9b207aa4-153a-469b-a9a3-2fc55e406771",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.70.20",
@@ -4539,7 +4800,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d5e6e6ea-9927-4d1d-aff2-7e2db001b4cc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.60.27",
@@ -4553,7 +4815,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b56cd5ea-9f63-42ce-ae22-b841efc5640b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.60.26",
@@ -4567,7 +4830,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3a971e56-5fdc-47f8-a3a3-95b5c956936d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.60.25",
@@ -4581,7 +4845,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "50791383-578b-474d-be88-3cce2cd0225f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.60.24",
@@ -4595,7 +4860,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0206c3a5-a60a-4f52-97dc-964f77a720db",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.60.23",
@@ -4609,7 +4875,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "abb651ed-93b5-4b59-b25e-46f3ecdd8677",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.60.22",
@@ -4623,7 +4890,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "351ab883-1561-4774-995c-c7fde2baccd2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.60.20",
@@ -4637,7 +4905,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cd42c0a0-0a21-4200-b29e-787ac044efcb",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.50.23",
@@ -4651,7 +4920,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "afb184e8-201e-4d20-9d6e-d48550c2ea06",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.50.22",
@@ -4665,7 +4935,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "adcc36b5-0afe-4f13-b0fb-a108896a6bc3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.50.21",
@@ -4679,7 +4950,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ccf03008-c7a9-48dc-bb50-20bc0487b76e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.50.20",
@@ -4693,7 +4965,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6345d3bf-44ac-458a-b137-25919f3e34f7",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.40.24",
@@ -4707,7 +4980,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d54c5515-febf-46cf-9c02-e02db95aa463",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.40.23",
@@ -4721,7 +4995,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1fd77fbe-c806-438c-b578-fe124a972fbb",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.40.22",
@@ -4735,7 +5010,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "115d47db-32a5-422b-abdd-79cb9e9366ae",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.40.21",
@@ -4749,7 +5025,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b82b9887-6f7a-4efd-a142-cac192b3f7c5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.30.25",
@@ -4763,7 +5040,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "45f5256b-0511-4dfd-a46e-4669601fdc6e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.30.23",
@@ -4777,7 +5055,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7209714f-1c94-4218-b3d1-fed1141ae13c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.30.22",
@@ -4791,7 +5070,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c3b71ea8-b539-4fe5-b68a-5bf3ef4892d2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.30.20",
@@ -4805,7 +5085,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0eee2956-c6ac-480a-aae6-87ac56fd62cc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.20.24",
@@ -4819,7 +5100,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1fc60666-9d53-4595-aceb-6f38b862cc6b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.20.23",
@@ -4833,7 +5115,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "14fbf174-5755-4169-baf2-6885d3898c8c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.20.22",
@@ -4847,7 +5130,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c8607823-f81a-42e4-9f46-c1bb3fbb06ed",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.20.20",
@@ -4861,7 +5145,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "49ba15bb-d0a2-428f-a8a9-3b2a17cc96c2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.10.24",
@@ -4875,7 +5160,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0179e0d4-dd33-4f3c-b76c-be40496fcea0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.10.22",
@@ -4889,7 +5175,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "297a3833-310d-4bdc-9607-6443f7d28cb7",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.10.21",
@@ -4903,7 +5190,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d8e31166-9e3c-4deb-9590-964022eb61b8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.10.20",
@@ -4917,7 +5205,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "165d7914-4597-4398-9325-1820003168b5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.35",
@@ -4931,7 +5220,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "916af7b2-7eb4-4b18-83d5-cc302bf82e7f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.34",
@@ -4945,7 +5235,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9f08fa32-4eaa-454f-8a4b-43e99e515066",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.33",
@@ -4959,7 +5250,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fd9a07cd-49e7-4fe6-9791-5358d0c23138",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.32",
@@ -4973,7 +5265,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fef8b6d8-452a-4f37-a98d-cc9f917f4ddc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.31",
@@ -4987,7 +5280,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4cfc96bf-f319-442a-b48d-c88956669414",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.30",
@@ -5001,7 +5295,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "471d48ef-7bc2-4ee2-9f82-18338eeff6a2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.29",
@@ -5015,7 +5310,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c8d89b8b-6e1e-41ed-a3ba-a700cc13e5b5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.28",
@@ -5029,7 +5325,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cfb51e62-ba3c-496e-b4ca-2c4bcbf3ca04",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.27",
@@ -5043,7 +5340,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6e4c1c50-3d50-4589-8504-eab4747b55e0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.26",
@@ -5057,7 +5355,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e5912e3f-8555-4edd-a153-1d824a259eb3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.25",
@@ -5071,7 +5370,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f76c2e43-6ac1-4959-8573-a85636ffcee3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.24",
@@ -5085,7 +5385,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f115410f-f682-4110-bfc0-a17219f2deb6",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.21",
@@ -5099,7 +5400,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "779ff155-e5ae-4c5f-8847-fb36f1d91579",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.19.0.20",
@@ -5113,7 +5415,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "46c548cd-6b9d-4a11-93e0-3150370151fc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.31",
@@ -5127,7 +5430,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9e228ff9-9374-498f-a1b4-f84b080ad940",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.30",
@@ -5141,7 +5445,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "37a7cf3b-fd0e-46bd-988c-d3a84c9d89a4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.29",
@@ -5155,7 +5460,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fd7cc6b0-aadf-48c4-8487-185cdcd0bea0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.28",
@@ -5169,7 +5475,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "521a991e-bd32-49ca-acd9-5b45ca52f823",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.27",
@@ -5183,7 +5490,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4959b0c0-9d57-49dc-8fa6-bb3b88f20611",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.26",
@@ -5197,7 +5505,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "249cbbdd-9547-46c1-92b8-008d7d1744df",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.23",
@@ -5211,7 +5520,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c1a7f56e-11ed-498b-8d64-17cab53a5eb3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.22",
@@ -5225,7 +5535,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3bd93974-f377-4e8e-bae7-479a3741bf59",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.21",
@@ -5239,7 +5550,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a24bdd6a-0e28-45e4-85a3-b52507eb249c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.30.20",
@@ -5253,7 +5565,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cea2f5ea-9231-4de1-a3b0-d65689a1ae98",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.20.30",
@@ -5267,7 +5580,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ef5bcd23-ab79-47de-b337-acc9dbdcbd1e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.20.29",
@@ -5281,7 +5595,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "37996955-b602-4697-962b-9825ebf2686e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.20.28",
@@ -5295,7 +5610,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d30fcbb2-4fde-4bb5-84c1-abb0dd549188",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.20.27",
@@ -5309,7 +5625,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "93ccef94-0bd0-45d8-b152-20a25a51a8f5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.20.26",
@@ -5323,7 +5640,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "012d3665-b5e8-4f35-97f3-94edc3efa311",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.20.25",
@@ -5337,7 +5655,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0b1009e4-52b3-4407-bf1d-274ddf2fdacc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.20.23",
@@ -5351,7 +5670,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "212e5a7d-9c44-4082-ad24-26a49e333869",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.20.21",
@@ -5365,7 +5685,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3cfb13ad-0f43-48df-9c9d-61f701f83cd8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.10.28",
@@ -5379,7 +5700,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "148424bf-d82e-4154-919f-7db2bf696223",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.10.27",
@@ -5393,7 +5715,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f214d608-0bf5-482e-a2fc-dabc87a2e132",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.10.26",
@@ -5407,7 +5730,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "428c00af-493d-460d-8ee8-58ff8f0bb870",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.10.21",
@@ -5421,7 +5745,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8eb5cf27-160e-42db-bd8c-f010492cfb03",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.10.20",
@@ -5435,7 +5760,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "46ac4b44-2ee4-430c-b367-d91544bd44cb",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.0.27",
@@ -5449,7 +5775,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6dcb1475-ba02-4302-b1c9-f8faaf2e392a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.0.25",
@@ -5463,7 +5790,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "43202b04-8641-4ccd-81f8-8735765d1719",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.0.24",
@@ -5477,7 +5805,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0cfb4c09-e66a-48b7-a160-dce0f78f41ec",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.0.22",
@@ -5491,7 +5820,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ac0eb940-5560-4f85-9824-60dc4fdeada8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.0.21",
@@ -5505,7 +5835,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ec1d14a2-e181-4146-b7e8-6f6466aabc74",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.18.0.20",
@@ -5519,7 +5850,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "537f8e54-c38c-4994-baf3-2d2059ff3240",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.40.23",
@@ -5533,7 +5865,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0cbfa585-81a0-405f-9aaf-f9ec06a38354",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.40.21",
@@ -5547,7 +5880,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ebb39b8b-60bc-4623-be6e-fe6eb0ba820d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.40.20",
@@ -5561,7 +5895,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "62710269-0913-4339-9c9a-4a039adeb535",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.30.25",
@@ -5575,7 +5910,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e9660b30-7787-43b4-96d1-1af1215623fa",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.30.24",
@@ -5589,7 +5925,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "bef02359-7187-49bc-9c7b-7f7e4b0011e7",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.30.23",
@@ -5603,7 +5940,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8aada731-1de6-4425-9863-8686c50378f2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.30.22",
@@ -5617,7 +5955,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7d9d6cdf-494a-4f7e-9817-b77ca5906a06",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.30.21",
@@ -5631,7 +5970,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ed9598f6-125d-45e7-99cb-699f59ed4413",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.30.20",
@@ -5645,7 +5985,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c1ad1e94-3414-480b-89d8-b41c2cbda51f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.20.23",
@@ -5659,7 +6000,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6d8b5454-9d55-443a-8fd9-06dc87490d75",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.20.22",
@@ -5673,7 +6015,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "026432e4-b1af-4b86-a258-3674101eec39",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.20.21",
@@ -5687,7 +6030,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d4d72af7-d729-45f1-8dfb-ed626b2fac3d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.20.20",
@@ -5701,7 +6045,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1062bba9-2045-4ea9-a67a-621edd2cd260",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.10.23",
@@ -5715,7 +6060,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ffbe8303-8f32-419a-9312-80f7703978d7",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.10.22",
@@ -5729,7 +6075,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "971f3059-6f5b-4d52-8b57-2e180433fffd",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.10.21",
@@ -5743,7 +6090,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b8d61194-14f4-45a8-8c1e-19da9d55e7a4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.10.20",
@@ -5757,7 +6105,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7c09f339-af39-45bf-ad44-c1881e9cf3ff",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.0.56",
@@ -5771,7 +6120,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "264a3857-1be7-4048-8077-4522de47315e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.0.54",
@@ -5785,7 +6135,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "83f1d4c1-8b7d-4582-b7d2-64464689d28e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.0.52",
@@ -5799,7 +6150,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "de07ae11-e05d-4bc5-b8e1-316863d4e4ca",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.17.0.50",
@@ -5813,7 +6165,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d3e26204-aa23-4dfb-b007-741cbad2ca51",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.230.56",
@@ -5827,7 +6180,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "db76bd0c-c9fd-4e5a-b2c4-eef157bd6164",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.230.54",
@@ -5841,7 +6195,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "69c75adb-d19f-4ca3-b79d-cf6d8df91004",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.230.52",
@@ -5855,7 +6210,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7a0e602e-e437-4356-8378-c2ad2ababe49",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.230.50",
@@ -5869,7 +6225,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "b946e005-5ea9-4d13-8a36-93d0ffa7d95a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.220.52",
@@ -5883,7 +6240,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c9a31802-83bd-4c72-829b-21bf9d58068b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.220.51",
@@ -5897,7 +6255,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "13afe26e-56a7-4ca9-bfde-e7e362c0fec2",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.220.50",
@@ -5911,7 +6270,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "cf26df75-c043-4f19-b96e-de741dc4c4bf",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.60",
@@ -5925,7 +6285,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "52e122b0-977f-486a-9b42-a053eead00aa",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.59",
@@ -5939,7 +6300,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0750a709-e666-4cda-8762-a5edf7e5bedf",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.58",
@@ -5953,7 +6315,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "19a4227b-5af5-4331-8921-49c384bff13a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.57",
@@ -5967,7 +6330,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d8938828-8fd2-425e-b2d3-a28a5d72c1a0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.56",
@@ -5981,7 +6345,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c325d7bf-7d42-4171-9f44-1f809117b7f1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.55",
@@ -5995,7 +6360,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "47720aa6-9654-4f3e-bb24-c74a479f3351",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.54",
@@ -6009,7 +6375,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6d5b0db4-52e7-421f-b9f9-8da8fe0f9d42",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.53",
@@ -6023,7 +6390,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1b280354-38bd-4d72-8cc0-d054c4ee3d39",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.210.50",
@@ -6037,7 +6405,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "7f25ed67-6225-4203-8631-7f2c8bc034ac",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.200.57",
@@ -6051,7 +6420,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fe912e0c-a2ad-455c-abd6-cbd2234da2b0",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.200.56",
@@ -6065,7 +6435,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3d5ce213-fac4-48ca-b810-fdd1cf726b76",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.200.55",
@@ -6079,7 +6450,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "06469736-4bf7-4030-a6cc-fb3d0ebebff1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.200.51",
@@ -6093,7 +6465,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "48cc1988-24bb-45b1-a00f-8d8d008b7998",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.60",
@@ -6107,7 +6480,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a5731b4a-195a-434f-9024-d9d843f87049",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.59",
@@ -6121,7 +6495,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f5a4f244-08ba-45f5-9081-c67488d95177",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.57",
@@ -6135,7 +6510,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9ba3a7fd-0370-4410-abc7-74bc9704316f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.56",
@@ -6149,7 +6525,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5aacf097-4ac1-467a-8a51-e8b844b52cec",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.55",
@@ -6163,7 +6540,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "288e8fd4-73c6-40d2-9df3-f53b56485185",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.54",
@@ -6177,7 +6555,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f8947dd1-fda6-446d-8251-36867403c85c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.53",
@@ -6191,7 +6570,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "58b91a25-6c24-47cc-b0b3-6fbc0cd8842a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.52",
@@ -6205,7 +6585,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d07c1071-bcd2-4078-8857-e5d7b609931a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.51",
@@ -6219,7 +6600,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3a2391c1-e5cc-4218-a321-620e997de0f4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.100.50",
@@ -6233,7 +6615,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fb76b4d6-c62f-43b4-892f-46d327fe7040",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.20.54",
@@ -6247,7 +6630,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0466c7a7-9600-468a-aaa8-411aeb0b763d",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.20.53",
@@ -6261,7 +6645,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6a89153e-c43c-4716-a645-dcc2414a6b60",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.20.52",
@@ -6275,7 +6660,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8bca2ce7-a6cd-449d-8a83-6df41cda3c58",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.20.50",
@@ -6289,7 +6675,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "337f2222-cddc-4a2c-99f8-2e7b944a8b62",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.0.68",
@@ -6303,7 +6690,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e005e0c6-e2f6-45a4-954d-f527e866a8fc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.0.60",
@@ -6317,7 +6705,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fcc2a65c-07e7-45c4-b66b-78a0ab673cbe",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.0.59",
@@ -6331,7 +6720,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c65b287d-bd9f-47a7-bf7d-7948dbd43ad4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.0.58",
@@ -6345,7 +6735,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "45b1cdf6-2456-4660-b2f9-a6acb8893ee5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.0.57",
@@ -6359,7 +6750,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e4085e2a-e74e-4091-a61d-86eff77a2335",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.0.55",
@@ -6373,7 +6765,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3f097757-b8e2-422a-bbc4-0de2d65fae22",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.0.53",
@@ -6387,7 +6780,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "fed93fc5-d026-49fc-a5b3-2fabaca0fd18",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.16.0.51",
@@ -6401,7 +6795,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "ccdd414e-8ecb-48c0-a0bc-cc7d9ae050e3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.15.0.54",
@@ -6415,7 +6810,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "1da5f729-2ede-4a62-ac13-33b142909cf5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.15.0.53",
@@ -6429,7 +6825,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "60334da6-1f55-40a4-a34b-f20cf654d889",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.15.0.51",
@@ -6443,7 +6840,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "38283a74-3311-4a49-bc4e-6550ea511e99",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.30.51",
@@ -6457,7 +6855,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "88094472-d550-4ff6-86ac-32701c4eb3e1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.25.1",
@@ -6471,7 +6870,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5e8cc245-1d16-4176-8326-bec907c64705",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.2.51",
@@ -6485,7 +6885,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f7cfe4a1-f9ba-4104-85fd-b6426598de01",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.2.50",
@@ -6499,7 +6900,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3e896ea1-99a0-4969-823b-3b6c574a7bcc",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.1.3",
@@ -6513,7 +6915,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e5547916-efd1-45b8-b6d2-3dfdc7510cbf",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.0.52",
@@ -6527,7 +6930,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "d470d913-e6be-4c8f-93d4-2b61a98d8efa",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.0.51",
@@ -6541,7 +6945,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "0b3ea232-b51c-46c7-ab0a-aeaecd2fa8aa",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.0.4",
@@ -6555,7 +6960,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "17914518-ed69-4854-8810-4b2d3554db86",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.0.3",
@@ -6569,7 +6975,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "4451a98a-9393-4dd4-b3b0-a39f1e5187c4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.0.2",
@@ -6583,7 +6990,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "3b01a06f-f924-4366-a4a9-93b4d47c9eb5",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.14.0.1",
@@ -6597,7 +7005,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9fbdfd18-dc7d-4ca6-a698-4e01ba137752",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.0.15",
@@ -6611,7 +7020,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "79f703ec-d35c-49a0-9da2-167d3c314e4f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.0.13",
@@ -6625,7 +7035,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "37e9eb3a-8bd7-4d2a-8409-04489e252ec1",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.0.9",
@@ -6639,7 +7050,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c930805d-d9b2-4e91-8f25-74d405d817fb",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.0.6",
@@ -6653,7 +7065,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c2aa0020-9b46-4a28-9de3-8085d980f5ed",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.0.5",
@@ -6667,7 +7080,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "edc9edea-537b-4f80-b6cf-589eebbe1349",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.0.4",
@@ -6681,7 +7095,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e5cd10aa-e542-46d2-91f5-4bd20205ee19",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.0.2",
@@ -6695,7 +7110,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "61a56d78-eb35-436b-a185-36bf2bec7aef",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.13.0.1",
@@ -6709,7 +7125,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "5a588f69-e65d-4651-aaa9-b015ded8d019",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.14",
@@ -6723,7 +7140,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "8ae06369-e856-4f4a-a37a-edb2d1c7e095",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.13",
@@ -6737,7 +7155,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "227f8ad1-b12f-479c-b296-9cb634209738",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.12",
@@ -6751,7 +7170,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "2ebd91f9-099a-414b-a56a-c2c61e48dc3f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.11",
@@ -6765,7 +7185,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "e1c2796d-a8f5-4762-be14-9d75ef1c4e87",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.10",
@@ -6779,7 +7200,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "9d9e9a1b-da15-42e1-977b-e44ab504be8c",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.9",
@@ -6793,7 +7215,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "865de55b-cd3f-472e-808b-1a6f0aece65f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.6",
@@ -6807,7 +7230,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a41272a8-140e-4f4b-a4fb-7c48cd2f8827",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.4",
@@ -6821,7 +7245,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f2e9f47c-b633-40b8-80d4-899dd3ec3ef8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.3",
@@ -6835,7 +7260,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "44b546b7-70a6-4384-b4c6-1cdc3a320060",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.12.0.2",
@@ -6849,7 +7275,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "625de0c6-bb52-41fa-8adf-2f21c6cf5b8a",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.0.10",
@@ -6863,7 +7290,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "55e4a122-6229-40e9-97d0-168b824c23df",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.0.9",
@@ -6877,7 +7305,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "dd82b611-3799-48d6-ab97-c146f28e39bb",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.0.8",
@@ -6891,7 +7320,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "c3e74ea2-6b65-42fd-a291-4e6d6853b11f",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.0.7",
@@ -6905,7 +7335,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a7a465c1-84ee-4d44-9276-d61135b8ca7b",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.0.5",
@@ -6919,7 +7350,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f310e0c3-1c19-4725-99c0-f1949f0791b3",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.0.4",
@@ -6933,7 +7365,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "f12dc2c0-344d-4c1a-af4a-c484f662b890",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.0.3",
@@ -6947,7 +7380,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "a4020779-d76d-4a41-a308-20822644265e",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.11.0.1",
@@ -6961,7 +7395,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "667B6F0B-5747-416C-A60B-82ABD49AA58D",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.10.0.4",
@@ -6975,7 +7410,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "F2E656DD-86F2-42BE-A157-253A2782B462",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.5.0.0",
@@ -6989,7 +7425,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "6C0C633F-C6D1-4DE7-8AA0-4A66866996C8",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.2.5.13",
@@ -7003,7 +7440,8 @@
     "date": "",
     "downloadable": true,
     "updateId": "53F27416-ED1B-4372-B7DB-556E4472513C",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   },
   {
     "id": "1.2.3.3",
@@ -7017,6 +7455,7 @@
     "date": "",
     "downloadable": true,
     "updateId": "6402FC0E-F392-488C-9557-35C1BB8FD4A4",
-    "revisionNumber": 1
+    "revisionNumber": 1,
+    "downloadUrl": null
   }
 ]

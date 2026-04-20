@@ -1596,6 +1596,8 @@ async function applyVersion(versionId, targetWindow) {
     throw new Error("Эта версия не скачана. Сначала нажми Установить.");
   }
 
+  const expectedClientVersion = versionIdToPackageVersion(item.id);
+
   sendInstallEvent(targetWindow, {
     versionId,
     kind: "log",
@@ -1714,9 +1716,59 @@ async function applyVersion(versionId, targetWindow) {
     progress: 80,
   });
 
-  const clientAfterApply = await getClientInfo();
+  let clientAfterApply = await getClientInfo();
   if (!clientAfterApply.installed) {
     throw new Error("Пакет применился, но Minecraft не обнаружен в системе.");
+  }
+
+  if (!versionsEqual(expectedClientVersion, clientAfterApply.version)) {
+    sendInstallEvent(targetWindow, {
+      versionId,
+      kind: "log",
+      level: "info",
+      text: `Windows сохранил версию ${clientAfterApply.version || "не определена"}, пробую чистое применение...`,
+    });
+    sendInstallEvent(targetWindow, {
+      versionId,
+      kind: "progress",
+      progress: 86,
+    });
+
+    const reinstallScript = `
+$pkgs = @()
+$pkgs += Get-AppxPackage -Name Microsoft.MinecraftUWP -ErrorAction SilentlyContinue
+$pkgs += Get-AppxPackage -Name Microsoft.MinecraftWindowsBeta -ErrorAction SilentlyContinue
+$pkgs = $pkgs | Where-Object { $_ -and $_.PackageFullName } | Sort-Object PackageFullName -Unique
+foreach ($pkg in $pkgs) {
+  try { Remove-AppxPackage -Package $pkg.PackageFullName -ErrorAction Stop } catch {}
+}
+Start-Sleep -Seconds 1
+Add-AppxPackage -Path '${escapePwsh(item.packagePath)}' -ForceApplicationShutdown -ForceUpdateFromAnyVersion -ErrorAction Stop
+`;
+
+    const reinstallResult = await runPowerShell(reinstallScript, { hidden: true });
+    if (reinstallResult.code !== 0) {
+      const hint = reinstallResult.stderr || reinstallResult.stdout || "Не удалось выполнить чистое применение версии.";
+      throw new Error(hint);
+    }
+
+    sendInstallEvent(targetWindow, {
+      versionId,
+      kind: "progress",
+      progress: 90,
+    });
+
+    clientAfterApply = await getClientInfo();
+    if (!clientAfterApply.installed) {
+      throw new Error("После чистого применения Minecraft не найден в системе.");
+    }
+  }
+
+  if (!versionsEqual(expectedClientVersion, clientAfterApply.version)) {
+    throw new Error(
+      `Версия не закрепилась. Ожидалось: ${expectedClientVersion}, получено: ${clientAfterApply.version || "не определено"}. `
+      + "Windows Store автоматически обновил клиент. Отключи автообновление Store и попробуй снова."
+    );
   }
 
   await restoreGameDataToPackage(clientAfterApply.packageFamilyName, targetWindow, versionId);
