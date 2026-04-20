@@ -121,6 +121,7 @@ contextBridge.exposeInMainWorld('launcherStats', {
 
 contextBridge.exposeInMainWorld('bedrockApi', {
   getVersions: () => ipcRenderer.invoke('bedrock:versions:list'),
+  refreshVersions: () => ipcRenderer.invoke('bedrock:versions:refresh'),
   getInstalled: () => ipcRenderer.invoke('bedrock:installed:list'),
   getClientInfo: () => ipcRenderer.invoke('bedrock:client:info'),
   getStoragePaths: () => ipcRenderer.invoke('bedrock:storage:paths'),

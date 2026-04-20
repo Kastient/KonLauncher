@@ -561,8 +561,20 @@ export default function App({ headerCenterSlot = null }) {
   const loadInitialData = useCallback(async () => {
     if (!api) return;
 
+    let refreshedVersions = null;
+    if (typeof api.refreshVersions === "function") {
+      try {
+        const refreshed = await api.refreshVersions();
+        if (Array.isArray(refreshed?.versions)) {
+          refreshedVersions = refreshed.versions;
+        }
+      } catch {
+        // fallback to cached local catalog
+      }
+    }
+
     const [remoteVersions, remoteInstalled, remoteClient, remoteStoragePaths, remoteResourcePacks] = await Promise.all([
-      api.getVersions(),
+      Array.isArray(refreshedVersions) ? refreshedVersions : api.getVersions(),
       api.getInstalled(),
       api.getClientInfo?.(),
       api.getStoragePaths?.(),

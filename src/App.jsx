@@ -81,8 +81,8 @@ export default function App() {
   const onlineCountLabel = useMemo(() => formatCompactCount(launcherStats.online), [launcherStats.online]);
 
   const clientSwitch = (
-    <div className="inline-flex items-center gap-4 rounded-full border border-white/10 bg-[#0c1320]/85 px-4 py-1.5 shadow-[0_8px_28px_rgba(0,0,0,0.35)]">
-      <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-zinc-300">
+    <div className="inline-flex items-center gap-4 px-1 text-[12px] font-black uppercase tracking-[0.18em]">
+      <div className="flex items-center gap-1.5 text-[10px] text-zinc-400">
         <Download size={11} className="text-zinc-400" />
         <span>{usageCountLabel}</span>
       </div>

@@ -9,10 +9,12 @@ const unzipper = require("unzipper");
 
 const VERSIONS_FILE = path.join(__dirname, "bedrock-data", "versions.json");
 const INSTALL_EVENT_CHANNEL = "bedrock:install:event";
+const UWP_SOURCE_URL = "https://raw.githubusercontent.com/ddf8196/mc-w10-versiondb-auto-update/master/versions.json.min";
 
 let versions = [];
 let activeInstallId = null;
 let handlersRegistered = false;
+let versionsRefreshPromise = null;
 const PACKAGE_EXTENSIONS = [".msixbundle", ".appxbundle", ".msix", ".appx", ".msixvc"];
 let cachedWorkspaceRoot = null;
 const DEFAULT_RESOURCE_PACK_ID = "launcher-default-rp";
@@ -22,8 +24,188 @@ const SUPPORTED_RESOURCE_PACK_EXTENSIONS = [".mcpack", ".zip"];
 const RESOURCE_PACK_LIBRARY_FILE = "library.json";
 
 function loadVersions() {
-  const raw = fs.readFileSync(VERSIONS_FILE, "utf8");
-  versions = JSON.parse(raw);
+  try {
+    const raw = fs.readFileSync(VERSIONS_FILE, "utf8");
+    const parsed = JSON.parse(raw);
+    versions = Array.isArray(parsed) ? parsed : [];
+  } catch {
+    versions = [];
+  }
+}
+
+function compareVersionDesc(a, b) {
+  const aParts = parseVersionParts(a);
+  const bParts = parseVersionParts(b);
+  const max = Math.max(aParts.length, bParts.length);
+
+  for (let i = 0; i < max; i += 1) {
+    const av = aParts[i] || 0;
+    const bv = bParts[i] || 0;
+    if (av !== bv) return bv - av;
+  }
+
+  return 0;
+}
+
+function channelFromCode(typeCode) {
+  return Number(typeCode) === 0 ? "Release" : "Preview";
+}
+
+function familyOf(version) {
+  const parts = String(version || "").split(".");
+  return parts.length >= 2 ? `${parts[0]}.${parts[1]}` : String(version || "");
+}
+
+function normalizeVersionEntry(entry) {
+  if (!entry || typeof entry !== "object") return null;
+  const id = String(entry.id || "").trim();
+  if (!id) return null;
+
+  const type = String(entry.type || "Release").trim() || "Release";
+  const displayId = String(entry.displayId || entry.shortId || formatDisplayVersionId(id)).trim() || formatDisplayVersionId(id);
+  const shortId = String(entry.shortId || displayId).trim() || displayId;
+  const family = String(entry.family || familyOf(id)).trim() || familyOf(id);
+  const source = String(entry.source || "UWP").trim() || "UWP";
+
+  return {
+    id,
+    shortId,
+    displayId,
+    family,
+    clientVersion: String(entry.clientVersion || id),
+    type,
+    source,
+    name: String(entry.name || `Bedrock ${displayId}${type === "Preview" ? " Preview" : ""}`),
+    date: String(entry.date || ""),
+    downloadable: entry.downloadable !== false,
+    updateId: entry.updateId ? String(entry.updateId) : null,
+    revisionNumber: Number.isFinite(Number(entry.revisionNumber)) ? Number(entry.revisionNumber) : 1,
+    directUrls: Array.isArray(entry.directUrls) ? entry.directUrls.filter((url) => typeof url === "string" && url.trim()) : undefined,
+    downloadUrl: entry.downloadUrl ? String(entry.downloadUrl) : undefined
+  };
+}
+
+function buildUwpEntryFromRemoteRow(row) {
+  if (!Array.isArray(row) || row.length < 3) return null;
+  const id = String(row[0] || "").trim();
+  const updateId = String(row[1] || "").trim();
+  if (!id || !updateId) return null;
+
+  const type = channelFromCode(row[2]);
+  const displayId = formatDisplayVersionId(id);
+  return normalizeVersionEntry({
+    id,
+    shortId: displayId,
+    displayId,
+    family: familyOf(id),
+    clientVersion: id,
+    type,
+    source: "UWP",
+    name: `Bedrock ${displayId}${type === "Preview" ? " Preview" : ""}`,
+    date: "",
+    downloadable: true,
+    updateId,
+    revisionNumber: 1,
+  });
+}
+
+function sortVersionsList(items) {
+  return [...items].sort((left, right) => {
+    const typeRankLeft = String(left?.type || "Release") === "Release" ? 0 : 1;
+    const typeRankRight = String(right?.type || "Release") === "Release" ? 0 : 1;
+    if (typeRankLeft !== typeRankRight) return typeRankLeft - typeRankRight;
+
+    const versionCmp = compareVersionDesc(left?.id, right?.id);
+    if (versionCmp !== 0) return versionCmp;
+
+    const sourceLeft = String(left?.source || "");
+    const sourceRight = String(right?.source || "");
+    if (sourceLeft < sourceRight) return -1;
+    if (sourceLeft > sourceRight) return 1;
+    return 0;
+  });
+}
+
+function mergeVersionCatalog(currentVersions, incomingVersions) {
+  const map = new Map();
+  for (const entry of currentVersions || []) {
+    const normalized = normalizeVersionEntry(entry);
+    if (!normalized) continue;
+    map.set(`${normalized.id}::${normalized.type}::${normalized.source}`, normalized);
+  }
+
+  let added = 0;
+  let changed = 0;
+
+  for (const entry of incomingVersions || []) {
+    const normalized = normalizeVersionEntry(entry);
+    if (!normalized) continue;
+    const key = `${normalized.id}::${normalized.type}::${normalized.source}`;
+    const existing = map.get(key);
+    if (!existing) {
+      map.set(key, normalized);
+      added += 1;
+      continue;
+    }
+
+    const merged = {
+      ...existing,
+      ...normalized,
+      updateId: normalized.updateId || existing.updateId,
+      revisionNumber: Number.isFinite(Number(normalized.revisionNumber))
+        ? Number(normalized.revisionNumber)
+        : existing.revisionNumber,
+    };
+    if (JSON.stringify(existing) !== JSON.stringify(merged)) {
+      changed += 1;
+      map.set(key, merged);
+    }
+  }
+
+  return {
+    versions: sortVersionsList(Array.from(map.values())),
+    added,
+    changed,
+  };
+}
+
+async function refreshVersionsCatalogFromRemote() {
+  if (versionsRefreshPromise) return versionsRefreshPromise;
+
+  versionsRefreshPromise = (async () => {
+    const response = await fetch(UWP_SOURCE_URL);
+    if (!response.ok) {
+      throw new Error(`Не удалось обновить каталог версий (${response.status}).`);
+    }
+
+    const payload = await response.json();
+    if (!Array.isArray(payload)) {
+      throw new Error("Некорректный ответ источника версий.");
+    }
+
+    const remoteEntries = payload.map((row) => buildUwpEntryFromRemoteRow(row)).filter(Boolean);
+    if (remoteEntries.length === 0) {
+      throw new Error("Источник версий вернул пустой список.");
+    }
+
+    const merged = mergeVersionCatalog(versions, remoteEntries);
+    versions = merged.versions;
+    await fsPromises.writeFile(VERSIONS_FILE, JSON.stringify(versions, null, 2), "utf8");
+
+    return {
+      ok: true,
+      source: UWP_SOURCE_URL,
+      total: versions.length,
+      added: merged.added,
+      changed: merged.changed,
+    };
+  })();
+
+  try {
+    return await versionsRefreshPromise;
+  } finally {
+    versionsRefreshPromise = null;
+  }
 }
 
 function getWorkspaceRoot() {
@@ -1474,8 +1656,16 @@ const registerBedrockIpc = () => {
   handlersRegistered = true;
 
   loadVersions();
+  void refreshVersionsCatalogFromRemote().catch(() => {});
 
   ipcMain.handle("bedrock:versions:list", async () => versions);
+  ipcMain.handle("bedrock:versions:refresh", async () => {
+    const result = await refreshVersionsCatalogFromRemote();
+    return {
+      ...result,
+      versions,
+    };
+  });
   ipcMain.handle("bedrock:installed:list", async () => readInstalledVersions());
   ipcMain.handle("bedrock:client:info", async () => getClientInfo());
   ipcMain.handle("bedrock:storage:paths", async () => ({
